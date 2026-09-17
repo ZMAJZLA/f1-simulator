@@ -5,30 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 // ULTIMATE DRAFT & SIMULATOR</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@400;500;600;700&display=swap');
 
         :root {
             --f1-red: #e10600;
             --bg-dark: #0a0a0f;
             --panel-dark: #14141a;
             --text-main: #ffffff;
-            --neon-glow: 0 0 20px rgba(225, 6, 0, 0.6);
             --success: #00ffcc;
             --gold: #ffd700;
+            --gold-dark: #ccaa00;
         }
 
         body {
             margin: 0; padding: 0 0 50px 0;
             background-color: var(--bg-dark); color: var(--text-main);
             font-family: 'Rajdhani', sans-serif;
-            background-image: radial-gradient(circle at top right, #1a1a24 0%, var(--bg-dark) 70%);
+            background-image: radial-gradient(circle at top right, #1a1a24 0%, var(--bg-dark) 80%);
             min-height: 100vh; overflow-x: hidden;
         }
 
         header {
             background: #000; border-bottom: 3px solid var(--f1-red);
             padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 50; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            position: sticky; top: 0; z-index: 50; box-shadow: 0 5px 25px rgba(0,0,0,0.9);
         }
 
         header h1 { font-family: 'Teko', sans-serif; font-size: 38px; margin: 0; letter-spacing: 2px; }
@@ -38,196 +38,231 @@
         .builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
         .driver-row { grid-column: span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
+        /* SLEEK TEXT-BASED CARDS */
         .slot-card {
-            background: var(--panel-dark); border: 2px dashed #444; border-radius: 8px;
+            background: linear-gradient(145deg, var(--panel-dark), #0f0f13);
+            border: 2px dashed #333; border-radius: 8px;
             height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
         .driver-card { height: 320px; }
 
-        .slot-card:hover { border-color: var(--f1-red); background: #1a1a20; transform: translateY(-3px); }
-        .slot-card.filled { border-style: solid; border-color: #333; background: #000; }
+        .slot-card:hover { border-color: var(--f1-red); transform: translateY(-8px); box-shadow: 0 15px 30px rgba(225, 6, 0, 0.2); }
+        .slot-card.filled { border-style: solid; border-color: #444; background: linear-gradient(145deg, #111, #000); }
         
-        .slot-card.locked-slot { opacity: 0.35; pointer-events: none; filter: grayscale(80%); border-color: #222; }
+        .slot-card.locked-slot { opacity: 0.4; pointer-events: none; filter: grayscale(100%); border-color: #222; box-shadow: none; transform: none;}
         .slot-card.locked-slot::after {
-            content: "LOCKED"; position: absolute; bottom: 12px; font-size: 11px;
-            letter-spacing: 2px; color: #8b8b99; font-weight: bold; background: rgba(0,0,0,0.8);
-            padding: 3px 8px; border-radius: 4px;
+            content: "LOCKED"; position: absolute; bottom: 15px; font-size: 13px;
+            letter-spacing: 3px; color: #666; font-weight: bold; background: #000;
+            padding: 5px 12px; border-radius: 4px; border: 1px solid #333;
         }
         .slot-card.completed-slot { pointer-events: none !important; border-color: var(--f1-red); }
-        .slot-card.completed-slot::after {
-            content: "✓ SECURED"; position: absolute; bottom: 12px; right: 12px; font-size: 12px;
-            letter-spacing: 2px; color: var(--success); font-weight: bold; background: rgba(0,0,0,0.8);
-            padding: 3px 8px; border-radius: 4px; border: 1px solid var(--success);
-        }
 
         .slot-label {
             position: absolute; top: 15px; left: 15px; font-size: 14px;
             color: #fff; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; z-index: 2;
-            background: rgba(0,0,0,0.8); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0;
+            background: rgba(0,0,0,0.9); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0;
         }
 
-        .slot-content { text-align: center; z-index: 2; padding: 20px; width: 100%; box-sizing: border-box; text-shadow: 0 2px 10px #000;}
-        .empty-icon { font-size: 50px; color: #444; margin-bottom: 10px; font-weight: 300;}
+        /* WATERMARK TYPOGRAPHY */
+        .watermark {
+            position: absolute; right: -10px; bottom: -20px; font-family: 'Teko', sans-serif;
+            font-size: 140px; color: rgba(255,255,255,0.03); z-index: 0; line-height: 1; pointer-events: none; font-weight: bold;
+        }
+
+        .slot-content { text-align: center; z-index: 2; padding: 20px; width: 100%; box-sizing: border-box; }
+        .empty-icon { font-size: 50px; color: #444; margin-bottom: 10px; font-weight: 300; transition: 0.3s;}
+        .slot-card:hover .empty-icon { color: var(--f1-red); transform: scale(1.2); }
         
-        .filled-name { font-family: 'Teko', sans-serif; font-size: 42px; margin: 0; line-height: 1; text-transform: uppercase;}
-        .filled-year { font-size: 16px; color: var(--f1-red); font-weight: bold; letter-spacing: 2px; margin-top: 5px; background: rgba(0,0,0,0.8); display: inline-block; padding: 2px 8px; border-radius: 4px;}
+        .filled-name { font-family: 'Teko', sans-serif; font-size: 46px; margin: 0; line-height: 1; text-transform: uppercase; text-shadow: 0 4px 10px rgba(0,0,0,0.8);}
+        .filled-year { font-size: 16px; color: #aaa; font-weight: bold; letter-spacing: 2px; margin-top: 8px; background: rgba(0,0,0,0.6); display: inline-block; padding: 4px 10px; border-radius: 4px;}
         .filled-stat { 
-            background: rgba(0,0,0,0.9); border: 1px solid var(--f1-red); display: inline-block;
-            padding: 5px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-radius: 4px; margin-top: 15px; text-transform: uppercase;
+            background: rgba(0,0,0,0.8); border: 1px solid var(--f1-red); display: inline-block; color: #fff;
+            padding: 5px 25px; font-family: 'Teko', sans-serif; font-size: 26px; border-radius: 4px; margin-top: 20px; text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
-        
-        /* Fixed Img styling - highly visible over the dark card */
-        .bg-img { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            object-fit: cover; opacity: 0.6; filter: grayscale(10%); transition: 0.4s; z-index: 0; 
-        }
-        .slot-card.completed-slot .bg-img { opacity: 0.75; filter: grayscale(0%); }
-        .draft-option:hover .bg-img { opacity: 0.9; filter: grayscale(0%); transform: scale(1.05); }
 
+        /* THE "SPARKLY SPARKLY" GOLD CARD ANIMATIONS */
         .gold-card {
-            background: linear-gradient(135deg, #1f1a08 0%, #3a300d 50%, #1f1a08 100%) !important; border: 2px solid var(--gold) !important;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.3) !important;
+            background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
+            border: 2px solid var(--gold) !important;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1) !important;
         }
+        .gold-card .filled-stat { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
+        .gold-card .watermark { color: rgba(255, 215, 0, 0.08); }
+        
+        /* Sweeping Light Flare */
         .gold-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.25), transparent);
-            transform: rotate(30deg); animation: shine 3s infinite; pointer-events: none; z-index: 1;
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+            transform: skewX(-25deg); animation: goldShine 4s infinite; z-index: 1; pointer-events: none;
         }
-        @keyframes shine { 0% { transform: translateX(-100%) rotate(30deg); } 100% { transform: translateX(100%) rotate(30deg); } }
+        @keyframes goldShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        /* Floating Sparkles */
+        .sparkle-1, .sparkle-2, .sparkle-3 {
+            position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 10px 2px var(--gold); z-index: 3; opacity: 0; pointer-events: none;
+        }
+        .sparkle-1 { top: 20%; left: 20%; animation: twinkle 2s infinite 0.5s; }
+        .sparkle-2 { top: 70%; right: 20%; animation: twinkle 2.5s infinite 1.2s; }
+        .sparkle-3 { top: 40%; left: 80%; animation: twinkle 1.8s infinite 0.1s; }
+        @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.5); } }
+
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
+        /* DRAFT OVERLAY WITH STAGGERED ENTRANCES */
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(15px);
+            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s ease; backdrop-filter: blur(20px);
         }
         .draft-overlay.active { opacity: 1; pointer-events: auto; }
 
-        .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px;}
+        .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,1);}
         .draft-header span { color: var(--f1-red); }
         
-        .respin-container { margin-bottom: 30px; display: flex; gap: 15px; align-items: center;}
+        .respin-container { margin-bottom: 40px; display: flex; gap: 15px; align-items: center;}
         .respin-btn { 
-            background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 20px;
+            background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 25px;
             font-family: 'Teko', sans-serif; font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.2s;
         }
-        .respin-btn:hover:not(:disabled) { background: var(--f1-red); box-shadow: 0 0 15px var(--f1-red);}
-        .respin-btn:disabled { border-color: #444; color: #666; cursor: not-allowed; }
+        .respin-btn:hover:not(:disabled) { background: var(--f1-red); box-shadow: 0 0 20px rgba(225,6,0,0.6); transform: scale(1.05);}
+        .respin-btn:disabled { border-color: #333; color: #555; cursor: not-allowed; }
 
-        .draft-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1400px; padding: 0 40px; width: 100%; box-sizing: border-box;}
+        .draft-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; max-width: 1400px; padding: 0 40px; width: 100%; box-sizing: border-box;}
         
         .draft-option {
-            background: #111; border: 2px solid #333; border-radius: 8px;
-            padding: 25px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between; min-height: 380px;
+            background: linear-gradient(180deg, #18181f, #0a0a0f); border: 2px solid #333; border-radius: 8px;
+            padding: 30px 25px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
+            opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-        .draft-option:hover { border-color: var(--f1-red); transform: translateY(-10px); box-shadow: 0 15px 30px rgba(225,6,0,0.4); }
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
-        .opt-content { z-index: 2; position: relative; text-shadow: 0 2px 8px #000; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
-        .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; background: rgba(0,0,0,0.85); display: inline-block; padding: 2px 8px; border-radius: 4px;}
-        .opt-name { font-family: 'Teko', sans-serif; font-size: 38px; line-height: 1; margin-bottom: 10px; text-transform: uppercase; background: rgba(0,0,0,0.6); display: inline-block; padding: 4px; border-radius: 4px;}
+        .draft-option:hover { border-color: var(--f1-red); transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
         
-        .opt-stage { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;}
-        .stage-rookie { color: var(--success); border: 1px solid var(--success); background: rgba(0, 0, 0, 0.9);}
-        .stage-prime { color: #c9b037; border: 1px solid #c9b037; background: rgba(0, 0, 0, 0.9);}
-        .stage-veteran { color: #888; border: 1px solid #888; background: rgba(0, 0, 0, 0.9);}
+        .opt-content { z-index: 2; position: relative; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
+        .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; letter-spacing: 2px;}
+        .opt-name { font-family: 'Teko', sans-serif; font-size: 44px; line-height: 0.9; margin-bottom: 15px; text-transform: uppercase; color: #fff;}
         
-        .opt-hist { background: rgba(0,0,0,0.9); border: 1px solid #444; border-radius: 4px; padding: 8px; font-size: 13px; color: #ccc; margin-bottom: 10px; font-weight: bold;}
-        .opt-hist span { color: #fff;}
-        .opt-note { font-size: 14px; color: #ccc; line-height: 1.5; font-style: italic; border-left: 3px solid var(--f1-red); padding-left: 12px; margin-bottom: 20px; flex-grow: 1; background: rgba(0,0,0,0.85); padding: 10px;}
+        .opt-stage { display: inline-block; font-size: 13px; padding: 4px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; width: max-content;}
+        .stage-rookie { color: var(--success); border: 1px solid var(--success); background: rgba(0, 255, 204, 0.1);}
+        .stage-prime { color: #c9b037; border: 1px solid #c9b037; background: rgba(201, 176, 55, 0.1);}
+        .stage-veteran { color: #888; border: 1px solid #888; background: rgba(136, 136, 136, 0.1);}
         
-        .opt-stat { font-family: 'Teko', sans-serif; font-size: 40px; text-align: right; color: #fff; margin-top: auto; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 4px;}
-        .spinning-card { animation: pulseBg 0.2s infinite alternate; filter: blur(2px); pointer-events: none; }
-        @keyframes pulseBg { from { background: #111; } to { background: #222; } }
+        .opt-hist { border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 12px 0; font-size: 14px; color: #aaa; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between;}
+        .opt-hist span { color: #fff; font-size: 16px;}
+        .opt-note { font-size: 15px; color: #ccc; line-height: 1.5; font-style: italic; flex-grow: 1; opacity: 0.8;}
+        
+        .opt-stat { font-family: 'Teko', sans-serif; font-size: 48px; text-align: right; color: #fff; margin-top: auto; line-height: 1;}
+        
+        .spinning-card { animation: pulseBg 0.5s infinite alternate; pointer-events: none; border-color: #333 !important;}
+        @keyframes pulseBg { from { opacity: 0.5; } to { opacity: 1; } }
 
+        /* SYNERGY & START BUTTON */
         .synergy-box {
-            background: #111; border-radius: 8px; border: 1px solid #333; padding: 20px;
-            text-align: center; margin-bottom: 30px; display: none; animation: slideIn 0.5s;
+            background: linear-gradient(90deg, transparent, #111, transparent); padding: 20px;
+            text-align: center; margin-bottom: 20px; display: none; animation: slideIn 0.5s;
         }
-        .synergy-title { font-family: 'Teko', sans-serif; font-size: 28px; color: #fff; letter-spacing: 1px;}
-        .synergy-status { font-size: 16px; font-weight: bold; margin-top: 10px; padding: 10px; border-radius: 4px;}
-        .syn-good { background: rgba(0, 255, 204, 0.1); color: #00ffcc; border: 1px solid #00ffcc;}
-        .syn-bad { background: rgba(225, 6, 0, 0.1); color: #ff3333; border: 1px solid #ff3333;}
+        .synergy-title { font-family: 'Teko', sans-serif; font-size: 28px; color: #fff; letter-spacing: 2px;}
+        .synergy-status { font-size: 18px; font-weight: bold; margin-top: 5px; text-transform: uppercase;}
+        .syn-good { color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.5);}
+        .syn-bad { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,0.5);}
 
-        .btn-container { text-align: center; margin: 20px 0 50px 0; }
+        .btn-container { text-align: center; margin: 30px 0 60px 0; }
         .btn-main {
             background: transparent; color: var(--text-main); font-family: 'Teko', sans-serif;
-            font-size: 36px; padding: 15px 80px; border: 2px solid #333; border-radius: 4px;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; opacity: 0.5; pointer-events: none;
+            font-size: 42px; padding: 15px 100px; border: 3px solid #333; border-radius: 6px;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 4px; transition: 0.3s; opacity: 0.3; pointer-events: none;
         }
         .btn-main.ready { border-color: var(--f1-red); color: var(--f1-red); opacity: 1; pointer-events: auto; }
-        .btn-main.ready:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 30px rgba(225, 6, 0, 0.6); transform: scale(1.05); }
+        .btn-main.ready:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 40px rgba(225, 6, 0, 0.8); transform: scale(1.05); }
 
-        #season-container { display: none; margin-top: 40px;}
+        /* 🔴 THE LIGHTS OUT ANIMATION SEQUENCE 🔴 */
+        #lights-out-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 500; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; gap: 40px;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+        .lights-container { display: flex; gap: 20px; }
+        .light-box {
+            width: 80px; height: 160px; background: #111; border: 4px solid #333; border-radius: 10px;
+            display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+        }
+        .light-bulb { width: 50px; height: 50px; background: #222; border-radius: 50%; transition: 0.1s; }
+        .light-bulb.on { background: #ff0000; box-shadow: 0 0 40px #ff0000, inset 0 0 10px #fff; }
+        #lights-text { font-family: 'Teko', sans-serif; font-size: 80px; color: #fff; letter-spacing: 5px; opacity: 0; transition: 0.1s; }
+
+        /* TICKER & TABLES */
+        #season-container { display: none; margin-top: 20px;}
         .scoreboard-header {
-            display: flex; justify-content: space-between; background: #000;
-            padding: 15px 20px; font-family: 'Teko', sans-serif; font-size: 22px; border-bottom: 2px solid var(--f1-red); border-radius: 6px 6px 0 0; color: #8b8b99;
+            display: flex; justify-content: space-between; background: #111;
+            padding: 15px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-bottom: 3px solid var(--f1-red); border-radius: 8px 8px 0 0; color: #8b8b99; letter-spacing: 1px;
         }
-        .race-list { background: var(--panel-dark); border-radius: 0 0 6px 6px; border: 1px solid #333; border-top: none;}
+        .race-list { background: var(--panel-dark); border-radius: 0 0 8px 8px; border: 1px solid #222; border-top: none; box-shadow: 0 15px 30px rgba(0,0,0,0.5);}
         .race-row {
-            display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #2a2a35; opacity: 0;
-            transform: translateX(-20px); animation: slideIn 0.3s forwards; flex-wrap: wrap;
+            display: flex; align-items: center; padding: 18px 20px; border-bottom: 1px solid #1a1a24; 
+            opacity: 0; transform: translateY(-10px); animation: slideDown 0.4s forwards; flex-wrap: wrap; background: #14141a; transition: 0.2s;
         }
-        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        .race-row:hover { background: #1a1a24; }
+        @keyframes slideDown { to { opacity: 1; transform: translateY(0); } }
 
-        .race-rnd { width: 50px; font-weight: bold; color: var(--f1-red); font-size: 18px;}
-        .race-track { flex-grow: 1; font-size: 18px; font-weight: 700; text-transform: uppercase; }
-        .race-winner { width: 180px; font-size: 16px; color: #c9b037; font-weight: bold;}
-        .race-driver { width: 140px; display: flex; align-items: center; gap: 10px; font-family: 'Teko', sans-serif; font-size: 22px; justify-content: center;}
+        .race-rnd { width: 60px; font-weight: bold; color: var(--f1-red); font-size: 20px;}
+        .race-track { flex-grow: 1; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+        .race-winner { width: 200px; font-size: 18px; color: var(--gold); font-weight: bold; text-transform: uppercase;}
+        .race-driver { width: 140px; display: flex; align-items: center; gap: 10px; font-family: 'Teko', sans-serif; font-size: 26px; justify-content: center;}
         
-        .pos-badge { background: #333; color: #fff; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 4px; font-size: 20px;}
-        .pos-1 { background: #c9b037; color: #000; } 
-        .pos-2 { background: #b4b4b4; color: #000; } 
-        .pos-3 { background: #ad8a56; color: #000; } 
+        .pos-badge { background: #222; color: #fff; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 6px; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+        .pos-1 { background: linear-gradient(135deg, #e6c200, #ffdf00); color: #000; font-weight: bold;} 
+        .pos-2 { background: linear-gradient(135deg, #999, #ccc); color: #000; font-weight: bold;} 
+        .pos-3 { background: linear-gradient(135deg, #a67c00, #bf953f); color: #000; font-weight: bold;} 
         .pos-dnf { background: var(--f1-red); color: #fff; font-size: 14px;}
-        .pos-dns { background: #555; color: #fff; font-size: 12px; font-weight: bold;}
+        .pos-dns { background: #444; color: #aaa; font-size: 14px;}
         
-        .race-pts { width: 60px; text-align: right; font-weight: bold; color: #00ffcc; font-size: 20px;}
-        .chaos-msg { width: 100%; margin-top: 8px; font-size: 13px; color: #ff3333; font-style: italic; text-align: right; font-weight: bold;}
+        .race-pts { width: 80px; text-align: right; font-weight: bold; color: var(--success); font-size: 24px; font-family: 'Teko', sans-serif;}
+        .chaos-msg { width: 100%; margin-top: 10px; font-size: 14px; color: #ff5555; font-style: italic; text-align: right; font-weight: 600;}
         .dns-msg { color: #f1c40f; }
+        .event-msg { color: #00ffcc; }
 
-        .championships { display: none; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; animation: slideIn 0.5s forwards; }
+        /* CHAMPIONSHIPS & SUMMARY CARD */
+        .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; animation: slideUpFade 0.8s forwards; }
         
         .summary-card {
-            grid-column: span 2; background: linear-gradient(45deg, #111, #1a1a20);
-            border-left: 5px solid var(--f1-red); padding: 30px; border-radius: 8px;
-            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 10px;
+            grid-column: span 2; background: linear-gradient(135deg, #111, #1a1a24);
+            border-left: 6px solid var(--f1-red); padding: 40px; border-radius: 8px;
+            text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin-bottom: 20px;
         }
-        .summary-card h2 { font-family: 'Teko', sans-serif; font-size: 42px; margin: 0; color: #fff; letter-spacing: 2px;}
-        .summary-card p { font-size: 18px; color: #ccc; line-height: 1.6; max-width: 900px; margin: 15px auto 0; }
+        .summary-card h2 { font-family: 'Teko', sans-serif; font-size: 50px; margin: 0; color: #fff; letter-spacing: 2px;}
+        .summary-card p { font-size: 20px; color: #ccc; line-height: 1.6; max-width: 900px; margin: 15px auto 0; font-weight: 500;}
         
-        .summary-1 { border-color: var(--gold); } .summary-1 h2 { color: var(--gold); }
+        .summary-1 { border-color: var(--gold); background: linear-gradient(135deg, #1a1400, #2b2200);} .summary-1 h2 { color: var(--gold); }
         .summary-2 { border-color: #b4b4b4; } .summary-2 h2 { color: #b4b4b4; }
         .summary-mid { border-color: var(--success); } .summary-mid h2 { color: var(--success); }
         .summary-bad { border-color: #ff3333; } .summary-bad h2 { color: #ff3333; }
 
-        .champ-card { background: var(--panel-dark); border-top: 4px solid var(--f1-red); border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .champ-card h2 { font-family: 'Teko', sans-serif; font-size: 32px; margin: 0 0 15px 0; color: #fff; text-align: center;}
-        table { width: 100%; border-collapse: collapse; font-size: 16px; }
-        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #2a2a35; }
-        th { color: #8b8b99; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #444;}
-        .pts-col { text-align: right; font-family: 'Teko', sans-serif; font-size: 24px; color: #00ffcc; width: 60px;}
-        .pos-col { width: 30px; font-weight: bold; color: #888;}
-        .user-team-row { background: rgba(225, 6, 0, 0.15); border-left: 3px solid var(--f1-red); }
+        .champ-card { background: var(--panel-dark); border-top: 4px solid var(--f1-red); border-radius: 8px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .champ-card h2 { font-family: 'Teko', sans-serif; font-size: 36px; margin: 0 0 20px 0; color: #fff; text-align: center; letter-spacing: 1px;}
+        table { width: 100%; border-collapse: collapse; font-size: 18px; }
+        th, td { padding: 15px 12px; text-align: left; border-bottom: 1px solid #222; }
+        th { color: #8b8b99; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #444;}
+        .pts-col { text-align: right; font-family: 'Teko', sans-serif; font-size: 28px; color: var(--success); width: 70px;}
+        .pos-col { width: 40px; font-weight: bold; color: #666;}
+        .user-team-row { background: rgba(225, 6, 0, 0.1); border-left: 4px solid var(--f1-red); }
         .user-team-row td { font-weight: bold; color: #fff; }
         .user-team-row .pos-col { color: var(--f1-red); }
 
         .share-btn {
-            background: #1da1f2; color: #fff; border: none; padding: 15px 30px; font-family: 'Teko', sans-serif;
-            font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.3s; margin-top: 20px; text-transform: uppercase;
+            background: #1da1f2; color: #fff; border: none; padding: 15px 40px; font-family: 'Teko', sans-serif;
+            font-size: 28px; cursor: pointer; border-radius: 6px; transition: 0.3s; margin-top: 30px; text-transform: uppercase; letter-spacing: 2px;
         }
-        .share-btn:hover { background: #0c85d0; transform: scale(1.05); }
-        
-        #toast {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--success); color: #000; padding: 10px 20px; border-radius: 4px;
-            font-weight: bold; display: none; z-index: 1000;
-        }
+        .share-btn:hover { background: #0c85d0; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(29, 161, 242, 0.4);}
         
         .footer-credits {
-            text-align: center; color: #8b8b99; font-size: 14px; margin-top: 50px; 
-            padding-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
+            text-align: center; color: #555; font-size: 16px; margin-top: 80px; 
+            padding-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
         }
     </style>
 </head>
@@ -235,31 +270,31 @@
 
     <header>
         <h1>F1 <span>ULTIMATE</span> // ENGINEERING DRAFT</h1>
-        <div style="font-size: 14px; font-weight: 600; color: #8b8b99; letter-spacing: 1px;">2026 GRID SIMULATION</div>
+        <div style="font-size: 16px; font-weight: 700; color: #8b8b99; letter-spacing: 2px;">2026 GRID SIMULATION</div>
     </header>
 
     <div class="container">
         <div class="builder-grid">
             <div class="slot-card" id="slot-chassis" onclick="openDraft('chassis')">
                 <div class="slot-label">STEP 1: CHASSIS</div>
-                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT CHASSIS</div></div>
+                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT CHASSIS</div></div>
             </div>
             <div class="slot-card locked-slot" id="slot-engine" onclick="openDraft('engine')">
                 <div class="slot-label">STEP 2: ENGINE</div>
-                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT ENGINE</div></div>
+                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT ENGINE</div></div>
             </div>
             <div class="slot-card locked-slot" id="slot-principal" onclick="openDraft('principal')">
                 <div class="slot-label">STEP 3: PRINCIPAL</div>
-                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT PRINCIPAL</div></div>
+                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT PRINCIPAL</div></div>
             </div>
             <div class="driver-row">
                 <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
                     <div class="slot-label">STEP 4: LEAD DRIVER</div>
-                    <div class="slot-content"><div class="empty-icon" style="font-size: 50px;">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT DRIVER</div></div>
+                    <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT DRIVER</div></div>
                 </div>
                 <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
                     <div class="slot-label">STEP 5: SECOND DRIVER</div>
-                    <div class="slot-content"><div class="empty-icon" style="font-size: 50px;">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT DRIVER</div></div>
+                    <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT DRIVER</div></div>
                 </div>
             </div>
         </div>
@@ -270,17 +305,17 @@
         </div>
 
         <div class="btn-container">
-            <button class="btn-main" id="sim-btn" onclick="initSeason()">LIGHTS OUT</button>
+            <button class="btn-main" id="sim-btn" onclick="triggerLightsOut()">LIGHTS OUT</button>
         </div>
 
         <div id="season-container">
             <div class="scoreboard-header">
-                <div style="width: 50px;">RND</div>
+                <div style="width: 60px;">RND</div>
                 <div style="flex-grow: 1;">GRAND PRIX</div>
-                <div style="width: 180px;">RACE WINNER</div>
+                <div style="width: 200px;">RACE WINNER</div>
                 <div style="width: 140px; text-align:center;" id="header-d1">DRV 1</div>
                 <div style="width: 140px; text-align:center;" id="header-d2">DRV 2</div>
-                <div style="width: 60px; text-align: right;">PTS</div>
+                <div style="width: 80px; text-align: right;">PTS</div>
             </div>
             <div class="race-list" id="race-list"></div>
         </div>
@@ -305,7 +340,7 @@
                     <thead><tr><th class="pos-col">POS</th><th>TEAM</th><th class="pts-col">PTS</th></tr></thead>
                     <tbody id="wcc-table"></tbody>
                 </table>
-                <button onclick="location.reload()" style="width:100%; margin-top:30px; background:var(--f1-red); color:#fff; border:none; padding:15px; font-family:'Teko', sans-serif; font-size:24px; cursor:pointer;">DRAFT NEXT SEASON</button>
+                <button onclick="location.reload()" style="width:100%; margin-top:30px; background:var(--f1-red); color:#fff; border:none; padding:20px; font-family:'Teko', sans-serif; font-size:32px; cursor:pointer; border-radius: 6px; letter-spacing: 2px;">DRAFT NEXT SEASON</button>
             </div>
         </div>
     </div>
@@ -319,20 +354,34 @@
         <div class="draft-grid" id="draft-grid"></div>
     </div>
 
-    <div id="toast">COPIED TO CLIPBOARD!</div>
+    <!-- LIGHTS OUT OVERLAY -->
+    <div id="lights-out-overlay">
+        <div class="lights-container" id="lights-container">
+            <div class="light-box"><div class="light-bulb bulb-1"></div><div class="light-bulb bulb-1"></div></div>
+            <div class="light-box"><div class="light-bulb bulb-2"></div><div class="light-bulb bulb-2"></div></div>
+            <div class="light-box"><div class="light-bulb bulb-3"></div><div class="light-bulb bulb-3"></div></div>
+            <div class="light-box"><div class="light-bulb bulb-4"></div><div class="light-bulb bulb-4"></div></div>
+            <div class="light-box"><div class="light-bulb bulb-5"></div><div class="light-bulb bulb-5"></div></div>
+        </div>
+        <div id="lights-text">AND AWAY WE GO!</div>
+    </div>
 
     <div class="footer-credits">
         Created by Jamie, in collaboration with Brian and with help from Ryan
     </div>
 
     <script>
-        // Only return SVG string for drivers now. Base64 makes it 100% immune to HTML breakages.
-        function getSVGVisual(name, category) {
-            let iconSvg = '<circle cx="100" cy="80" r="35" fill="#e10600"/><path d="M 60 160 C 60 120, 140 120, 140 160 Z" fill="#333"/><path d="M 75 80 L 125 80" stroke="#fff" stroke-width="8" stroke-linecap="round"/>';
-            const safeName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            const rawSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 200 300"><rect width="200" height="300" fill="#111116"/><g transform="translate(0, 30)">${iconSvg}</g><text x="100" y="220" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="14">${safeName}</text><text x="100" y="240" text-anchor="middle" fill="#e10600" font-family="sans-serif" font-size="10" font-weight="bold">F1 ULTIMATE SPEC</text></svg>`;
-            return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(rawSvg)));
-        }
+        // --- EXPANDED SCENARIOS ---
+        const raceEvents = [
+            "Complained about the tires for 40 laps, then set fastest lap.",
+            "Asked race control if they had the drink. They did not have the drink.",
+            "Told the race engineer to 'leave me alone, I know what I'm doing'.",
+            "Overtook 3 cars round the outside of Turn 4.",
+            "Spent 15 laps stuck in a massive DRS train.",
+            "Pit crew nailed a 1.8 second stop. Masterclass.",
+            "Defended like a lion against a faster car for 10 laps.",
+            "Ignored team orders to let teammate past."
+        ];
 
         const driverFunnyMessages = [
             "Accidentally shifted into reverse at 200mph and set a lap record.",
@@ -340,7 +389,6 @@
             "Bypassed pit limiter by convincing the FIA it was a mechanical glitch.",
             "Drove three laps on three wheels and didn't even notice.",
             "Uses telemetry screens to watch cooking tutorials during safety cars.",
-            "Overtook three cars while attempting to sneeze.",
             "Demanded mid-race pit stop just to get iced coffee."
         ];
 
@@ -353,11 +401,11 @@
         ];
 
         const dnfMessages = [
-            "Steering wheel detached at 200mph.",
-            "Engine exploded into a million expensive pieces.",
-            "Spun into the gravel on the formation lap.",
-            "Tried to text and drive down the back straight.",
-            "Mechanic left a wrench in the sidepod."
+            "Steering wheel detached at 200mph. DNF.",
+            "Engine exploded into a million expensive pieces. DNF.",
+            "Spun into the gravel on the formation lap. DNF.",
+            "Tried to text and drive down the back straight. DNF.",
+            "Mechanic left a wrench in the sidepod. Catastrophic DNF."
         ];
 
         const dnsMessages = [
@@ -370,7 +418,7 @@
 
         const iconicTeams = ["Scuderia Ferrari", "McLaren", "Red Bull", "Williams", "Mercedes", "Lotus"];
 
-        // Img properties removed from Chassis, Engine, Principal, and Special Principals.
+        // --- PURE TEXT DATABASE (NO IMAGES) ---
         const db = {
             chassis: [
                 { name: 'Red Bull RB19', year: 2023, stat: 99, note: 'The greatest F1 car built. Flawless aero.' },
@@ -401,51 +449,51 @@
                 { name: 'Steve Dickman', year: 2026, stat: 67, isSpecial: true }
             ],
             drivers: [
-                { name: 'Lewis Hamilton', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lewis_Hamilton_2016_Malaysia_2.jpg/800px-Lewis_Hamilton_2016_Malaysia_2.jpg', versions: [
+                { name: 'Lewis Hamilton', versions: [
                     { year: 2007, stage: 'Rookie', stat: 93, note: 'Sensational debut year.', hWins: 4, hPods: 12, hPoles: 6 },
                     { year: 2020, stage: 'Prime', stat: 99, note: 'Absolute peak in the W11.', hWins: 11, hPods: 14, hPoles: 10 },
                     { year: 2026, stage: 'Veteran', stat: 91, note: 'The Ferrari era.', hWins: 0, hPods: 3, hPoles: 0 }
                 ]},
-                { name: 'Max Verstappen', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Max_Verstappen_2017_Malaysia_3.jpg/800px-Max_Verstappen_2017_Malaysia_3.jpg', versions: [
+                { name: 'Max Verstappen', versions: [
                     { year: 2016, stage: 'Rookie', stat: 89, note: 'Aggressive, raw, incredibly fast.', hWins: 1, hPods: 7, hPoles: 0 },
                     { year: 2023, stage: 'Prime', stat: 99, note: '19 wins in a single season. Unbeatable.', hWins: 19, hPods: 21, hPoles: 12 }
                 ]},
-                { name: 'Fernando Alonso', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fernando_Alonso_2017_Malaysia.jpg/800px-Fernando_Alonso_2017_Malaysia.jpg', versions: [
+                { name: 'Fernando Alonso', versions: [
                     { year: 2012, stage: 'Prime', stat: 98, note: 'Taking a midfield Ferrari to a title fight.', hWins: 3, hPods: 13, hPoles: 2 },
                     { year: 2023, stage: 'Veteran', stat: 93, note: 'Still defending like a lion.', hWins: 0, hPods: 8, hPoles: 0 }
                 ]},
-                { name: 'Sebastian Vettel', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Sebastian_Vettel_2015_Malaysia_podium_1.jpg/800px-Sebastian_Vettel_2015_Malaysia_podium_1.jpg', versions: [
+                { name: 'Sebastian Vettel', versions: [
                     { year: 2013, stage: 'Prime', stat: 98, note: '9 wins in a row. Red Bull\'s golden boy.', hWins: 13, hPods: 16, hPoles: 9 },
-                    { year: 2020, stage: 'Decline', stat: 82, note: 'Sbinnala era.', hWins: 0, hPods: 1, hPoles: 0, crashMsg: 'Vettel spun at the apex.' }
+                    { year: 2020, stage: 'Decline', stat: 82, note: 'Sbinnala era.', hWins: 0, hPods: 1, hPoles: 0, crashMsg: 'Vettel spun at the apex. DNF.' }
                 ]},
-                { name: 'Michael Schumacher', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Michael_Schumacher_1994_UK.jpg/800px-Michael_Schumacher_1994_UK.jpg', versions: [
+                { name: 'Michael Schumacher', versions: [
                     { year: 2004, stage: 'Prime', stat: 99, note: 'The Red Baron at his terrifying peak.', hWins: 13, hPods: 15, hPoles: 8 },
                     { year: 2012, stage: 'Veteran', stat: 88, note: 'Mercedes comeback era.', hWins: 0, hPods: 1, hPoles: 0 }
                 ]},
-                { name: 'Ayrton Senna', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Ayrton_Senna_Cropped.jpg/800px-Ayrton_Senna_Cropped.jpg', versions: [
+                { name: 'Ayrton Senna', versions: [
                     { year: 1988, stage: 'Prime', stat: 99, note: 'God-like qualifying pace.', hWins: 8, hPods: 11, hPoles: 13 }
                 ]},
-                { name: 'Charles Leclerc', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Charles_Leclerc_2019.jpg/800px-Charles_Leclerc_2019.jpg', versions: [
+                { name: 'Charles Leclerc', versions: [
                     { year: 2018, stage: 'Rookie', stat: 87, note: 'Sauber starlet.', hWins: 0, hPods: 0, hPoles: 0 },
                     { year: 2022, stage: 'Prime', stat: 95, note: 'Blindingly fast, let down by strategy.', hWins: 3, hPods: 11, hPoles: 9 }
                 ]},
-                { name: 'Pastor Maldonado', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Pastor_Maldonado_2014.jpg/800px-Pastor_Maldonado_2014.jpg', versions: [
+                { name: 'Pastor Maldonado', versions: [
                     { year: 2012, stage: 'Prime', stat: 80, risk: 40, note: 'Fast on his day, but a magnet for the barriers.', hWins: 1, hPods: 1, hPoles: 1, crashMsg: 'Maldonado torpedoed into Turn 1. DNF.' }
                 ]}
             ],
             specialDrivers: [
-                { name: 'Brian Buttell', gender: 'M', birthYear: 2006, stat: 115, isSpecial: true, img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Jamie Karter', gender: 'M', birthYear: 2002, stat: 115, isSpecial: true, img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Ryan Vasey', gender: 'M', birthYear: 2007, stat: 115, isSpecial: true, customNote: "Once tried to get insured on a Porsche as a child... what were you to expect???", img: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Anjali Tiwari', gender: 'F', birthYear: 2003, stat: 15, isSpecial: true, customNote: "Almost killed someone on her driving test.", img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Reece Anderson', gender: 'M', birthYear: 2001, stat: 95, isSpecial: true, img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Alisha Cummings', gender: 'F', birthYear: 2006, stat: 85, isSpecial: true, customNote: "Once crashed a Fiat 500 whoops!", img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Jordan Bell', gender: 'F', birthYear: 2001, stat: 65, isSpecial: true, img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Daniel Robins', gender: 'M', birthYear: 1992, stat: 50, isSpecial: true, img: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Luis Hart', gender: 'M', birthYear: 2000, stat: 1, isSpecial: true, customNote: "Thought a stick shift was a pants readjustment.", img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Elena Jones', gender: 'F', birthYear: 1995, stat: 66, isSpecial: true, img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Shak Ashraf', gender: 'M', birthYear: 1990, stat: 70, isSpecial: true, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop' },
-                { name: 'Jo Miller', gender: 'F', birthYear: 1986, stat: 75, isSpecial: true, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop' }
+                { name: 'Brian Buttell', gender: 'M', birthYear: 2006, stat: 115, isSpecial: true },
+                { name: 'Jamie Karter', gender: 'M', birthYear: 2002, stat: 115, isSpecial: true },
+                { name: 'Ryan Vasey', gender: 'M', birthYear: 2007, stat: 115, isSpecial: true, customNote: "Once tried to get insured on a Porsche as a child... what were you to expect???" },
+                { name: 'Anjali Tiwari', gender: 'F', birthYear: 2003, stat: 15, isSpecial: true, customNote: "Almost killed someone on her driving test." },
+                { name: 'Reece Anderson', gender: 'M', birthYear: 2001, stat: 95, isSpecial: true },
+                { name: 'Alisha Cummings', gender: 'F', birthYear: 2006, stat: 85, isSpecial: true, customNote: "Once crashed a Fiat 500 whoops!" },
+                { name: 'Jordan Bell', gender: 'F', birthYear: 2001, stat: 65, isSpecial: true },
+                { name: 'Daniel Robins', gender: 'M', birthYear: 1992, stat: 50, isSpecial: true },
+                { name: 'Luis Hart', gender: 'M', birthYear: 2000, stat: 1, isSpecial: true, customNote: "Thought a stick shift was a pants readjustment." },
+                { name: 'Elena Jones', gender: 'F', birthYear: 1995, stat: 66, isSpecial: true },
+                { name: 'Shak Ashraf', gender: 'M', birthYear: 1990, stat: 70, isSpecial: true },
+                { name: 'Jo Miller', gender: 'F', birthYear: 1986, stat: 75, isSpecial: true }
             ]
         };
 
@@ -500,7 +548,7 @@
             
             grid.innerHTML = '';
             for(let i=0; i<4; i++) {
-                grid.innerHTML += `<div class="draft-option spinning-card"><div class="opt-content"><div class="opt-name" style="background:transparent;">DRAFTING...</div></div></div>`;
+                grid.innerHTML += `<div class="draft-option spinning-card" style="animation-delay: ${i*0.1}s"><div class="opt-content"><div class="opt-name" style="background:transparent;">DRAFTING...</div></div></div>`;
             }
 
             setTimeout(() => { renderDraftOptions(slotName, grid); }, 600);
@@ -544,7 +592,7 @@
                 
                 options = shuffledDrivers.slice(0, 4).map(d => {
                     const rv = getRandomVersion(d.versions);
-                    return { img: d.img, name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles };
+                    return { name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles };
                 });
 
                 if (Math.random() < 0.25) {
@@ -558,7 +606,7 @@
                         
                         const replaceIdx = Math.floor(Math.random() * options.length);
                         options[replaceIdx] = {
-                            img: sd.img || '', name: sd.name, year: activeYear, stage: `SPECIAL [${sd.gender}]`,
+                            name: sd.name, year: activeYear, stage: `SPECIAL [${sd.gender}]`,
                             stat: sd.stat, risk: sd.stat < 50 ? 25 : 5, note: `${randomTeam} - "${randomNote}"`,
                             isDriver: true, isSpecial: true, hWins: Math.floor(sd.stat/10), hPods: Math.floor(sd.stat/8), hPoles: Math.floor(sd.stat/12)
                         };
@@ -582,26 +630,28 @@
                 options = shuffled.slice(0, 4);
             }
 
-            options.forEach(opt => {
+            options.forEach((opt, index) => {
                 const card = document.createElement('div');
                 const isShiny = opt.isSpecial || opt.stat >= 98;
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''}`;
+                card.style.animationDelay = `${index * 0.1}s`;
                 
-                let bgHtml = '';
-                // ONLY drivers get real images to keep the focus on the racers.
-                if (slotName.includes('driver') && opt.img) {
-                    const fallbackImg = getSVGVisual(opt.name, 'driver');
-                    bgHtml = `<img src="${opt.img}" referrerpolicy="no-referrer" class="bg-img" onerror="this.onerror=null; this.src='${fallbackImg}';">`;
-                }
+                // Pure typography watermark
+                let watermarkText = opt.name.split(' ').pop().substring(0,2).toUpperCase();
+                if (slotName === 'engine') watermarkText = "V6";
+                let watermark = `<div class="watermark">${watermarkText}</div>`;
                 
+                let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
+
                 let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : 'stage-' + opt.stage.toLowerCase()}">${opt.stage}</div>` : '';
                 let histHtml = opt.isDriver ? `<div class="opt-hist">WINS: <span>${opt.hWins}</span> | PODS: <span>${opt.hPods}</span> | POLES: <span>${opt.hPoles}</span></div>` : '';
                 
                 let displayStat = formatStatDisplay(slotName, opt.stat);
-                let statFontSize = slotName === 'engine' ? '28px' : '48px';
+                let statFontSize = slotName === 'engine' ? '32px' : '54px';
 
                 card.innerHTML = `
-                    ${bgHtml}
+                    ${watermark}
+                    ${sparkles}
                     <div class="opt-content">
                         <div>
                             <div class="opt-year">${opt.year}</div>
@@ -626,17 +676,17 @@
             slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''}`;
             
             let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
-            let statFontSize = activeDraftSlot === 'engine' ? '18px' : '24px';
+            let statFontSize = activeDraftSlot === 'engine' ? '20px' : '28px';
             
-            let bgHtml = '';
-            // Only drivers get the image in the completed slot
-            if (activeDraftSlot.includes('driver') && item.img) {
-                const fallbackImg = getSVGVisual(item.name, 'driver');
-                bgHtml = `<img src="${item.img}" referrerpolicy="no-referrer" class="bg-img" onerror="this.onerror=null; this.src='${fallbackImg}';">`;
-            }
+            let watermarkText = item.name.split(' ').pop().substring(0,2).toUpperCase();
+            if (activeDraftSlot === 'engine') watermarkText = "V6";
+            let watermark = `<div class="watermark" style="font-size: 180px; right:-20px; bottom:-30px;">${watermarkText}</div>`;
+            
+            let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
             
             slot.innerHTML = `
-                ${bgHtml}
+                ${watermark}
+                ${sparkles}
                 <div class="slot-label">${activeDraftSlot.replace(/[0-9]/g, '')}</div>
                 <div class="slot-content">
                     <div class="filled-name">${item.name}</div>
@@ -682,6 +732,34 @@
             }
         }
 
+        // --- THE LIGHTS OUT SEQUENCE ---
+        function triggerLightsOut() {
+            const btn = document.getElementById('sim-btn');
+            if(!btn.classList.contains('ready')) return;
+            
+            const overlay = document.getElementById('lights-out-overlay');
+            overlay.style.opacity = 1;
+            
+            let lightIndex = 1;
+            const interval = setInterval(() => {
+                if(lightIndex <= 5) {
+                    document.querySelectorAll(`.bulb-${lightIndex}`).forEach(b => b.classList.add('on'));
+                    lightIndex++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.querySelectorAll('.light-bulb').forEach(b => b.classList.remove('on'));
+                        document.getElementById('lights-text').style.opacity = 1;
+                        
+                        setTimeout(() => {
+                            overlay.style.opacity = 0;
+                            initSeason();
+                        }, 1200);
+                    }, 1000 + (Math.random() * 1500)); // Random hold time for suspense
+                }
+            }, 1000);
+        }
+
         let allDrivers = [];
         let allTeams = [];
         let currentRace = 0;
@@ -718,17 +796,22 @@
                 }
             });
 
-            currentRace = 0; runRace();
+            currentRace = 0; 
+            setTimeout(runRace, 500);
         }
 
         function runRace() {
-            if (currentRace >= tracks.length) { renderStandings(); return; }
+            if (currentRace >= tracks.length) { 
+                setTimeout(renderStandings, 800); 
+                return; 
+            }
 
             allDrivers.forEach(d => {
                 if (Math.random() * 100 < 2) { 
                     d.raceScore = -1;
                     d.raceStatus = 'DNS';
                     d.raceMsg = d.isUser ? dnsMessages[Math.floor(Math.random() * dnsMessages.length)] : null;
+                    d.eventMsg = null;
                     return;
                 }
 
@@ -744,10 +827,13 @@
                     d.raceScore = -1;
                     d.raceStatus = 'DNF';
                     d.raceMsg = d.msg || (d.isUser ? dnfMessages[Math.floor(Math.random() * dnfMessages.length)] : null);
+                    d.eventMsg = null;
                 } else {
                     d.raceScore = (d.stat * 0.4) + (d.team.pace * 0.6) + (Math.random() * 12 - 5);
                     d.raceStatus = 'FINISH';
                     d.raceMsg = null;
+                    // 15% chance for a funny mid-race event to happen to a user driver even if they finish
+                    d.eventMsg = (d.isUser && Math.random() < 0.15) ? raceEvents[Math.floor(Math.random() * raceEvents.length)] : null;
                 }
             });
 
@@ -770,13 +856,13 @@
                 }
 
                 if (d.isUser) {
-                    if (d.name === teamState.driver1.name) u1Result = { pos: d.currentPos, msg: d.raceMsg, class: getPosClass(d.currentPos) };
-                    else u2Result = { pos: d.currentPos, msg: d.raceMsg, class: getPosClass(d.currentPos) };
+                    if (d.name === teamState.driver1.name) u1Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, class: getPosClass(d.currentPos) };
+                    else u2Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, class: getPosClass(d.currentPos) };
                 }
             });
 
             appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts);
-            currentRace++; setTimeout(runRace, 400);
+            currentRace++; setTimeout(runRace, 600); // Slower tick rate so you can read events
         }
 
         function getPosClass(pos) {
@@ -794,14 +880,12 @@
             div.className = 'race-row';
             
             let chaosHtml = '';
-            if (d1.msg) {
-                const colorClass = d1.pos === 'DNS' ? 'dns-msg' : '';
-                chaosHtml += `<div class="chaos-msg ${colorClass}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
-            }
-            if (d2.msg) {
-                const colorClass = d2.pos === 'DNS' ? 'dns-msg' : '';
-                chaosHtml += `<div class="chaos-msg ${colorClass}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
-            }
+            // Handle DNFs/DNSs
+            if (d1.msg) chaosHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
+            if (d2.msg) chaosHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
+            // Handle funny race events
+            if (d1.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
+            if (d2.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
 
             div.innerHTML = `
                 <div class="race-rnd">R${round}</div>
@@ -813,7 +897,7 @@
                 ${chaosHtml}
             `;
             list.appendChild(div);
-            window.scrollTo(0, document.body.scrollHeight);
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
 
         function renderStandings() {
