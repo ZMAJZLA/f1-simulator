@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 // ULTIMATE DRAFT & SIMULATOR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@400;500;600&display=swap');
+
+        :root {
+            --f1-red: #e10600;
+            --bg-dark: #0a0a0f;
+            --panel-dark: #14141a;
+            --text-main: #ffffff;
+            --neon-glow: 0 0 20px rgba(225, 6, 0, 0.6);
+            --success: #00ffcc;
+            --gold: #ffd700;
+        }
+
+        body {
+            margin: 0; padding: 0 0 50px 0;
+            background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            background-image: radial-gradient(circle at top right, #1a1a24 0%, var(--bg-dark) 70%);
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        header {
+            background: #000; border-bottom: 3px solid var(--f1-red);
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 50; box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+        }
+
+        header h1 { font-family: 'Teko', sans-serif; font-size: 38px; margin: 0; letter-spacing: 2px; }
+        header span { color: var(--f1-red); }
+
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .driver-row { grid-column: span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .slot-card {
+            background: var(--panel-dark); border: 2px dashed #444; border-radius: 8px;
+            height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+        }
+        .driver-card { height: 320px; }
+
+        .slot-card:hover { border-color: var(--f1-red); background: #1a1a20; transform: translateY(-3px); }
+        .slot-card.filled { border-style: solid; border-color: #333; background: #000; }
+        
+        .slot-card.locked-slot { opacity: 0.35; pointer-events: none; filter: grayscale(80%); border-color: #222; }
+        .slot-card.locked-slot::after {
+            content: "LOCKED"; position: absolute; bottom: 12px; font-size: 11px;
+            letter-spacing: 2px; color: #8b8b99; font-weight: bold; background: rgba(0,0,0,0.8);
+            padding: 3px 8px; border-radius: 4px;
+        }
+        .slot-card.completed-slot { pointer-events: none !important; border-color: var(--f1-red); }
+        .slot-card.completed-slot::after {
+            content: "✓ SECURED"; position: absolute; bottom: 12px; right: 12px; font-size: 12px;
+            letter-spacing: 2px; color: var(--success); font-weight: bold; background: rgba(0,0,0,0.8);
+            padding: 3px 8px; border-radius: 4px; border: 1px solid var(--success);
+        }
+
+        .slot-label {
+            position: absolute; top: 15px; left: 15px; font-size: 14px;
+            color: #fff; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; z-index: 2;
+            background: rgba(0,0,0,0.8); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0;
+        }
+
+        .slot-content { text-align: center; z-index: 2; padding: 20px; width: 100%; box-sizing: border-box; text-shadow: 0 2px 10px #000;}
+        .empty-icon { font-size: 50px; color: #444; margin-bottom: 10px; font-weight: 300;}
+        
+        .filled-name { font-family: 'Teko', sans-serif; font-size: 42px; margin: 0; line-height: 1; text-transform: uppercase;}
+        .filled-year { font-size: 16px; color: var(--f1-red); font-weight: bold; letter-spacing: 2px; margin-top: 5px; background: rgba(0,0,0,0.8); display: inline-block; padding: 2px 8px; border-radius: 4px;}
+        .filled-stat { 
+            background: rgba(0,0,0,0.9); border: 1px solid var(--f1-red); display: inline-block;
+            padding: 5px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-radius: 4px; margin-top: 15px; text-transform: uppercase;
+        }
+        
+        .bg-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; filter: grayscale(20%); transition: 0.4s; z-index: 0; }
+        .slot-card.completed-slot .bg-img { opacity: 0.65; filter: grayscale(0%); }
+
+        .gold-card {
+            background: linear-gradient(135deg, #1f1a08 0%, #3a300d 50%, #1f1a08 100%) !important; border: 2px solid var(--gold) !important;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.3) !important;
+        }
+        .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
+
+        .draft-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(15px);
+        }
+        .draft-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px;}
+        .draft-header span { color: var(--f1-red); }
+        
+        .respin-container { margin-bottom: 30px; display: flex; gap: 15px; align-items: center;}
+        .respin-btn { 
+            background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 20px;
+            font-family: 'Teko', sans-serif; font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.2s;
+        }
+        .respin-btn:hover:not(:disabled) { background: var(--f1-red); box-shadow: 0 0 15px var(--f1-red);}
+        .respin-btn:disabled { border-color: #444; color: #666; cursor: not-allowed; }
+
+        .draft-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1400px; padding: 0 40px; width: 100%; box-sizing: border-box;}
+        
+        .draft-option {
+            background: #111; border: 2px solid #333; border-radius: 8px;
+            padding: 25px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between; min-height: 380px;
+        }
+        .draft-option:hover { border-color: var(--f1-red); transform: translateY(-10px); box-shadow: 0 15px 30px rgba(225,6,0,0.4); }
+        .draft-option:hover .bg-img { opacity: 0.85; filter: grayscale(0%); }
+        
+        .opt-content { z-index: 2; position: relative; text-shadow: 0 2px 8px #000; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
+        .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; background: rgba(0,0,0,0.85); display: inline-block; padding: 2px 8px; border-radius: 4px;}
+        .opt-name { font-family: 'Teko', sans-serif; font-size: 38px; line-height: 1; margin-bottom: 10px; text-transform: uppercase; background: rgba(0,0,0,0.6); display: inline-block; padding: 4px; border-radius: 4px;}
+        
+        .opt-stage { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;}
+        .stage-rookie { color: var(--success); border: 1px solid var(--success); background: rgba(0, 0, 0, 0.9);}
+        .stage-prime { color: #c9b037; border: 1px solid #c9b037; background: rgba(0, 0, 0, 0.9);}
+        .stage-veteran { color: #888; border: 1px solid #888; background: rgba(0, 0, 0, 0.9);}
+        
+        .opt-hist { background: rgba(0,0,0,0.9); border: 1px solid #444; border-radius: 4px; padding: 8px; font-size: 13px; color: #ccc; margin-bottom: 10px; font-weight: bold;}
+        .opt-hist span { color: #fff;}
+        .opt-note { font-size: 14px; color: #ccc; line-height: 1.5; font-style: italic; border-left: 3px solid var(--f1-red); padding-left: 12px; margin-bottom: 20px; flex-grow: 1; background: rgba(0,0,0,0.85); padding: 10px;}
+        
+        .opt-stat { font-family: 'Teko', sans-serif; font-size: 40px; text-align: right; color: #fff; margin-top: auto; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 4px;}
+        .spinning-card { animation: pulseBg 0.2s infinite alternate; filter: blur(2px); pointer-events: none; }
+        @keyframes pulseBg { from { background: #111; } to { background: #222; } }
+
+        .synergy-box {
+            background: #111; border-radius: 8px; border: 1px solid #333; padding: 20px;
+            text-align: center; margin-bottom: 30px; display: none; animation: slideIn 0.5s;
+        }
+        .synergy-title { font-family: 'Teko', sans-serif; font-size: 28px; color: #fff; letter-spacing: 1px;}
+        .synergy-status { font-size: 16px; font-weight: bold; margin-top: 10px; padding: 10px; border-radius: 4px;}
+        .syn-good { background: rgba(0, 255, 204, 0.1); color: #00ffcc; border: 1px solid #00ffcc;}
+        .syn-bad { background: rgba(225, 6, 0, 0.1); color: #ff3333; border: 1px solid #ff3333;}
+
+        .btn-container { text-align: center; margin: 20px 0 50px 0; }
+        .btn-main {
+            background: transparent; color: var(--text-main); font-family: 'Teko', sans-serif;
+            font-size: 36px; padding: 15px 80px; border: 2px solid #333; border-radius: 4px;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; opacity: 0.5; pointer-events: none;
+        }
+        .btn-main.ready { border-color: var(--f1-red); color: var(--f1-red); opacity: 1; pointer-events: auto; }
+        .btn-main.ready:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 30px rgba(225, 6, 0, 0.6); transform: scale(1.05); }
+
+        #season-container { display: none; margin-top: 40px;}
+        .scoreboard-header {
+            display: flex; justify-content: space-between; background: #000;
+            padding: 15px 20px; font-family: 'Teko', sans-serif; font-size: 22px; border-bottom: 2px solid var(--f1-red); border-radius: 6px 6px 0 0; color: #8b8b99;
+        }
+        .race-list { background: var(--panel-dark); border-radius: 0 0 6px 6px; border: 1px solid #333; border-top: none;}
+        .race-row {
+            display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #2a2a35; opacity: 0;
+            transform: translateX(-20px); animation: slideIn 0.3s forwards; flex-wrap: wrap;
+        }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+
+        .race-rnd { width: 50px; font-weight: bold; color: var(--f1-red); font-size: 18px;}
+        .race-track { flex-grow: 1; font-size: 18px; font-weight: 700; text-transform: uppercase; }
+        .race-winner { width: 180px; font-size: 16px; color: #c9b037; font-weight: bold;}
+        .race-driver { width: 140px; display: flex; align-items: center; gap: 10px; font-family: 'Teko', sans-serif; font-size: 22px; justify-content: center;}
+        
+        .pos-badge { background: #333; color: #fff; width: 35px; height: 35px; display: flex; justify-content: center; align-items: center; border-radius: 4px; font-size: 20px;}
+        .pos-1 { background: #c9b037; color: #000; } 
+        .pos-2 { background: #b4b4b4; color: #000; } 
+        .pos-3 { background: #ad8a56; color: #000; } 
+        .pos-dnf { background: var(--f1-red); color: #fff; font-size: 14px;}
+        .pos-dns { background: #555; color: #fff; font-size: 12px; font-weight: bold;}
+        
+        .race-pts { width: 60px; text-align: right; font-weight: bold; color: #00ffcc; font-size: 20px;}
+        .chaos-msg { width: 100%; margin-top: 8px; font-size: 13px; color: #ff3333; font-style: italic; text-align: right; font-weight: bold;}
+        .dns-msg { color: #f1c40f; }
+
+        .championships { display: none; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; animation: slideIn 0.5s forwards; }
+        
+        .summary-card {
+            grid-column: span 2; background: linear-gradient(45deg, #111, #1a1a20);
+            border-left: 5px solid var(--f1-red); padding: 30px; border-radius: 8px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 10px;
+        }
+        .summary-card h2 { font-family: 'Teko', sans-serif; font-size: 42px; margin: 0; color: #fff; letter-spacing: 2px;}
+        .summary-card p { font-size: 18px; color: #ccc; line-height: 1.6; max-width: 900px; margin: 15px auto 0; }
+        
+        .summary-1 { border-color: var(--gold); } .summary-1 h2 { color: var(--gold); }
+        .summary-2 { border-color: #b4b4b4; } .summary-2 h2 { color: #b4b4b4; }
+        .summary-mid { border-color: var(--success); } .summary-mid h2 { color: var(--success); }
+        .summary-bad { border-color: #ff3333; } .summary-bad h2 { color: #ff3333; }
+
+        .champ-card { background: var(--panel-dark); border-top: 4px solid var(--f1-red); border-radius: 8px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .champ-card h2 { font-family: 'Teko', sans-serif; font-size: 32px; margin: 0 0 15px 0; color: #fff; text-align: center;}
+        table { width: 100%; border-collapse: collapse; font-size: 16px; }
+        th, td { padding: 12px 10px; text-align: left; border-bottom: 1px solid #2a2a35; }
+        th { color: #8b8b99; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #444;}
+        .pts-col { text-align: right; font-family: 'Teko', sans-serif; font-size: 24px; color: #00ffcc; width: 60px;}
+        .pos-col { width: 30px; font-weight: bold; color: #888;}
+        .user-team-row { background: rgba(225, 6, 0, 0.15); border-left: 3px solid var(--f1-red); }
+        .user-team-row td { font-weight: bold; color: #fff; }
+        .user-team-row .pos-col { color: var(--f1-red); }
+
+        .share-btn {
+            background: #1da1f2; color: #fff; border: none; padding: 15px 30px; font-family: 'Teko', sans-serif;
+            font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.3s; margin-top: 20px; text-transform: uppercase;
+        }
+        .share-btn:hover { background: #0c85d0; transform: scale(1.05); }
+        
+        #toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--success); color: #000; padding: 10px 20px; border-radius: 4px;
+            font-weight: bold; display: none; z-index: 1000;
+        }
+        
+        .footer-credits {
+            text-align: center; color: #8b8b99; font-size: 14px; margin-top: 50px; 
+            padding-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>F1 <span>ULTIMATE</span> // ENGINEERING DRAFT</h1>
+        <div style="font-size: 14px; font-weight: 600; color: #8b8b99; letter-spacing: 1px;">2026 GRID SIMULATION</div>
+    </header>
+
+    <div class="container">
+        <div class="builder-grid">
+            <div class="slot-card" id="slot-chassis" onclick="openDraft('chassis')">
+                <div class="slot-label">STEP 1: CHASSIS</div>
+                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT CHASSIS</div></div>
+            </div>
+            <div class="slot-card locked-slot" id="slot-engine" onclick="openDraft('engine')">
+                <div class="slot-label">STEP 2: ENGINE</div>
+                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT ENGINE</div></div>
+            </div>
+            <div class="slot-card locked-slot" id="slot-principal" onclick="openDraft('principal')">
+                <div class="slot-label">STEP 3: PRINCIPAL</div>
+                <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT PRINCIPAL</div></div>
+            </div>
+            <div class="driver-row">
+                <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
+                    <div class="slot-label">STEP 4: LEAD DRIVER</div>
+                    <div class="slot-content"><div class="empty-icon" style="font-size: 50px;">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT DRIVER</div></div>
+                </div>
+                <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
+                    <div class="slot-label">STEP 5: SECOND DRIVER</div>
+                    <div class="slot-content"><div class="empty-icon" style="font-size: 50px;">+</div><div style="font-weight: 600; color: #8b8b99;">DRAFT DRIVER</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="synergy-box" id="synergy-box">
+            <div class="synergy-title">ENGINEERING SYNERGY</div>
+            <div id="synergy-text" class="synergy-status">Evaluating era compatibility...</div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn-main" id="sim-btn" onclick="initSeason()">LIGHTS OUT</button>
+        </div>
+
+        <div id="season-container">
+            <div class="scoreboard-header">
+                <div style="width: 50px;">RND</div>
+                <div style="flex-grow: 1;">GRAND PRIX</div>
+                <div style="width: 180px;">RACE WINNER</div>
+                <div style="width: 140px; text-align:center;" id="header-d1">DRV 1</div>
+                <div style="width: 140px; text-align:center;" id="header-d2">DRV 2</div>
+                <div style="width: 60px; text-align: right;">PTS</div>
+            </div>
+            <div class="race-list" id="race-list"></div>
+        </div>
+
+        <div class="championships" id="championships">
+            <div class="summary-card" id="season-summary-card">
+                <h2 id="summary-title">SEASON REVIEW</h2>
+                <p id="summary-text">...</p>
+                <button class="share-btn" onclick="shareResults()">🔗 COPY RESULTS TO CLIPBOARD</button>
+            </div>
+
+            <div class="champ-card">
+                <h2>WORLD DRIVERS' CHAMPIONSHIP</h2>
+                <table>
+                    <thead><tr><th class="pos-col">POS</th><th>DRIVER</th><th>TEAM</th><th class="pts-col">PTS</th></tr></thead>
+                    <tbody id="wdc-table"></tbody>
+                </table>
+            </div>
+            <div class="champ-card">
+                <h2>WORLD CONSTRUCTORS' CHAMPIONSHIP</h2>
+                <table>
+                    <thead><tr><th class="pos-col">POS</th><th>TEAM</th><th class="pts-col">PTS</th></tr></thead>
+                    <tbody id="wcc-table"></tbody>
+                </table>
+                <button onclick="location.reload()" style="width:100%; margin-top:30px; background:var(--f1-red); color:#fff; border:none; padding:15px; font-family:'Teko', sans-serif; font-size:24px; cursor:pointer;">DRAFT NEXT SEASON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRAFT OVERLAY -->
+    <div class="draft-overlay" id="draft-overlay">
+        <div class="draft-header" id="draft-title">DRAFT <span>CHASSIS</span></div>
+        <div class="respin-container">
+            <button class="respin-btn" id="respin-btn" onclick="respin()">RESPIN (3 LEFT)</button>
+        </div>
+        <div class="draft-grid" id="draft-grid"></div>
+    </div>
+
+    <div id="toast">COPIED TO CLIPBOARD!</div>
+
+    <div class="footer-credits">
+        Created by Jamie, in collaboration with Brian and with help from Ryan
+    </div>
+
+    <script>
+        // --- PROXY IMAGE LOADER ---
+        // Forces all images through a secure cache to bypass hotlink blocking.
+        function getSafeImgUrl(url) {
+            if (!url) return '';
+            return 'https://wsrv.nl/?url=' + encodeURIComponent(url);
+        }
+
+        // --- FALLBACK GENERATOR ---
+        function getSVGVisual(name, category) {
+            let iconSvg = '';
+            if (category === 'driver') {
+                iconSvg = '<circle cx="100" cy="80" r="35" fill="#e10600"/><path d="M 60 160 C 60 120, 140 120, 140 160 Z" fill="#333"/><path d="M 75 80 L 125 80" stroke="#fff" stroke-width="8" stroke-linecap="round"/>';
+            } else if (category === 'chassis') {
+                iconSvg = '<path d="M 30 110 L 70 100 L 130 100 L 170 110 L 160 125 L 40 125 Z" fill="#e10600"/><circle cx="60" cy="130" r="14" fill="#222"/><circle cx="140" cy="130" r="14" fill="#222"/>';
+            } else if (category === 'principal') {
+                iconSvg = '<circle cx="100" cy="80" r="30" fill="#fff"/><path d="M 50 160 C 50 110, 150 110, 150 160 Z" fill="#444"/><path d="M 70 80 C 70 50, 130 50, 130 80" fill="none" stroke="#e10600" stroke-width="6"/><rect x="125" y="70" width="10" height="20" fill="#e10600" rx="3"/>';
+            } else {
+                iconSvg = '<rect x="60" y="70" width="80" height="60" rx="8" fill="#333" stroke="#e10600" stroke-width="4"/><path d="M 40 90 L 60 90 M 140 90 L 160 90" stroke="#ff3333" stroke-width="6"/>';
+            }
+
+            const safeName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            const rawSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 200 300"><rect width="200" height="300" fill="#111116"/><g transform="translate(0, 30)">${iconSvg}</g><text x="100" y="220" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="14">${safeName}</text><text x="100" y="240" text-anchor="middle" fill="#e10600" font-family="sans-serif" font-size="10" font-weight="bold">F1 ULTIMATE SPEC</text></svg>`;
+            return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(rawSvg)));
+        }
+
+        const driverFunnyMessages = [
+            "Accidentally shifted into reverse at 200mph and set a lap record.",
+            "Refuses to drive unless steering wheel plays Eurobeat at max volume.",
+            "Bypassed pit limiter by convincing the FIA it was a mechanical glitch.",
+            "Drove three laps on three wheels and didn't even notice.",
+            "Uses telemetry screens to watch cooking tutorials during safety cars.",
+            "Overtook three cars while attempting to sneeze.",
+            "Demanded mid-race pit stop just to get iced coffee."
+        ];
+
+        const principalFunnyMessages = [
+            "Screamed at the FIA so loudly they refunded a 5-second penalty.",
+            "Replaced strategy software with a spreadsheet built in 10 minutes.",
+            "Bribed rival engineers with hot sausages for tire degradation data.",
+            "Demanded the pit crew change all 4 tires in under 1.2 seconds or walk home.",
+            "Accidentally ordered 400 sets of wet tires for the Abu Dhabi GP."
+        ];
+
+        const dnfMessages = [
+            "Steering wheel detached at 200mph.",
+            "Engine exploded into a million expensive pieces.",
+            "Spun into the gravel on the formation lap.",
+            "Tried to text and drive down the back straight.",
+            "Mechanic left a wrench in the sidepod."
+        ];
+
+        const dnsMessages = [
+            "Driver literally shit themselves in the motorhome. DNS.",
+            "Locked inside the motorhome toilet. DNS.",
+            "Fell asleep during the national anthem. DNS.",
+            "Got into a fistfight with the team principal. DNS.",
+            "Ate bad sushi from paddock catering. Severe food poisoning. DNS."
+        ];
+
+        const iconicTeams = ["Scuderia Ferrari", "McLaren", "Red Bull", "Williams", "Mercedes", "Lotus"];
+
+        const db = {
+            chassis: [
+                { name: 'Red Bull RB19', year: 2023, stat: 99, note: 'The greatest F1 car built. Flawless aero.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Max_Verstappen_2023_Red_Bull_RB19.jpg/800px-Max_Verstappen_2023_Red_Bull_RB19.jpg' },
+                { name: 'McLaren MP4/4', year: 1988, stat: 98, note: "Senna & Prost's legendary chariot. 15 wins.", img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/McLaren_MP4-4.jpg/800px-McLaren_MP4-4.jpg' },
+                { name: 'Ferrari F2004', year: 2004, stat: 97, note: 'The absolute peak of the V10 era.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/F2004_Michael_Schumacher.jpg/800px-F2004_Michael_Schumacher.jpg' },
+                { name: 'Mercedes W11', year: 2020, stat: 99, note: 'DAS system engaged. Cornering physics defied.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Lewis_Hamilton_2020_Tuscany.jpg/800px-Lewis_Hamilton_2020_Tuscany.jpg' },
+                { name: 'Lotus 72', year: 1970, stat: 94, note: 'Wedge-shaped aerodynamic pioneer.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Lotus_72_E_Fittipaldi_G%C3%B6teborg_2008.jpg/800px-Lotus_72_E_Fittipaldi_G%C3%B6teborg_2008.jpg' },
+                { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Mick_Schumacher_2021_Austria_2.jpg/800px-Mick_Schumacher_2021_Austria_2.jpg' }
+            ],
+            engine: [
+                { name: 'Mercedes PU106A', year: 2014, stat: 99, note: 'The dawn of the hybrid era. Uncatchable.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Mercedes_F1_W05_engine_2014.jpg/800px-Mercedes_F1_W05_engine_2014.jpg' },
+                { name: 'Ferrari 053', year: 2004, stat: 98, note: '3.0L V10 that revved to 19,000 RPM.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ferrari_053_engine.jpg/800px-Ferrari_053_engine.jpg' },
+                { name: 'Honda RBPTH001', year: 2023, stat: 99, note: 'Bulletproof Red Bull reliability.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Max_Verstappen_2023_Red_Bull_RB19.jpg/800px-Max_Verstappen_2023_Red_Bull_RB19.jpg' },
+                { name: 'Honda RA168E', year: 1988, stat: 97, note: 'The turbo beast that conquered the 80s.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Honda_RA168E_engine.jpg/800px-Honda_RA168E_engine.jpg' },
+                { name: 'Ford Cosworth DFV', year: 1970, stat: 95, note: 'The engine that powered an entire decade.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Cosworth_DFV_engine.jpg/800px-Cosworth_DFV_engine.jpg' },
+                { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/McLaren_Honda_MP4-30_Alonso_2015_Malaysia_Free_Practice.jpg/800px-McLaren_Honda_MP4-30_Alonso_2015_Malaysia_Free_Practice.jpg' }
+            ],
+            principal: [
+                { name: 'Toto Wolff', year: 2020, stat: 98, note: 'Flawless execution and pumpernickel.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Toto_Wolff_2016_Malaysia.jpg/800px-Toto_Wolff_2016_Malaysia.jpg' },
+                { name: 'Christian Horner', year: 2023, stat: 97, note: 'Master of highly aggressive strategies.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Christian_Horner_2016_Malaysia.jpg/800px-Christian_Horner_2016_Malaysia.jpg' },
+                { name: 'Jean Todt', year: 2004, stat: 98, note: 'Architect of the Ferrari golden era.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Jean_Todt_2013.jpg/800px-Jean_Todt_2013.jpg' },
+                { name: 'Ron Dennis', year: 1988, stat: 96, note: 'Clinical, obsessive perfectionism.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Ron_Dennis_2008.jpg/800px-Ron_Dennis_2008.jpg' },
+                { name: 'Mattia Binotto', year: 2022, stat: 80, note: '"Question? We are checking." Strategy disasters.', stratRisk: 20, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Mattia_Binotto_2019.jpg/800px-Mattia_Binotto_2019.jpg' }
+            ],
+            specialPrincipals: [
+                { name: 'Jonathon Middleton', year: 2026, stat: 105, isSpecial: true },
+                { name: 'Karl Smeatham', year: 2026, stat: 95, isSpecial: true },
+                { name: 'Steve Dickman', year: 2026, stat: 67, isSpecial: true }
+            ],
+            drivers: [
+                { name: 'Lewis Hamilton', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Lewis_Hamilton_2016_Malaysia_2.jpg/800px-Lewis_Hamilton_2016_Malaysia_2.jpg', versions: [
+                    { year: 2007, stage: 'Rookie', stat: 93, note: 'Sensational debut year.', hWins: 4, hPods: 12, hPoles: 6 },
+                    { year: 2020, stage: 'Prime', stat: 99, note: 'Absolute peak in the W11.', hWins: 11, hPods: 14, hPoles: 10 },
+                    { year: 2026, stage: 'Veteran', stat: 91, note: 'The Ferrari era.', hWins: 0, hPods: 3, hPoles: 0 }
+                ]},
+                { name: 'Max Verstappen', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Max_Verstappen_2017_Malaysia_3.jpg/800px-Max_Verstappen_2017_Malaysia_3.jpg', versions: [
+                    { year: 2016, stage: 'Rookie', stat: 89, note: 'Aggressive, raw, incredibly fast.', hWins: 1, hPods: 7, hPoles: 0 },
+                    { year: 2023, stage: 'Prime', stat: 99, note: '19 wins in a single season. Unbeatable.', hWins: 19, hPods: 21, hPoles: 12 }
+                ]},
+                { name: 'Fernando Alonso', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Fernando_Alonso_2017_Malaysia.jpg/800px-Fernando_Alonso_2017_Malaysia.jpg', versions: [
+                    { year: 2012, stage: 'Prime', stat: 98, note: 'Taking a midfield Ferrari to a title fight.', hWins: 3, hPods: 13, hPoles: 2 },
+                    { year: 2023, stage: 'Veteran', stat: 93, note: 'Still defending like a lion.', hWins: 0, hPods: 8, hPoles: 0 }
+                ]},
+                { name: 'Sebastian Vettel', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Sebastian_Vettel_2015_Malaysia_podium_1.jpg/800px-Sebastian_Vettel_2015_Malaysia_podium_1.jpg', versions: [
+                    { year: 2013, stage: 'Prime', stat: 98, note: '9 wins in a row. Red Bull\'s golden boy.', hWins: 13, hPods: 16, hPoles: 9 },
+                    { year: 2020, stage: 'Decline', stat: 82, note: 'Sbinnala era.', hWins: 0, hPods: 1, hPoles: 0, crashMsg: 'Vettel spun at the apex.' }
+                ]},
+                { name: 'Michael Schumacher', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Michael_Schumacher_1994_UK.jpg/800px-Michael_Schumacher_1994_UK.jpg', versions: [
+                    { year: 2004, stage: 'Prime', stat: 99, note: 'The Red Baron at his terrifying peak.', hWins: 13, hPods: 15, hPoles: 8 },
+                    { year: 2012, stage: 'Veteran', stat: 88, note: 'Mercedes comeback era.', hWins: 0, hPods: 1, hPoles: 0 }
+                ]},
+                { name: 'Ayrton Senna', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Ayrton_Senna_Cropped.jpg/800px-Ayrton_Senna_Cropped.jpg', versions: [
+                    { year: 1988, stage: 'Prime', stat: 99, note: 'God-like qualifying pace.', hWins: 8, hPods: 11, hPoles: 13 }
+                ]},
+                { name: 'Charles Leclerc', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Charles_Leclerc_2019.jpg/800px-Charles_Leclerc_2019.jpg', versions: [
+                    { year: 2018, stage: 'Rookie', stat: 87, note: 'Sauber starlet.', hWins: 0, hPods: 0, hPoles: 0 },
+                    { year: 2022, stage: 'Prime', stat: 95, note: 'Blindingly fast, let down by strategy.', hWins: 3, hPods: 11, hPoles: 9 }
+                ]},
+                { name: 'Pastor Maldonado', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Pastor_Maldonado_2014.jpg/800px-Pastor_Maldonado_2014.jpg', versions: [
+                    { year: 2012, stage: 'Prime', stat: 80, risk: 40, note: 'Fast on his day, but a magnet for the barriers.', hWins: 1, hPods: 1, hPoles: 1, crashMsg: 'Maldonado torpedoed into Turn 1. DNF.' }
+                ]}
+            ],
+            specialDrivers: [
+                { name: 'Brian Buttell', gender: 'M', birthYear: 2006, stat: 115, isSpecial: true },
+                { name: 'Jamie Karter', gender: 'M', birthYear: 2002, stat: 115, isSpecial: true },
+                { name: 'Ryan Vasey', gender: 'M', birthYear: 2007, stat: 115, isSpecial: true, customNote: "Once tried to get insured on a Porsche as a child... what were you to expect???" },
+                { name: 'Anjali Tiwari', gender: 'F', birthYear: 2003, stat: 15, isSpecial: true, customNote: "Almost killed someone on her driving test." },
+                { name: 'Reece Anderson', gender: 'M', birthYear: 2001, stat: 95, isSpecial: true },
+                { name: 'Alisha Cummings', gender: 'F', birthYear: 2006, stat: 85, isSpecial: true, customNote: "Once crashed a Fiat 500 whoops!" },
+                { name: 'Jordan Bell', gender: 'F', birthYear: 2001, stat: 65, isSpecial: true },
+                { name: 'Daniel Robins', gender: 'M', birthYear: 1992, stat: 50, isSpecial: true },
+                { name: 'Luis Hart', gender: 'M', birthYear: 2000, stat: 1, isSpecial: true, customNote: "Thought a stick shift was a pants readjustment." }
+            ]
+        };
+
+        const aiTeamsBase = [
+            { id: 'mcl', name: 'McLaren', pace: 96, drivers: [{name: 'L. Norris', stat: 95}, {name: 'O. Piastri', stat: 93}] },
+            { id: 'rbr', name: 'Red Bull', pace: 95, drivers: [{name: 'M. Verstappen', stat: 98}, {name: 'L. Lawson', stat: 86}] },
+            { id: 'fer', name: 'Ferrari', pace: 95, drivers: [{name: 'L. Hamilton', stat: 96}, {name: 'C. Leclerc', stat: 95}] },
+            { id: 'mer', name: 'Mercedes', pace: 93, drivers: [{name: 'G. Russell', stat: 92}, {name: 'K. Antonelli', stat: 87}] },
+            { id: 'ast', name: 'Aston Martin', pace: 89, drivers: [{name: 'F. Alonso', stat: 92}, {name: 'L. Stroll', stat: 80}] },
+            { id: 'aud', name: 'Audi', pace: 83, drivers: [{name: 'N. Hulkenberg', stat: 84}, {name: 'G. Bortoleto', stat: 82}] },
+            { id: 'vca', name: 'VCARB', pace: 81, drivers: [{name: 'Y. Tsunoda', stat: 84}, {name: 'I. Hadjar', stat: 80}] },
+            { id: 'haa', name: 'Haas', pace: 80, drivers: [{name: 'O. Bearman', stat: 82}, {name: 'E. Ocon', stat: 84}] },
+            { id: 'wil', name: 'Williams', pace: 79, drivers: [{name: 'A. Albon', stat: 85}, {name: 'C. Sainz', stat: 91}] },
+            { id: 'alp', name: 'Alpine', pace: 76, drivers: [{name: 'P. Gasly', stat: 85}, {name: 'J. Doohan', stat: 79}] }
+        ];
+
+        const tracks = ["Bahrain", "Saudi Arabia", "Australia", "Japan", "Miami", "Imola", "Monaco", "Canada", "Spain", "Austria", "Great Britain", "Hungary", "Belgium", "Netherlands", "Monza", "Baku", "Singapore", "Austin", "Mexico", "Brazil", "Las Vegas", "Qatar", "Abu Dhabi"];
+        const ptsSys = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+
+        const slotSequence = ['chassis', 'engine', 'principal', 'driver1', 'driver2'];
+        let teamState = {};
+        let activeDraftSlot = '';
+        let respinsLeft = 3;
+        let synergyPenalty = 0;
+        let synergyDnfMultiplier = 0;
+
+        function formatStatDisplay(type, stat) {
+            if (type !== 'engine') return stat;
+            if (stat >= 98) return "ICONIC";
+            if (stat >= 95) return "PERFECT";
+            if (stat >= 86) return "ALMOST PERFECT";
+            if (stat >= 76) return "MID TABLE";
+            return "FAILURE";
+        }
+
+        function updateRespinBtn() {
+            const btn = document.getElementById('respin-btn');
+            btn.innerText = `RESPIN (${respinsLeft} LEFT)`;
+            if (respinsLeft === 0) btn.disabled = true;
+        }
+
+        function openDraft(slotName, isRespin = false) {
+            const slotEl = document.getElementById(`slot-${slotName}`);
+            if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
+
+            activeDraftSlot = slotName;
+            const overlay = document.getElementById('draft-overlay');
+            const grid = document.getElementById('draft-grid');
+            document.getElementById('draft-title').innerHTML = `DRAFT <span>${slotName.replace(/[0-9]/g, '').toUpperCase()}</span>`;
+            
+            overlay.classList.add('active');
+            
+            grid.innerHTML = '';
+            for(let i=0; i<4; i++) {
+                grid.innerHTML += `<div class="draft-option spinning-card"><div class="opt-content"><div class="opt-name" style="background:transparent;">DRAFTING...</div></div></div>`;
+            }
+
+            setTimeout(() => { renderDraftOptions(slotName, grid); }, 600);
+        }
+
+        function respin() {
+            if (respinsLeft > 0) {
+                respinsLeft--;
+                updateRespinBtn();
+                openDraft(activeDraftSlot, true);
+            }
+        }
+
+        function getRandomVersion(versions) {
+            let totalWeight = 0;
+            let weightedVersions = versions.map(v => {
+                let weight = 40; 
+                if (v.stage === 'Prime') weight = 15; 
+                if (v.stage === 'Rookie') weight = 45; 
+                if (v.stage === 'Veteran' || v.stage === 'Decline') weight = 40; 
+                totalWeight += weight;
+                return { ...v, weight };
+            });
+
+            let randomNum = Math.random() * totalWeight;
+            for (let v of weightedVersions) {
+                if (randomNum < v.weight) return v;
+                randomNum -= v.weight;
+            }
+            return weightedVersions[0];
+        }
+
+        function renderDraftOptions(slotName, grid) {
+            grid.innerHTML = '';
+            let options = [];
+
+            if (slotName.includes('driver')) {
+                let shuffledDrivers = [...db.drivers].sort(() => 0.5 - Math.random());
+                if (slotName === 'driver2' && teamState.driver1) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver1.name);
+                else if (slotName === 'driver1' && teamState.driver2) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver2.name);
+                
+                options = shuffledDrivers.slice(0, 4).map(d => {
+                    const rv = getRandomVersion(d.versions);
+                    return { img: d.img, name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles };
+                });
+
+                if (Math.random() < 0.25) {
+                    const activeYear = teamState.chassis ? teamState.chassis.year : 2026;
+                    const eligibleSpecials = db.specialDrivers.filter(sd => activeYear >= (sd.birthYear + 18));
+                    
+                    if (eligibleSpecials.length > 0) {
+                        const sd = eligibleSpecials[Math.floor(Math.random() * eligibleSpecials.length)];
+                        const randomTeam = iconicTeams[Math.floor(Math.random() * iconicTeams.length)];
+                        const randomNote = sd.customNote || driverFunnyMessages[Math.floor(Math.random() * driverFunnyMessages.length)];
+                        
+                        const replaceIdx = Math.floor(Math.random() * options.length);
+                        options[replaceIdx] = {
+                            img: sd.img || '', name: sd.name, year: activeYear, stage: `SPECIAL [${sd.gender}]`,
+                            stat: sd.stat, risk: sd.stat < 50 ? 25 : 5, note: `${randomTeam} - "${randomNote}"`,
+                            isDriver: true, isSpecial: true, hWins: Math.floor(sd.stat/10), hPods: Math.floor(sd.stat/8), hPoles: Math.floor(sd.stat/12)
+                        };
+                    }
+                }
+            } else if (slotName === 'principal') {
+                let shuffled = [...db.principal].sort(() => 0.5 - Math.random());
+                options = shuffled.slice(0, 4);
+
+                if (Math.random() < 0.25) {
+                    const sp = db.specialPrincipals[Math.floor(Math.random() * db.specialPrincipals.length)];
+                    const randomNote = principalFunnyMessages[Math.floor(Math.random() * principalFunnyMessages.length)];
+                    const replaceIdx = Math.floor(Math.random() * options.length);
+                    options[replaceIdx] = {
+                        name: sp.name, year: sp.year, stat: sp.stat, note: randomNote,
+                        img: sp.img || '', isSpecial: true, isPrincipal: true
+                    };
+                }
+            } else {
+                let shuffled = [...db[slotName]].sort(() => 0.5 - Math.random());
+                options = shuffled.slice(0, 4);
+            }
+
+            options.forEach(opt => {
+                const card = document.createElement('div');
+                const isShiny = opt.isSpecial || opt.stat >= 98;
+                card.className = `draft-option ${isShiny ? 'gold-card' : ''}`;
+                
+                const categoryType = slotName.includes('driver') ? 'driver' : (slotName === 'chassis' ? 'chassis' : (slotName === 'principal' ? 'principal' : 'engine'));
+                const fallbackImg = getSVGVisual(opt.name, categoryType);
+                const primaryImg = opt.img ? getSafeImgUrl(opt.img) : fallbackImg;
+                
+                // Pure HTML injection with safe Base64 fallback. No inline Javascript events.
+                let bgHtml = `<img src="${primaryImg}" class="bg-img" style="background-image: url('${fallbackImg}'); background-size: cover; background-position: center;">`;
+                
+                let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : 'stage-' + opt.stage.toLowerCase()}">${opt.stage}</div>` : '';
+                let histHtml = opt.isDriver ? `<div class="opt-hist">WINS: <span>${opt.hWins}</span> | PODS: <span>${opt.hPods}</span> | POLES: <span>${opt.hPoles}</span></div>` : '';
+                
+                let displayStat = formatStatDisplay(slotName, opt.stat);
+                let statFontSize = slotName === 'engine' ? '28px' : '48px';
+
+                card.innerHTML = `
+                    ${bgHtml}
+                    <div class="opt-content">
+                        <div>
+                            <div class="opt-year">${opt.year}</div>
+                            <div class="opt-name">${opt.name}</div>
+                            ${stageHtml}
+                            ${histHtml}
+                            <div class="opt-note">${opt.note}</div>
+                        </div>
+                        <div class="opt-stat" style="font-size: ${statFontSize}; color: ${slotName === 'engine' && opt.stat < 80 ? '#ff3333' : '#fff'}">${displayStat}</div>
+                    </div>
+                `;
+                card.onclick = () => selectDraft(opt);
+                grid.appendChild(card);
+            });
+        }
+
+        function selectDraft(item) {
+            teamState[activeDraftSlot] = item;
+            const slot = document.getElementById(`slot-${activeDraftSlot}`);
+            
+            const isShiny = item.isSpecial || item.stat >= 98;
+            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''}`;
+            
+            let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
+            let statFontSize = activeDraftSlot === 'engine' ? '18px' : '24px';
+            
+            const categoryType = activeDraftSlot.includes('driver') ? 'driver' : (activeDraftSlot === 'chassis' ? 'chassis' : (activeDraftSlot === 'principal' ? 'principal' : 'engine'));
+            const fallbackImg = getSVGVisual(item.name, categoryType);
+            const primaryImg = item.img ? getSafeImgUrl(item.img) : fallbackImg;
+            
+            let bgImg = `<img src="${primaryImg}" class="bg-img" style="background-image: url('${fallbackImg}'); background-size: cover; background-position: center;">`;
+            
+            slot.innerHTML = `
+                ${bgImg}
+                <div class="slot-label">${activeDraftSlot.replace(/[0-9]/g, '')}</div>
+                <div class="slot-content">
+                    <div class="filled-name">${item.name}</div>
+                    <div class="filled-year">${item.year} ${item.stage ? '[' + item.stage.toUpperCase() + ']' : ''}</div>
+                    <div class="filled-stat" style="font-size: ${statFontSize};">${displayStat}</div>
+                </div>
+            `;
+            
+            document.getElementById('draft-overlay').classList.remove('active');
+
+            const currentIndex = slotSequence.indexOf(activeDraftSlot);
+            if (currentIndex < slotSequence.length - 1) {
+                const nextSlotEl = document.getElementById(`slot-${slotSequence[currentIndex + 1]}`);
+                nextSlotEl.classList.remove('locked-slot');
+            }
+
+            if (slotSequence.every(key => teamState[key] !== undefined)) {
+                
+                const eraDiff = Math.abs(teamState.chassis.year - teamState.engine.year);
+                const synBox = document.getElementById('synergy-box');
+                const synText = document.getElementById('synergy-text');
+                
+                synBox.style.display = 'block';
+
+                if (eraDiff <= 5) {
+                    synergyPenalty = 0; synergyDnfMultiplier = 0;
+                    synText.className = 'synergy-status syn-good';
+                    synText.innerText = "PERFECT HARMONY: Chassis and Engine eras align perfectly. Maximum pace unlocked.";
+                } else if (eraDiff <= 15) {
+                    synergyPenalty = -3; synergyDnfMultiplier = 5;
+                    synText.className = 'synergy-status syn-bad';
+                    synText.style.borderColor = "#f1c40f"; synText.style.color = "#f1c40f";
+                    synText.innerText = "WARNING: Slight era mismatch. Minor aerodynamic and power penalty.";
+                } else {
+                    synergyPenalty = -10; synergyDnfMultiplier = 20;
+                    synText.className = 'synergy-status syn-bad';
+                    synText.innerText = `CRITICAL MISMATCH: Bolting a ${teamState.engine.year} engine into a ${teamState.chassis.year} chassis! Massive pace deficit and high DNF risk!`;
+                }
+
+                document.getElementById('sim-btn').classList.add('ready');
+                document.getElementById('header-d1').innerText = teamState.driver1.name.split(' ').pop().substring(0,3).toUpperCase();
+                document.getElementById('header-d2').innerText = teamState.driver2.name.split(' ').pop().substring(0,3).toUpperCase();
+            }
+        }
+
+        let allDrivers = [];
+        let allTeams = [];
+        let currentRace = 0;
+        let generatedSeed = "";
+        let finalTeamPts = 0;
+        let finalTeamPos = 0;
+
+        function initSeason() {
+            document.getElementById('sim-btn').style.display = 'none';
+            document.getElementById('season-container').style.display = 'block';
+            
+            const userTeamName = teamState.principal.name.split(' ').pop().toUpperCase() + " RACING";
+            const userCarPace = ((teamState.chassis.stat + teamState.engine.stat + teamState.principal.stat) / 3) + synergyPenalty;
+
+            const s1 = teamState.chassis.name.substring(0,3).toUpperCase();
+            const s2 = teamState.engine.name.substring(0,3).toUpperCase();
+            const s3 = teamState.principal.name.substring(0,3).toUpperCase();
+            const s4 = teamState.driver1.name.substring(0,3).toUpperCase();
+            const s5 = teamState.driver2.name.substring(0,3).toUpperCase();
+            const hash = Math.floor(Math.random() * 900) + 100;
+            generatedSeed = `${s1}${s2}-${s3}-${s4}${s5}-${hash}`;
+
+            allTeams = JSON.parse(JSON.stringify(aiTeamsBase));
+            allTeams.forEach(t => t.pts = 0);
+            allTeams.push({ name: userTeamName, pace: userCarPace, pts: 0, isUser: true });
+
+            allDrivers = [];
+            allTeams.forEach(team => {
+                if (team.isUser) {
+                    allDrivers.push({ name: teamState.driver1.name, stat: teamState.driver1.stat, team: team, pts: 0, isUser: true, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg });
+                    allDrivers.push({ name: teamState.driver2.name, stat: teamState.driver2.stat, team: team, pts: 0, isUser: true, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg });
+                } else {
+                    team.drivers.forEach(d => { allDrivers.push({ name: d.name, stat: d.stat, team: team, pts: 0, isUser: false, risk: 4 }); });
+                }
+            });
+
+            currentRace = 0; runRace();
+        }
+
+        function runRace() {
+            if (currentRace >= tracks.length) { renderStandings(); return; }
+
+            allDrivers.forEach(d => {
+                if (Math.random() * 100 < 2) { 
+                    d.raceScore = -1;
+                    d.raceStatus = 'DNS';
+                    d.raceMsg = d.isUser ? dnsMessages[Math.floor(Math.random() * dnsMessages.length)] : null;
+                    return;
+                }
+
+                let dnfThreshold = d.risk || 4;
+                if (d.isUser) {
+                    if (teamState.chassis.dnfRisk) dnfThreshold += teamState.chassis.dnfRisk;
+                    if (teamState.engine.stat < 80) dnfThreshold += 15;
+                    if (teamState.principal.stratRisk) dnfThreshold += teamState.principal.stratRisk;
+                    dnfThreshold += synergyDnfMultiplier;
+                }
+
+                if (Math.random() * 100 < dnfThreshold) {
+                    d.raceScore = -1;
+                    d.raceStatus = 'DNF';
+                    d.raceMsg = d.msg || (d.isUser ? dnfMessages[Math.floor(Math.random() * dnfMessages.length)] : null);
+                } else {
+                    d.raceScore = (d.stat * 0.4) + (d.team.pace * 0.6) + (Math.random() * 12 - 5);
+                    d.raceStatus = 'FINISH';
+                    d.raceMsg = null;
+                }
+            });
+
+            allDrivers.sort((a, b) => b.raceScore - a.raceScore);
+
+            let pos = 1; let raceWinner = ""; let u1Result = {}, u2Result = {}; let userRacePts = 0;
+
+            allDrivers.forEach(d => {
+                if (d.raceScore === -1) { 
+                    d.currentPos = d.raceStatus; 
+                } else {
+                    d.currentPos = pos;
+                    if (pos === 1) raceWinner = d.name;
+                    if (pos <= 10) {
+                        let pts = ptsSys[pos - 1];
+                        d.pts += pts; d.team.pts += pts;
+                        if(d.isUser) userRacePts += pts;
+                    }
+                    pos++;
+                }
+
+                if (d.isUser) {
+                    if (d.name === teamState.driver1.name) u1Result = { pos: d.currentPos, msg: d.raceMsg, class: getPosClass(d.currentPos) };
+                    else u2Result = { pos: d.currentPos, msg: d.raceMsg, class: getPosClass(d.currentPos) };
+                }
+            });
+
+            appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts);
+            currentRace++; setTimeout(runRace, 400);
+        }
+
+        function getPosClass(pos) {
+            if (pos === 'DNF') return 'pos-dnf';
+            if (pos === 'DNS') return 'pos-dns';
+            if (pos === 1) return 'pos-1';
+            if (pos === 2) return 'pos-2';
+            if (pos === 3) return 'pos-3';
+            return '';
+        }
+
+        function appendRaceRow(track, round, winner, d1, d2, userPts) {
+            const list = document.getElementById('race-list');
+            const div = document.createElement('div');
+            div.className = 'race-row';
+            
+            let chaosHtml = '';
+            if (d1.msg) {
+                const colorClass = d1.pos === 'DNS' ? 'dns-msg' : '';
+                chaosHtml += `<div class="chaos-msg ${colorClass}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
+            }
+            if (d2.msg) {
+                const colorClass = d2.pos === 'DNS' ? 'dns-msg' : '';
+                chaosHtml += `<div class="chaos-msg ${colorClass}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
+            }
+
+            div.innerHTML = `
+                <div class="race-rnd">R${round}</div>
+                <div class="race-track">${track}</div>
+                <div class="race-winner">${winner || "NO FINISHERS"}</div>
+                <div class="race-driver"><div class="pos-badge ${d1.class}">${d1.pos}</div></div>
+                <div class="race-driver"><div class="pos-badge ${d2.class}">${d2.pos}</div></div>
+                <div class="race-pts">+${userPts}</div>
+                ${chaosHtml}
+            `;
+            list.appendChild(div);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function renderStandings() {
+            document.getElementById('championships').style.display = 'grid';
+            
+            allDrivers.sort((a, b) => b.pts - a.pts);
+            const wdcTable = document.getElementById('wdc-table');
+            allDrivers.forEach((d, index) => {
+                const tr = document.createElement('tr');
+                if(d.isUser) tr.className = 'user-team-row';
+                tr.innerHTML = `<td class="pos-col">${index + 1}</td><td>${d.name}</td><td style="font-size:14px; color:#aaa;">${d.team.name}</td><td class="pts-col">${d.pts}</td>`;
+                wdcTable.appendChild(tr);
+            });
+
+            allTeams.sort((a, b) => b.pts - a.pts);
+            const wccTable = document.getElementById('wcc-table');
+            allTeams.forEach((t, index) => {
+                const tr = document.createElement('tr');
+                if(t.isUser) {
+                    tr.className = 'user-team-row';
+                    finalTeamPts = t.pts;
+                    finalTeamPos = index + 1;
+                }
+                tr.innerHTML = `<td class="pos-col">${index + 1}</td><td>${t.name}</td><td class="pts-col">${t.pts}</td>`;
+                wccTable.appendChild(tr);
+            });
+
+            const summaryCard = document.getElementById('season-summary-card');
+            const summaryTitle = document.getElementById('summary-title');
+            const summaryText = document.getElementById('summary-text');
+
+            if (finalTeamPos === 1) {
+                summaryCard.className = 'summary-card summary-1';
+                summaryTitle.innerText = "🏆 WORLD CONSTRUCTORS' CHAMPIONS";
+                summaryText.innerText = "ABSOLUTE DOMINANCE. You engineered a masterpiece and destroyed the grid. The factory is popping champagne, your drivers are legends, and the synergy was flawless. Take a bow.";
+            } else if (finalTeamPos === 2) {
+                summaryCard.className = 'summary-card summary-2';
+                summaryTitle.innerText = "🥈 P2 - FIRST OF THE LOSERS";
+                summaryText.innerText = "So close, yet so agonizingly far. You spent all those millions just to watch another team lift the trophy. Enjoy the taste of silver, mate. Toto Wolff is laughing somewhere.";
+            } else if (finalTeamPos >= 3 && finalTeamPos <= 6) {
+                summaryCard.className = 'summary-card summary-mid';
+                summaryTitle.innerText = "📊 MID-TABLE MEDIOCRITY";
+                summaryText.innerText = "Perfectly balanced, perfectly average. You weren't a complete embarrassment, but nobody is going to remember this season. Try finding the accelerator pedal next year.";
+            } else if (finalTeamPos >= 7 && finalTeamPos <= 10) {
+                summaryCard.className = 'summary-card summary-bad';
+                summaryTitle.innerText = "🚜 ABSOLUTE TRACTOR";
+                summaryText.innerText = "The car was a moving chicane. Drivers are threatening to strike, and the sponsors are frantically tearing up their contracts. A complete strategic and engineering disasterclass.";
+            } else {
+                summaryCard.className = 'summary-card summary-bad';
+                summaryTitle.innerText = "☠️ TERMINATED WITH IMMEDIATE EFFECT";
+                summaryText.innerText = "You finished dead last. Behind Haas. Behind Sauber. The board has locked you out of the paddock and your lead driver just retired out of sheer embarrassment. Pack your bags.";
+            }
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function shareResults() {
+            let posEmoji = "🏁";
+            if (finalTeamPos === 1) posEmoji = "🏆 P1 - CHAMPIONS!";
+            else if (finalTeamPos === 2) posEmoji = "🥈 P2 - ALMOST!";
+            else if (finalTeamPos >= 3 && finalTeamPos <= 6) posEmoji = "📊 MIDFIELD";
+            else posEmoji = "🚜 TRACTOR TIER";
+
+            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\nSeed: #${generatedSeed}\nPlay now: your-website-here.com`;
+            
+            navigator.clipboard.writeText(shareText).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
