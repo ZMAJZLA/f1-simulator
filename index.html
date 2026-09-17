@@ -14,7 +14,8 @@
             --text-main: #ffffff;
             --success: #00ffcc;
             --gold: #ffd700;
-            --gold-dark: #ccaa00;
+            --neon-blue: #00bfff;
+            --neon-purple: #9d00ff;
         }
 
         body {
@@ -33,6 +34,21 @@
 
         header h1 { font-family: 'Teko', sans-serif; font-size: 38px; margin: 0; letter-spacing: 2px; }
         header span { color: var(--f1-red); }
+
+        .top-tools { display: flex; gap: 15px; align-items: center; }
+        .seed-display { 
+            background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 6px 14px; 
+            border-radius: 4px; font-family: monospace; font-size: 14px; color: var(--success); letter-spacing: 1px;
+        }
+        
+        .tool-btn {
+            background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
+            padding: 8px 16px; font-family: 'Teko', sans-serif; font-size: 20px; cursor: pointer;
+            border-radius: 4px; transition: 0.2s; letter-spacing: 1px;
+        }
+        .tool-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
+        .tool-btn-reset { border-color: var(--f1-red); color: var(--f1-red); }
+        .tool-btn-reset:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 15px var(--f1-red); }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
@@ -81,6 +97,7 @@
             box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
 
+        /* SPARKLY GOLD CARDS */
         .gold-card {
             background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
             border: 2px solid var(--gold) !important;
@@ -95,6 +112,13 @@
             transform: skewX(-25deg); animation: goldShine 4s infinite; z-index: 1; pointer-events: none;
         }
         @keyframes goldShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        /* MEME / SHIT TIER CARDS */
+        .shit-card {
+            background: linear-gradient(135deg, #200500 0%, #100200 100%) !important;
+            border: 2px dashed #ff3333 !important;
+        }
+        .shit-card .filled-stat { border-color: #ff3333; color: #ff3333; }
 
         .sparkle-1, .sparkle-2, .sparkle-3 {
             position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
@@ -145,6 +169,7 @@
         .stage-rookie { color: var(--success); border: 1px solid var(--success); background: rgba(0, 255, 204, 0.1);}
         .stage-prime { color: #c9b037; border: 1px solid #c9b037; background: rgba(201, 176, 55, 0.1);}
         .stage-veteran { color: #888; border: 1px solid #888; background: rgba(136, 136, 136, 0.1);}
+        .stage-shit { color: #ff3333; border: 1px solid #ff3333; background: rgba(255, 51, 51, 0.1);}
         
         .opt-hist { border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 12px 0; font-size: 14px; color: #aaa; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between;}
         .opt-hist span { color: #fff; font-size: 16px;}
@@ -260,7 +285,11 @@
 
     <header>
         <h1>F1 <span>ULTIMATE</span> // ENGINEERING DRAFT</h1>
-        <div style="font-size: 16px; font-weight: 700; color: #8b8b99; letter-spacing: 2px;">2026 GRID SIMULATION</div>
+        <div class="top-tools">
+            <div class="seed-display" id="active-seed">SEED: READY</div>
+            <button class="tool-btn" onclick="autoDraft()">⚡ DO IT FOR ME</button>
+            <button class="tool-btn tool-btn-reset" onclick="resetDraft()">🔄 RESET</button>
+        </div>
     </header>
 
     <div class="container">
@@ -378,7 +407,6 @@
             "Bypassed pit limiter by convincing the FIA it was a mechanical glitch.",
             "Drove three laps on three wheels and didn't even notice.",
             "Uses telemetry screens to watch cooking tutorials during safety cars.",
-            "Overtook three cars while attempting to sneeze.",
             "Demanded mid-race pit stop just to get iced coffee."
         ];
 
@@ -411,7 +439,6 @@
 
         const iconicTeams = ["Scuderia Ferrari", "McLaren", "Red Bull", "Williams", "Mercedes", "Lotus", "Benetton", "Brawn GP", "Renault"];
 
-        // MASSIVE DATABASE EXPANSION
         const db = {
             chassis: [
                 { name: 'Red Bull RB19', year: 2023, stat: 99, note: 'The greatest F1 car built. Flawless aero.' },
@@ -586,6 +613,16 @@
             if (respinsLeft === 0) btn.disabled = true;
         }
 
+        function updateSeedDisplay() {
+            if (!teamState.chassis) return;
+            const s1 = teamState.chassis ? teamState.chassis.name.substring(0,2).toUpperCase() : 'XX';
+            const s2 = teamState.engine ? teamState.engine.name.substring(0,2).toUpperCase() : 'XX';
+            const s3 = teamState.principal ? teamState.principal.name.substring(0,2).toUpperCase() : 'XX';
+            const s4 = teamState.driver1 ? teamState.driver1.name.substring(0,2).toUpperCase() : 'XX';
+            const s5 = teamState.driver2 ? teamState.driver2.name.substring(0,2).toUpperCase() : 'XX';
+            document.getElementById('active-seed').innerText = `SEED: #${s1}${s2}-${s3}-${s4}${s5}`;
+        }
+
         function openDraft(slotName, isRespin = false) {
             const slotEl = document.getElementById(`slot-${slotName}`);
             if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
@@ -636,17 +673,25 @@
             grid.innerHTML = '';
             let options = [];
 
+            // 5% CHANCE FOR A "CURSED" SHIT-TIER OR "GOD" ALL-GOLD SELECTION ROLL
+            const rollType = Math.random();
+            let forceShit = rollType < 0.05;
+            let forceGod = rollType > 0.95;
+
             if (slotName.includes('driver')) {
                 let shuffledDrivers = [...db.drivers].sort(() => 0.5 - Math.random());
                 if (slotName === 'driver2' && teamState.driver1) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver1.name);
                 else if (slotName === 'driver1' && teamState.driver2) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver2.name);
                 
+                if (forceShit) shuffledDrivers = shuffledDrivers.filter(d => d.versions.some(v => v.stat < 60));
+                if (forceGod) shuffledDrivers = shuffledDrivers.filter(d => d.versions.some(v => v.stat > 95));
+
                 options = shuffledDrivers.slice(0, 4).map(d => {
                     const rv = getRandomVersion(d.versions);
                     return { name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles };
                 });
 
-                if (Math.random() < 0.25) {
+                if (Math.random() < 0.25 && !forceShit && !forceGod) {
                     const activeYear = teamState.chassis ? teamState.chassis.year : 2026;
                     const eligibleSpecials = db.specialDrivers.filter(sd => activeYear >= (sd.birthYear + 18));
                     
@@ -665,9 +710,11 @@
                 }
             } else if (slotName === 'principal') {
                 let shuffled = [...db.principal].sort(() => 0.5 - Math.random());
+                if (forceShit) shuffled = shuffled.filter(p => p.stat < 85);
+                if (forceGod) shuffled = shuffled.filter(p => p.stat >= 96);
                 options = shuffled.slice(0, 4);
 
-                if (Math.random() < 0.25) {
+                if (Math.random() < 0.25 && !forceShit && !forceGod) {
                     const sp = db.specialPrincipals[Math.floor(Math.random() * db.specialPrincipals.length)];
                     const randomNote = principalFunnyMessages[Math.floor(Math.random() * principalFunnyMessages.length)];
                     const replaceIdx = Math.floor(Math.random() * options.length);
@@ -678,13 +725,17 @@
                 }
             } else {
                 let shuffled = [...db[slotName]].sort(() => 0.5 - Math.random());
+                if (forceShit) shuffled = shuffled.filter(i => i.stat < 75);
+                if (forceGod) shuffled = shuffled.filter(i => i.stat >= 97);
                 options = shuffled.slice(0, 4);
             }
 
             options.forEach((opt, index) => {
                 const card = document.createElement('div');
                 const isShiny = opt.isSpecial || opt.stat >= 98;
-                card.className = `draft-option ${isShiny ? 'gold-card' : ''}`;
+                const isShit = opt.stat <= 50;
+
+                card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
                 card.style.animationDelay = `${index * 0.1}s`;
                 
                 let watermarkText = opt.name.split(' ').pop().substring(0,2).toUpperCase();
@@ -693,7 +744,10 @@
                 
                 let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
 
-                let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : 'stage-' + opt.stage.toLowerCase()}">${opt.stage}</div>` : '';
+                let stageClass = 'stage-' + (opt.stage ? opt.stage.toLowerCase() : '');
+                if (isShit) stageClass = 'stage-shit';
+
+                let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : stageClass}">${opt.stage}</div>` : '';
                 let histHtml = opt.isDriver ? `<div class="opt-hist">WINS: <span>${opt.hWins}</span> | PODS: <span>${opt.hPods}</span> | POLES: <span>${opt.hPoles}</span></div>` : '';
                 
                 let displayStat = formatStatDisplay(slotName, opt.stat);
@@ -723,7 +777,8 @@
             const slot = document.getElementById(`slot-${activeDraftSlot}`);
             
             const isShiny = item.isSpecial || item.stat >= 98;
-            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''}`;
+            const isShit = item.stat <= 50;
+            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
             
             let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
             let statFontSize = activeDraftSlot === 'engine' ? '20px' : '28px';
@@ -746,6 +801,7 @@
             `;
             
             document.getElementById('draft-overlay').classList.remove('active');
+            updateSeedDisplay();
 
             const currentIndex = slotSequence.indexOf(activeDraftSlot);
             if (currentIndex < slotSequence.length - 1) {
@@ -782,7 +838,46 @@
             }
         }
 
-        // --- THE LIGHTS OUT SEQUENCE ---
+        // QOL FEATURE: AUTO DRAFT ("DO IT FOR ME")
+        function autoDraft() {
+            resetDraft();
+            slotSequence.forEach(slot => {
+                let options = [];
+                if (slot.includes('driver')) {
+                    let available = db.drivers;
+                    if (slot === 'driver2' && teamState.driver1) available = available.filter(d => d.name !== teamState.driver1.name);
+                    let d = available[Math.floor(Math.random() * available.length)];
+                    let rv = getRandomVersion(d.versions);
+                    options.push({ name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles });
+                } else {
+                    options = db[slot];
+                }
+                let picked = options[Math.floor(Math.random() * options.length)];
+                activeDraftSlot = slot;
+                selectDraft(picked);
+            });
+        }
+
+        // QOL FEATURE: RESET BUTTON
+        function resetDraft() {
+            teamState = {};
+            respinsLeft = 3;
+            updateRespinBtn();
+            document.getElementById('synergy-box').style.display = 'none';
+            document.getElementById('sim-btn').classList.remove('ready');
+            document.getElementById('active-seed').innerText = "SEED: READY";
+
+            slotSequence.forEach((slot, index) => {
+                const el = document.getElementById(`slot-${slot}`);
+                el.className = `slot-card ${index > 0 ? 'locked-slot' : ''} ${slot.includes('driver') ? 'driver-card' : ''}`;
+                const label = slot.replace(/[0-9]/g, '').toUpperCase();
+                el.innerHTML = `
+                    <div class="slot-label">STEP ${index + 1}: ${label}</div>
+                    <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT ${label}</div></div>
+                `;
+            });
+        }
+
         function triggerLightsOut() {
             const btn = document.getElementById('sim-btn');
             if(!btn.classList.contains('ready')) return;
@@ -823,14 +918,6 @@
             
             const userTeamName = teamState.principal.name.split(' ').pop().toUpperCase() + " RACING";
             const userCarPace = ((teamState.chassis.stat + teamState.engine.stat + teamState.principal.stat) / 3) + synergyPenalty;
-
-            const s1 = teamState.chassis.name.substring(0,3).toUpperCase();
-            const s2 = teamState.engine.name.substring(0,3).toUpperCase();
-            const s3 = teamState.principal.name.substring(0,3).toUpperCase();
-            const s4 = teamState.driver1.name.substring(0,3).toUpperCase();
-            const s5 = teamState.driver2.name.substring(0,3).toUpperCase();
-            const hash = Math.floor(Math.random() * 900) + 100;
-            generatedSeed = `${s1}${s2}-${s3}-${s4}${s5}-${hash}`;
 
             allTeams = JSON.parse(JSON.stringify(aiTeamsBase));
             allTeams.forEach(t => t.pts = 0);
@@ -1008,12 +1095,11 @@
             else if (finalTeamPos >= 3 && finalTeamPos <= 6) posEmoji = "📊 MIDFIELD";
             else posEmoji = "🚜 TRACTOR TIER";
 
-            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\nSeed: #${generatedSeed}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
+            const seedText = document.getElementById('active-seed').innerText;
+            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\n${seedText}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
             
             navigator.clipboard.writeText(shareText).then(() => {
-                const toast = document.getElementById('toast');
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+                alert("Results copied to clipboard!");
             });
         }
     </script>
