@@ -77,13 +77,13 @@
             padding: 5px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-radius: 4px; margin-top: 15px; text-transform: uppercase;
         }
         
-        /* CSS Multi-Layer Background Engine */
+        /* Fixed Img styling - highly visible over the dark card */
         .bg-img { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background-size: cover; background-position: center; 
-            opacity: 0.55; filter: grayscale(20%); transition: 0.4s; z-index: 0; 
+            object-fit: cover; opacity: 0.6; filter: grayscale(10%); transition: 0.4s; z-index: 0; 
         }
-        .slot-card.completed-slot .bg-img { opacity: 0.65; filter: grayscale(0%); }
+        .slot-card.completed-slot .bg-img { opacity: 0.75; filter: grayscale(0%); }
+        .draft-option:hover .bg-img { opacity: 0.9; filter: grayscale(0%); transform: scale(1.05); }
 
         .gold-card {
             background: linear-gradient(135deg, #1f1a08 0%, #3a300d 50%, #1f1a08 100%) !important; border: 2px solid var(--gold) !important;
@@ -97,7 +97,6 @@
         @keyframes shine { 0% { transform: translateX(-100%) rotate(30deg); } 100% { transform: translateX(100%) rotate(30deg); } }
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
-        /* DRAFT OVERLAY */
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column;
@@ -124,7 +123,6 @@
             display: flex; flex-direction: column; justify-content: space-between; min-height: 380px;
         }
         .draft-option:hover { border-color: var(--f1-red); transform: translateY(-10px); box-shadow: 0 15px 30px rgba(225,6,0,0.4); }
-        .draft-option:hover .bg-img { opacity: 0.85; filter: grayscale(0%); }
         
         .opt-content { z-index: 2; position: relative; text-shadow: 0 2px 8px #000; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
         .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; background: rgba(0,0,0,0.85); display: inline-block; padding: 2px 8px; border-radius: 4px;}
@@ -328,19 +326,9 @@
     </div>
 
     <script>
-        // 100% BULLETPROOF BASE64 SVG GENERATOR
+        // Only return SVG string for drivers now. Base64 makes it 100% immune to HTML breakages.
         function getSVGVisual(name, category) {
-            let iconSvg = '';
-            if (category === 'driver') {
-                iconSvg = '<circle cx="100" cy="80" r="35" fill="#e10600"/><path d="M 60 160 C 60 120, 140 120, 140 160 Z" fill="#333"/><path d="M 75 80 L 125 80" stroke="#fff" stroke-width="8" stroke-linecap="round"/>';
-            } else if (category === 'chassis') {
-                iconSvg = '<path d="M 30 110 L 70 100 L 130 100 L 170 110 L 160 125 L 40 125 Z" fill="#e10600"/><circle cx="60" cy="130" r="14" fill="#222"/><circle cx="140" cy="130" r="14" fill="#222"/>';
-            } else if (category === 'principal') {
-                iconSvg = '<circle cx="100" cy="80" r="30" fill="#fff"/><path d="M 50 160 C 50 110, 150 110, 150 160 Z" fill="#444"/><path d="M 70 80 C 70 50, 130 50, 130 80" fill="none" stroke="#e10600" stroke-width="6"/><rect x="125" y="70" width="10" height="20" fill="#e10600" rx="3"/>';
-            } else {
-                iconSvg = '<rect x="60" y="70" width="80" height="60" rx="8" fill="#333" stroke="#e10600" stroke-width="4"/><path d="M 40 90 L 60 90 M 140 90 L 160 90" stroke="#ff3333" stroke-width="6"/>';
-            }
-
+            let iconSvg = '<circle cx="100" cy="80" r="35" fill="#e10600"/><path d="M 60 160 C 60 120, 140 120, 140 160 Z" fill="#333"/><path d="M 75 80 L 125 80" stroke="#fff" stroke-width="8" stroke-linecap="round"/>';
             const safeName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             const rawSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 200 300"><rect width="200" height="300" fill="#111116"/><g transform="translate(0, 30)">${iconSvg}</g><text x="100" y="220" text-anchor="middle" fill="#ffffff" font-family="sans-serif" font-weight="bold" font-size="14">${safeName}</text><text x="100" y="240" text-anchor="middle" fill="#e10600" font-family="sans-serif" font-size="10" font-weight="bold">F1 ULTIMATE SPEC</text></svg>`;
             return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(rawSvg)));
@@ -382,29 +370,30 @@
 
         const iconicTeams = ["Scuderia Ferrari", "McLaren", "Red Bull", "Williams", "Mercedes", "Lotus"];
 
+        // Img properties removed from Chassis, Engine, Principal, and Special Principals.
         const db = {
             chassis: [
-                { name: 'Red Bull RB19', year: 2023, stat: 99, note: 'The greatest F1 car built. Flawless aero.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Max_Verstappen_2023_Red_Bull_RB19.jpg/800px-Max_Verstappen_2023_Red_Bull_RB19.jpg' },
-                { name: 'McLaren MP4/4', year: 1988, stat: 98, note: "Senna & Prost's legendary chariot. 15 wins.", img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/McLaren_MP4-4.jpg/800px-McLaren_MP4-4.jpg' },
-                { name: 'Ferrari F2004', year: 2004, stat: 97, note: 'The absolute peak of the V10 era.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/F2004_Michael_Schumacher.jpg/800px-F2004_Michael_Schumacher.jpg' },
-                { name: 'Mercedes W11', year: 2020, stat: 99, note: 'DAS system engaged. Cornering physics defied.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Lewis_Hamilton_2020_Tuscany.jpg/800px-Lewis_Hamilton_2020_Tuscany.jpg' },
-                { name: 'Lotus 72', year: 1970, stat: 94, note: 'Wedge-shaped aerodynamic pioneer.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Lotus_72_E_Fittipaldi_G%C3%B6teborg_2008.jpg/800px-Lotus_72_E_Fittipaldi_G%C3%B6teborg_2008.jpg' },
-                { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Mick_Schumacher_2021_Austria_2.jpg/800px-Mick_Schumacher_2021_Austria_2.jpg' }
+                { name: 'Red Bull RB19', year: 2023, stat: 99, note: 'The greatest F1 car built. Flawless aero.' },
+                { name: 'McLaren MP4/4', year: 1988, stat: 98, note: "Senna & Prost's legendary chariot. 15 wins." },
+                { name: 'Ferrari F2004', year: 2004, stat: 97, note: 'The absolute peak of the V10 era.' },
+                { name: 'Mercedes W11', year: 2020, stat: 99, note: 'DAS system engaged. Cornering physics defied.' },
+                { name: 'Lotus 72', year: 1970, stat: 94, note: 'Wedge-shaped aerodynamic pioneer.' },
+                { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10 }
             ],
             engine: [
-                { name: 'Mercedes PU106A', year: 2014, stat: 99, note: 'The dawn of the hybrid era. Uncatchable.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Mercedes_F1_W05_engine_2014.jpg/800px-Mercedes_F1_W05_engine_2014.jpg' },
-                { name: 'Ferrari 053', year: 2004, stat: 98, note: '3.0L V10 that revved to 19,000 RPM.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ferrari_053_engine.jpg/800px-Ferrari_053_engine.jpg' },
-                { name: 'Honda RBPTH001', year: 2023, stat: 99, note: 'Bulletproof Red Bull reliability.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Max_Verstappen_2023_Red_Bull_RB19.jpg/800px-Max_Verstappen_2023_Red_Bull_RB19.jpg' },
-                { name: 'Honda RA168E', year: 1988, stat: 97, note: 'The turbo beast that conquered the 80s.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Honda_RA168E_engine.jpg/800px-Honda_RA168E_engine.jpg' },
-                { name: 'Ford Cosworth DFV', year: 1970, stat: 95, note: 'The engine that powered an entire decade.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Cosworth_DFV_engine.jpg/800px-Cosworth_DFV_engine.jpg' },
-                { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/McLaren_Honda_MP4-30_Alonso_2015_Malaysia_Free_Practice.jpg/800px-McLaren_Honda_MP4-30_Alonso_2015_Malaysia_Free_Practice.jpg' }
+                { name: 'Mercedes PU106A', year: 2014, stat: 99, note: 'The dawn of the hybrid era. Uncatchable.' },
+                { name: 'Ferrari 053', year: 2004, stat: 98, note: '3.0L V10 that revved to 19,000 RPM.' },
+                { name: 'Honda RBPTH001', year: 2023, stat: 99, note: 'Bulletproof Red Bull reliability.' },
+                { name: 'Honda RA168E', year: 1988, stat: 97, note: 'The turbo beast that conquered the 80s.' },
+                { name: 'Ford Cosworth DFV', year: 1970, stat: 95, note: 'The engine that powered an entire decade.' },
+                { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25 }
             ],
             principal: [
-                { name: 'Toto Wolff', year: 2020, stat: 98, note: 'Flawless execution and pumpernickel.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Toto_Wolff_2016_Malaysia.jpg/800px-Toto_Wolff_2016_Malaysia.jpg' },
-                { name: 'Christian Horner', year: 2023, stat: 97, note: 'Master of highly aggressive strategies.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Christian_Horner_2016_Malaysia.jpg/800px-Christian_Horner_2016_Malaysia.jpg' },
-                { name: 'Jean Todt', year: 2004, stat: 98, note: 'Architect of the Ferrari golden era.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Jean_Todt_2013.jpg/800px-Jean_Todt_2013.jpg' },
-                { name: 'Ron Dennis', year: 1988, stat: 96, note: 'Clinical, obsessive perfectionism.', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Ron_Dennis_2008.jpg/800px-Ron_Dennis_2008.jpg' },
-                { name: 'Mattia Binotto', year: 2022, stat: 80, note: '"Question? We are checking." Strategy disasters.', stratRisk: 20, img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Mattia_Binotto_2019.jpg/800px-Mattia_Binotto_2019.jpg' }
+                { name: 'Toto Wolff', year: 2020, stat: 98, note: 'Flawless execution and pumpernickel.' },
+                { name: 'Christian Horner', year: 2023, stat: 97, note: 'Master of highly aggressive strategies.' },
+                { name: 'Jean Todt', year: 2004, stat: 98, note: 'Architect of the Ferrari golden era.' },
+                { name: 'Ron Dennis', year: 1988, stat: 96, note: 'Clinical, obsessive perfectionism.' },
+                { name: 'Mattia Binotto', year: 2022, stat: 80, note: '"Question? We are checking." Strategy disasters.', stratRisk: 20 }
             ],
             specialPrincipals: [
                 { name: 'Jonathon Middleton', year: 2026, stat: 105, isSpecial: true },
@@ -445,15 +434,18 @@
                 ]}
             ],
             specialDrivers: [
-                { name: 'Brian Buttell', gender: 'M', birthYear: 2006, stat: 115, isSpecial: true },
-                { name: 'Jamie Karter', gender: 'M', birthYear: 2002, stat: 115, isSpecial: true },
-                { name: 'Ryan Vasey', gender: 'M', birthYear: 2007, stat: 115, isSpecial: true, customNote: "Once tried to get insured on a Porsche as a child... what were you to expect???" },
-                { name: 'Anjali Tiwari', gender: 'F', birthYear: 2003, stat: 15, isSpecial: true, customNote: "Almost killed someone on her driving test." },
-                { name: 'Reece Anderson', gender: 'M', birthYear: 2001, stat: 95, isSpecial: true },
-                { name: 'Alisha Cummings', gender: 'F', birthYear: 2006, stat: 85, isSpecial: true, customNote: "Once crashed a Fiat 500 whoops!" },
-                { name: 'Jordan Bell', gender: 'F', birthYear: 2001, stat: 65, isSpecial: true },
-                { name: 'Daniel Robins', gender: 'M', birthYear: 1992, stat: 50, isSpecial: true },
-                { name: 'Luis Hart', gender: 'M', birthYear: 2000, stat: 1, isSpecial: true, customNote: "Thought a stick shift was a pants readjustment." }
+                { name: 'Brian Buttell', gender: 'M', birthYear: 2006, stat: 115, isSpecial: true, img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Jamie Karter', gender: 'M', birthYear: 2002, stat: 115, isSpecial: true, img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Ryan Vasey', gender: 'M', birthYear: 2007, stat: 115, isSpecial: true, customNote: "Once tried to get insured on a Porsche as a child... what were you to expect???", img: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Anjali Tiwari', gender: 'F', birthYear: 2003, stat: 15, isSpecial: true, customNote: "Almost killed someone on her driving test.", img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Reece Anderson', gender: 'M', birthYear: 2001, stat: 95, isSpecial: true, img: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Alisha Cummings', gender: 'F', birthYear: 2006, stat: 85, isSpecial: true, customNote: "Once crashed a Fiat 500 whoops!", img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Jordan Bell', gender: 'F', birthYear: 2001, stat: 65, isSpecial: true, img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Daniel Robins', gender: 'M', birthYear: 1992, stat: 50, isSpecial: true, img: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Luis Hart', gender: 'M', birthYear: 2000, stat: 1, isSpecial: true, customNote: "Thought a stick shift was a pants readjustment.", img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Elena Jones', gender: 'F', birthYear: 1995, stat: 66, isSpecial: true, img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Shak Ashraf', gender: 'M', birthYear: 1990, stat: 70, isSpecial: true, img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop' },
+                { name: 'Jo Miller', gender: 'F', birthYear: 1986, stat: 75, isSpecial: true, img: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop' }
             ]
         };
 
@@ -582,7 +574,7 @@
                     const replaceIdx = Math.floor(Math.random() * options.length);
                     options[replaceIdx] = {
                         name: sp.name, year: sp.year, stat: sp.stat, note: randomNote,
-                        img: sp.img || '', isSpecial: true, isPrincipal: true
+                        isSpecial: true, isPrincipal: true
                     };
                 }
             } else {
@@ -595,11 +587,12 @@
                 const isShiny = opt.isSpecial || opt.stat >= 98;
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''}`;
                 
-                const categoryType = slotName.includes('driver') ? 'driver' : (slotName === 'chassis' ? 'chassis' : (slotName === 'principal' ? 'principal' : 'engine'));
-                const fallbackImg = getSVGVisual(opt.name, categoryType);
-                const primaryImg = opt.img || fallbackImg;
-                
-                let bgHtml = `<div class="bg-img" style="background-image: url('${primaryImg}'), url('${fallbackImg}');"></div>`;
+                let bgHtml = '';
+                // ONLY drivers get real images to keep the focus on the racers.
+                if (slotName.includes('driver') && opt.img) {
+                    const fallbackImg = getSVGVisual(opt.name, 'driver');
+                    bgHtml = `<img src="${opt.img}" referrerpolicy="no-referrer" class="bg-img" onerror="this.onerror=null; this.src='${fallbackImg}';">`;
+                }
                 
                 let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : 'stage-' + opt.stage.toLowerCase()}">${opt.stage}</div>` : '';
                 let histHtml = opt.isDriver ? `<div class="opt-hist">WINS: <span>${opt.hWins}</span> | PODS: <span>${opt.hPods}</span> | POLES: <span>${opt.hPoles}</span></div>` : '';
@@ -635,11 +628,12 @@
             let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
             let statFontSize = activeDraftSlot === 'engine' ? '18px' : '24px';
             
-            const categoryType = activeDraftSlot.includes('driver') ? 'driver' : (activeDraftSlot === 'chassis' ? 'chassis' : (activeDraftSlot === 'principal' ? 'principal' : 'engine'));
-            const fallbackImg = getSVGVisual(item.name, categoryType);
-            const primaryImg = item.img || fallbackImg;
-            
-            let bgHtml = `<div class="bg-img" style="background-image: url('${primaryImg}'), url('${fallbackImg}');"></div>`;
+            let bgHtml = '';
+            // Only drivers get the image in the completed slot
+            if (activeDraftSlot.includes('driver') && item.img) {
+                const fallbackImg = getSVGVisual(item.name, 'driver');
+                bgHtml = `<img src="${item.img}" referrerpolicy="no-referrer" class="bg-img" onerror="this.onerror=null; this.src='${fallbackImg}';">`;
+            }
             
             slot.innerHTML = `
                 ${bgHtml}
