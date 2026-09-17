@@ -38,7 +38,6 @@
         .builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
         .driver-row { grid-column: span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* SLEEK TEXT-BASED CARDS */
         .slot-card {
             background: linear-gradient(145deg, var(--panel-dark), #0f0f13);
             border: 2px dashed #333; border-radius: 8px;
@@ -65,7 +64,6 @@
             background: rgba(0,0,0,0.9); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0;
         }
 
-        /* WATERMARK TYPOGRAPHY */
         .watermark {
             position: absolute; right: -10px; bottom: -20px; font-family: 'Teko', sans-serif;
             font-size: 140px; color: rgba(255,255,255,0.03); z-index: 0; line-height: 1; pointer-events: none; font-weight: bold;
@@ -83,7 +81,6 @@
             box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
 
-        /* THE "SPARKLY SPARKLY" GOLD CARD ANIMATIONS */
         .gold-card {
             background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
             border: 2px solid var(--gold) !important;
@@ -92,7 +89,6 @@
         .gold-card .filled-stat { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
         .gold-card .watermark { color: rgba(255, 215, 0, 0.08); }
         
-        /* Sweeping Light Flare */
         .gold-card::before {
             content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
@@ -100,7 +96,6 @@
         }
         @keyframes goldShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* Floating Sparkles */
         .sparkle-1, .sparkle-2, .sparkle-3 {
             position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
             box-shadow: 0 0 10px 2px var(--gold); z-index: 3; opacity: 0; pointer-events: none;
@@ -112,7 +107,6 @@
 
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
-        /* DRAFT OVERLAY WITH STAGGERED ENTRANCES */
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column;
@@ -161,7 +155,6 @@
         .spinning-card { animation: pulseBg 0.5s infinite alternate; pointer-events: none; border-color: #333 !important;}
         @keyframes pulseBg { from { opacity: 0.5; } to { opacity: 1; } }
 
-        /* SYNERGY & START BUTTON */
         .synergy-box {
             background: linear-gradient(90deg, transparent, #111, transparent); padding: 20px;
             text-align: center; margin-bottom: 20px; display: none; animation: slideIn 0.5s;
@@ -180,7 +173,6 @@
         .btn-main.ready { border-color: var(--f1-red); color: var(--f1-red); opacity: 1; pointer-events: auto; }
         .btn-main.ready:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 40px rgba(225, 6, 0, 0.8); transform: scale(1.05); }
 
-        /* 🔴 THE LIGHTS OUT ANIMATION SEQUENCE 🔴 */
         #lights-out-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 500; display: flex; flex-direction: column;
@@ -196,7 +188,6 @@
         .light-bulb.on { background: #ff0000; box-shadow: 0 0 40px #ff0000, inset 0 0 10px #fff; }
         #lights-text { font-family: 'Teko', sans-serif; font-size: 80px; color: #fff; letter-spacing: 5px; opacity: 0; transition: 0.1s; }
 
-        /* TICKER & TABLES */
         #season-container { display: none; margin-top: 20px;}
         .scoreboard-header {
             display: flex; justify-content: space-between; background: #111;
@@ -227,7 +218,6 @@
         .dns-msg { color: #f1c40f; }
         .event-msg { color: #00ffcc; }
 
-        /* CHAMPIONSHIPS & SUMMARY CARD */
         .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; animation: slideUpFade 0.8s forwards; }
         
         .summary-card {
@@ -345,7 +335,6 @@
         </div>
     </div>
 
-    <!-- DRAFT OVERLAY -->
     <div class="draft-overlay" id="draft-overlay">
         <div class="draft-header" id="draft-title">DRAFT <span>CHASSIS</span></div>
         <div class="respin-container">
@@ -354,7 +343,6 @@
         <div class="draft-grid" id="draft-grid"></div>
     </div>
 
-    <!-- LIGHTS OUT OVERLAY -->
     <div id="lights-out-overlay">
         <div class="lights-container" id="lights-container">
             <div class="light-box"><div class="light-bulb bulb-1"></div><div class="light-bulb bulb-1"></div></div>
@@ -371,7 +359,6 @@
     </div>
 
     <script>
-        // --- EXPANDED SCENARIOS ---
         const raceEvents = [
             "Complained about the tires for 40 laps, then set fastest lap.",
             "Asked race control if they had the drink. They did not have the drink.",
@@ -380,7 +367,9 @@
             "Spent 15 laps stuck in a massive DRS train.",
             "Pit crew nailed a 1.8 second stop. Masterclass.",
             "Defended like a lion against a faster car for 10 laps.",
-            "Ignored team orders to let teammate past."
+            "Ignored team orders to let teammate past.",
+            "Got a 5 second penalty for exceeding track limits.",
+            "Radio: 'Bono, my tires are gone!'"
         ];
 
         const driverFunnyMessages = [
@@ -389,6 +378,7 @@
             "Bypassed pit limiter by convincing the FIA it was a mechanical glitch.",
             "Drove three laps on three wheels and didn't even notice.",
             "Uses telemetry screens to watch cooking tutorials during safety cars.",
+            "Overtook three cars while attempting to sneeze.",
             "Demanded mid-race pit stop just to get iced coffee."
         ];
 
@@ -397,7 +387,8 @@
             "Replaced strategy software with a spreadsheet built in 10 minutes.",
             "Bribed rival engineers with hot sausages for tire degradation data.",
             "Demanded the pit crew change all 4 tires in under 1.2 seconds or walk home.",
-            "Accidentally ordered 400 sets of wet tires for the Abu Dhabi GP."
+            "Accidentally ordered 400 sets of wet tires for the Abu Dhabi GP.",
+            "Got caught napping on the pit wall during a safety car."
         ];
 
         const dnfMessages = [
@@ -405,7 +396,9 @@
             "Engine exploded into a million expensive pieces. DNF.",
             "Spun into the gravel on the formation lap. DNF.",
             "Tried to text and drive down the back straight. DNF.",
-            "Mechanic left a wrench in the sidepod. Catastrophic DNF."
+            "Mechanic left a wrench in the sidepod. Catastrophic DNF.",
+            "Hydraulics failed. Car is now a massive paperweight. DNF.",
+            "Crashed into the safety car. DNF."
         ];
 
         const dnsMessages = [
@@ -416,9 +409,9 @@
             "Ate bad sushi from paddock catering. Severe food poisoning. DNS."
         ];
 
-        const iconicTeams = ["Scuderia Ferrari", "McLaren", "Red Bull", "Williams", "Mercedes", "Lotus"];
+        const iconicTeams = ["Scuderia Ferrari", "McLaren", "Red Bull", "Williams", "Mercedes", "Lotus", "Benetton", "Brawn GP", "Renault"];
 
-        // --- PURE TEXT DATABASE (NO IMAGES) ---
+        // MASSIVE DATABASE EXPANSION
         const db = {
             chassis: [
                 { name: 'Red Bull RB19', year: 2023, stat: 99, note: 'The greatest F1 car built. Flawless aero.' },
@@ -426,7 +419,15 @@
                 { name: 'Ferrari F2004', year: 2004, stat: 97, note: 'The absolute peak of the V10 era.' },
                 { name: 'Mercedes W11', year: 2020, stat: 99, note: 'DAS system engaged. Cornering physics defied.' },
                 { name: 'Lotus 72', year: 1970, stat: 94, note: 'Wedge-shaped aerodynamic pioneer.' },
-                { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10 }
+                { name: 'Brawn BGP 001', year: 2009, stat: 96, note: 'The double-diffuser miracle.' },
+                { name: 'Williams FW14B', year: 1992, stat: 98, note: 'Active suspension spaceship. Untouchable.' },
+                { name: 'Ferrari F2002', year: 2002, stat: 98, note: 'Schumacher dominant weapon. Built to destroy.' },
+                { name: 'Tyrrell P34', year: 1976, stat: 85, note: 'Six wheels are clearly better than four.' },
+                { name: 'Jordan 191', year: 1991, stat: 88, note: 'The most beautiful F1 car ever made.' },
+                { name: 'McLaren MP4-20', year: 2005, stat: 95, note: 'Fastest on the grid, made entirely of glass.', dnfRisk: 20 },
+                { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10 },
+                { name: 'Andrea Moda S921', year: 1992, stat: 10, note: 'The worst F1 car ever built. A lethal joke.', dnfRisk: 50 },
+                { name: 'Life L190', year: 1990, stat: 5, note: 'A chassis attached to a W12 block that barely moved.', dnfRisk: 60 }
             ],
             engine: [
                 { name: 'Mercedes PU106A', year: 2014, stat: 99, note: 'The dawn of the hybrid era. Uncatchable.' },
@@ -434,13 +435,26 @@
                 { name: 'Honda RBPTH001', year: 2023, stat: 99, note: 'Bulletproof Red Bull reliability.' },
                 { name: 'Honda RA168E', year: 1988, stat: 97, note: 'The turbo beast that conquered the 80s.' },
                 { name: 'Ford Cosworth DFV', year: 1970, stat: 95, note: 'The engine that powered an entire decade.' },
-                { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25 }
+                { name: 'BMW P83 V10', year: 2003, stat: 98, note: 'Screaming 900+ horsepower Williams monster.' },
+                { name: 'Renault RS27 V8', year: 2011, stat: 96, note: 'Blown diffuser exhaust mapping perfection.' },
+                { name: 'TAG-Porsche V6t', year: 1984, stat: 95, note: 'Absolute dominance in the 80s turbo era.' },
+                { name: 'Mercedes FO 108W', year: 2009, stat: 96, note: 'The powerhouse behind Brawn GP.' },
+                { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25 },
+                { name: 'Renault Energy F1', year: 2015, stat: 65, note: '"The engine feels good, much slower than before."', dnfRisk: 20 },
+                { name: 'Life W12', year: 1990, stat: 10, note: 'Produced 400hp when everyone else had 700. Catastrophic.', dnfRisk: 50 }
             ],
             principal: [
                 { name: 'Toto Wolff', year: 2020, stat: 98, note: 'Flawless execution and pumpernickel.' },
                 { name: 'Christian Horner', year: 2023, stat: 97, note: 'Master of highly aggressive strategies.' },
                 { name: 'Jean Todt', year: 2004, stat: 98, note: 'Architect of the Ferrari golden era.' },
                 { name: 'Ron Dennis', year: 1988, stat: 96, note: 'Clinical, obsessive perfectionism.' },
+                { name: 'Ross Brawn', year: 2009, stat: 99, note: 'Master of the rulebook loop-hole.' },
+                { name: 'Frank Williams', year: 1992, stat: 96, note: 'Pure racing passion and ruthless management.' },
+                { name: 'Colin Chapman', year: 1978, stat: 97, note: '"Simplify, then add lightness."' },
+                { name: 'Eddie Jordan', year: 1999, stat: 88, note: 'Rock and roll, vibes, and unexpectedly good strat.' },
+                { name: 'Flavio Briatore', year: 2005, stat: 95, note: 'Ruthless. Might order a deliberate crash.', stratRisk: 15 },
+                { name: 'Gunther Steiner', year: 2019, stat: 75, note: '"We look like a bunch of wankers."', stratRisk: 10 },
+                { name: 'Cyril Abiteboul', year: 2019, stat: 70, note: 'Promises podiums, delivers midfield pain.', stratRisk: 15 },
                 { name: 'Mattia Binotto', year: 2022, stat: 80, note: '"Question? We are checking." Strategy disasters.', stratRisk: 20 }
             ],
             specialPrincipals: [
@@ -473,12 +487,49 @@
                 { name: 'Ayrton Senna', versions: [
                     { year: 1988, stage: 'Prime', stat: 99, note: 'God-like qualifying pace.', hWins: 8, hPods: 11, hPoles: 13 }
                 ]},
+                { name: 'Alain Prost', versions: [
+                    { year: 1989, stage: 'Prime', stat: 98, note: 'The Professor. Clinical and calculating.', hWins: 4, hPods: 11, hPoles: 2 }
+                ]},
+                { name: 'Niki Lauda', versions: [
+                    { year: 1984, stage: 'Prime', stat: 97, note: 'Fearless half-point World Champion.', hWins: 5, hPods: 9, hPoles: 0 }
+                ]},
+                { name: 'James Hunt', versions: [
+                    { year: 1976, stage: 'Prime', stat: 92, note: 'Breakfast of champions. High risk driver.', hWins: 6, hPods: 8, hPoles: 8 }
+                ]},
+                { name: 'Kimi Raikkonen', versions: [
+                    { year: 2005, stage: 'Prime', stat: 96, note: 'Blindingly fast McLaren years.', hWins: 7, hPods: 12, hPoles: 5 },
+                    { year: 2012, stage: 'Veteran', stat: 90, note: '"Leave me alone, I know what I am doing."', hWins: 1, hPods: 7, hPoles: 0 }
+                ]},
+                { name: 'Mika Hakkinen', versions: [
+                    { year: 1999, stage: 'Prime', stat: 96, note: 'The Flying Finn. Schumacher\'s greatest rival.', hWins: 5, hPods: 10, hPoles: 11 }
+                ]},
+                { name: 'Jenson Button', versions: [
+                    { year: 2009, stage: 'Prime', stat: 94, note: 'Brawn GP hero and wet weather god.', hWins: 6, hPods: 9, hPoles: 4 }
+                ]},
+                { name: 'Mark Webber', versions: [
+                    { year: 2010, stage: 'Prime', stat: 91, note: '"Not bad for a number two driver."', hWins: 4, hPods: 10, hPoles: 5 }
+                ]},
+                { name: 'Nico Rosberg', versions: [
+                    { year: 2016, stage: 'Prime', stat: 95, note: 'Beat Lewis Hamilton in equal machinery.', hWins: 9, hPods: 16, hPoles: 8 }
+                ]},
+                { name: 'Nigel Mansell', versions: [
+                    { year: 1992, stage: 'Prime', stat: 95, note: 'Il Leone. Pure brute force driving.', hWins: 9, hPods: 12, hPoles: 14 }
+                ]},
                 { name: 'Charles Leclerc', versions: [
                     { year: 2018, stage: 'Rookie', stat: 87, note: 'Sauber starlet.', hWins: 0, hPods: 0, hPoles: 0 },
                     { year: 2022, stage: 'Prime', stat: 95, note: 'Blindingly fast, let down by strategy.', hWins: 3, hPods: 11, hPoles: 9 }
                 ]},
                 { name: 'Pastor Maldonado', versions: [
                     { year: 2012, stage: 'Prime', stat: 80, risk: 40, note: 'Fast on his day, but a magnet for the barriers.', hWins: 1, hPods: 1, hPoles: 1, crashMsg: 'Maldonado torpedoed into Turn 1. DNF.' }
+                ]},
+                { name: 'Nikita Mazepin', versions: [
+                    { year: 2021, stage: 'Rookie', stat: 30, risk: 40, note: 'Mazespin. A danger to himself and others.', hWins: 0, hPods: 0, hPoles: 0, crashMsg: 'Spun out on pit exit. Typical. DNF.' }
+                ]},
+                { name: 'Nicholas Latifi', versions: [
+                    { year: 2021, stage: 'Prime', stat: 55, risk: 20, note: 'GOATifi. The ultimate championship decider.', hWins: 0, hPods: 0, hPoles: 0, crashMsg: 'Crashed into the barriers, causing a safety car.' }
+                ]},
+                { name: 'Mahaveer Raghunathan', versions: [
+                    { year: 2019, stage: 'Rookie', stat: 5, risk: 50, note: 'Our Lord and Savior. Literally cannot turn the car.', hWins: 0, hPods: 0, hPoles: 0, crashMsg: 'Got stuck doing a 15-point turn. Disqualified.' }
                 ]}
             ],
             specialDrivers: [
@@ -636,7 +687,6 @@
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''}`;
                 card.style.animationDelay = `${index * 0.1}s`;
                 
-                // Pure typography watermark
                 let watermarkText = opt.name.split(' ').pop().substring(0,2).toUpperCase();
                 if (slotName === 'engine') watermarkText = "V6";
                 let watermark = `<div class="watermark">${watermarkText}</div>`;
@@ -755,7 +805,7 @@
                             overlay.style.opacity = 0;
                             initSeason();
                         }, 1200);
-                    }, 1000 + (Math.random() * 1500)); // Random hold time for suspense
+                    }, 1000 + (Math.random() * 1500)); 
                 }
             }, 1000);
         }
@@ -832,7 +882,6 @@
                     d.raceScore = (d.stat * 0.4) + (d.team.pace * 0.6) + (Math.random() * 12 - 5);
                     d.raceStatus = 'FINISH';
                     d.raceMsg = null;
-                    // 15% chance for a funny mid-race event to happen to a user driver even if they finish
                     d.eventMsg = (d.isUser && Math.random() < 0.15) ? raceEvents[Math.floor(Math.random() * raceEvents.length)] : null;
                 }
             });
@@ -862,7 +911,7 @@
             });
 
             appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts);
-            currentRace++; setTimeout(runRace, 600); // Slower tick rate so you can read events
+            currentRace++; setTimeout(runRace, 600); 
         }
 
         function getPosClass(pos) {
@@ -880,10 +929,8 @@
             div.className = 'race-row';
             
             let chaosHtml = '';
-            // Handle DNFs/DNSs
             if (d1.msg) chaosHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
             if (d2.msg) chaosHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
-            // Handle funny race events
             if (d1.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
             if (d2.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
 
