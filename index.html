@@ -77,15 +77,27 @@
             padding: 5px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-radius: 4px; margin-top: 15px; text-transform: uppercase;
         }
         
-        .bg-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; filter: grayscale(20%); transition: 0.4s; z-index: 0; }
+        /* CSS Multi-Layer Background Engine */
+        .bg-img { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background-size: cover; background-position: center; 
+            opacity: 0.55; filter: grayscale(20%); transition: 0.4s; z-index: 0; 
+        }
         .slot-card.completed-slot .bg-img { opacity: 0.65; filter: grayscale(0%); }
 
         .gold-card {
             background: linear-gradient(135deg, #1f1a08 0%, #3a300d 50%, #1f1a08 100%) !important; border: 2px solid var(--gold) !important;
             box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.3) !important;
         }
+        .gold-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.25), transparent);
+            transform: rotate(30deg); animation: shine 3s infinite; pointer-events: none; z-index: 1;
+        }
+        @keyframes shine { 0% { transform: translateX(-100%) rotate(30deg); } 100% { transform: translateX(100%) rotate(30deg); } }
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
+        /* DRAFT OVERLAY */
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column;
@@ -316,14 +328,7 @@
     </div>
 
     <script>
-        // --- PROXY IMAGE LOADER ---
-        // Forces all images through a secure cache to bypass hotlink blocking.
-        function getSafeImgUrl(url) {
-            if (!url) return '';
-            return 'https://wsrv.nl/?url=' + encodeURIComponent(url);
-        }
-
-        // --- FALLBACK GENERATOR ---
+        // 100% BULLETPROOF BASE64 SVG GENERATOR
         function getSVGVisual(name, category) {
             let iconSvg = '';
             if (category === 'driver') {
@@ -592,10 +597,9 @@
                 
                 const categoryType = slotName.includes('driver') ? 'driver' : (slotName === 'chassis' ? 'chassis' : (slotName === 'principal' ? 'principal' : 'engine'));
                 const fallbackImg = getSVGVisual(opt.name, categoryType);
-                const primaryImg = opt.img ? getSafeImgUrl(opt.img) : fallbackImg;
+                const primaryImg = opt.img || fallbackImg;
                 
-                // Pure HTML injection with safe Base64 fallback. No inline Javascript events.
-                let bgHtml = `<img src="${primaryImg}" class="bg-img" style="background-image: url('${fallbackImg}'); background-size: cover; background-position: center;">`;
+                let bgHtml = `<div class="bg-img" style="background-image: url('${primaryImg}'), url('${fallbackImg}');"></div>`;
                 
                 let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : 'stage-' + opt.stage.toLowerCase()}">${opt.stage}</div>` : '';
                 let histHtml = opt.isDriver ? `<div class="opt-hist">WINS: <span>${opt.hWins}</span> | PODS: <span>${opt.hPods}</span> | POLES: <span>${opt.hPoles}</span></div>` : '';
@@ -633,12 +637,12 @@
             
             const categoryType = activeDraftSlot.includes('driver') ? 'driver' : (activeDraftSlot === 'chassis' ? 'chassis' : (activeDraftSlot === 'principal' ? 'principal' : 'engine'));
             const fallbackImg = getSVGVisual(item.name, categoryType);
-            const primaryImg = item.img ? getSafeImgUrl(item.img) : fallbackImg;
+            const primaryImg = item.img || fallbackImg;
             
-            let bgImg = `<img src="${primaryImg}" class="bg-img" style="background-image: url('${fallbackImg}'); background-size: cover; background-position: center;">`;
+            let bgHtml = `<div class="bg-img" style="background-image: url('${primaryImg}'), url('${fallbackImg}');"></div>`;
             
             slot.innerHTML = `
-                ${bgImg}
+                ${bgHtml}
                 <div class="slot-label">${activeDraftSlot.replace(/[0-9]/g, '')}</div>
                 <div class="slot-content">
                     <div class="filled-name">${item.name}</div>
@@ -879,7 +883,7 @@
             else if (finalTeamPos >= 3 && finalTeamPos <= 6) posEmoji = "📊 MIDFIELD";
             else posEmoji = "🚜 TRACTOR TIER";
 
-            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\nSeed: #${generatedSeed}\nPlay now: your-website-here.com`;
+            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\nSeed: #${generatedSeed}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
             
             navigator.clipboard.writeText(shareText).then(() => {
                 const toast = document.getElementById('toast');
