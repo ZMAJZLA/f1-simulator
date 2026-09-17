@@ -24,6 +24,7 @@
             font-family: 'Rajdhani', sans-serif;
             background-image: radial-gradient(circle at top right, #1a1a24 0%, var(--bg-dark) 80%);
             min-height: 100vh; overflow-x: hidden;
+            will-change: transform;
         }
 
         header {
@@ -58,12 +59,14 @@
             background: linear-gradient(145deg, var(--panel-dark), #0f0f13);
             border: 2px dashed #333; border-radius: 8px;
             height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden;
+            cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s;
+            position: relative; overflow: hidden;
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            will-change: transform;
         }
         .driver-card { height: 320px; }
 
-        .slot-card:hover { border-color: var(--f1-red); transform: translateY(-8px); box-shadow: 0 15px 30px rgba(225, 6, 0, 0.2); }
+        .slot-card:hover { border-color: var(--f1-red); transform: translate3d(0, -8px, 0); box-shadow: 0 15px 30px rgba(225, 6, 0, 0.2); }
         .slot-card.filled { border-style: solid; border-color: #444; background: linear-gradient(145deg, #111, #000); }
         
         .slot-card.locked-slot { opacity: 0.4; pointer-events: none; filter: grayscale(100%); border-color: #222; box-shadow: none; transform: none;}
@@ -97,7 +100,7 @@
             box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
 
-        /* SPARKLY GOLD CARDS */
+        /* GOLD CARDS */
         .gold-card {
             background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
             border: 2px solid var(--gold) !important;
@@ -113,7 +116,7 @@
         }
         @keyframes goldShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* MEME / SHIT TIER CARDS */
+        /* SHIT TIER CARDS */
         .shit-card {
             background: linear-gradient(135deg, #200500 0%, #100200 100%) !important;
             border: 2px dashed #ff3333 !important;
@@ -131,17 +134,18 @@
 
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
+        /* OVERLAY & RANDOMIZATION REEL */
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s ease; backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.92); z-index: 200; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
         .draft-overlay.active { opacity: 1; pointer-events: auto; }
 
         .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,1);}
         .draft-header span { color: var(--f1-red); }
         
-        .respin-container { margin-bottom: 40px; display: flex; gap: 15px; align-items: center;}
+        .respin-container { margin-bottom: 30px; display: flex; gap: 15px; align-items: center;}
         .respin-btn { 
             background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 25px;
             font-family: 'Teko', sans-serif; font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.2s;
@@ -153,14 +157,24 @@
         
         .draft-option {
             background: linear-gradient(180deg, #18181f, #0a0a0f); border: 2px solid #333; border-radius: 8px;
-            padding: 30px 25px; cursor: pointer; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
-            opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            padding: 30px 25px; cursor: pointer; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.25s, box-shadow 0.25s;
+            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); will-change: transform;
         }
-        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
-        .draft-option:hover { border-color: var(--f1-red); transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
+        .draft-option:hover { border-color: var(--f1-red); transform: translate3d(0, -12px, 0) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
         
+        /* SLOT REEL DIGITAL SHUFFLE EFFECT */
+        .slot-reeling {
+            border-color: var(--neon-blue) !important;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.3) !important;
+            animation: slotPulse 0.1s infinite alternate;
+        }
+        @keyframes slotPulse {
+            0% { transform: scale(0.98); opacity: 0.8; }
+            100% { transform: scale(1.01); opacity: 1; }
+        }
+
         .opt-content { z-index: 2; position: relative; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
         .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; letter-spacing: 2px;}
         .opt-name { font-family: 'Teko', sans-serif; font-size: 44px; line-height: 0.9; margin-bottom: 15px; text-transform: uppercase; color: #fff;}
@@ -173,16 +187,13 @@
         
         .opt-hist { border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 12px 0; font-size: 14px; color: #aaa; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between;}
         .opt-hist span { color: #fff; font-size: 16px;}
-        .opt-note { font-size: 15px; color: #ccc; line-height: 1.5; font-style: italic; flex-grow: 1; opacity: 0.8;}
+        .opt-note { font-size: 15px; color: #ccc; line-height: 1.5; font-style: italic; flex-grow: 1; opacity: 0.85;}
         
         .opt-stat { font-family: 'Teko', sans-serif; font-size: 48px; text-align: right; color: #fff; margin-top: auto; line-height: 1;}
-        
-        .spinning-card { animation: pulseBg 0.5s infinite alternate; pointer-events: none; border-color: #333 !important;}
-        @keyframes pulseBg { from { opacity: 0.5; } to { opacity: 1; } }
 
         .synergy-box {
             background: linear-gradient(90deg, transparent, #111, transparent); padding: 20px;
-            text-align: center; margin-bottom: 20px; display: none; animation: slideIn 0.5s;
+            text-align: center; margin-bottom: 20px; display: none;
         }
         .synergy-title { font-family: 'Teko', sans-serif; font-size: 28px; color: #fff; letter-spacing: 2px;}
         .synergy-status { font-size: 18px; font-weight: bold; margin-top: 5px; text-transform: uppercase;}
@@ -202,7 +213,7 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 500; display: flex; flex-direction: column;
             justify-content: center; align-items: center; gap: 40px;
-            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s;
         }
         .lights-container { display: flex; gap: 20px; }
         .light-box {
@@ -220,11 +231,10 @@
         }
         .race-list { background: var(--panel-dark); border-radius: 0 0 8px 8px; border: 1px solid #222; border-top: none; box-shadow: 0 15px 30px rgba(0,0,0,0.5);}
         .race-row {
-            display: flex; align-items: center; padding: 18px 20px; border-bottom: 1px solid #1a1a24; 
-            opacity: 0; transform: translateY(-10px); animation: slideDown 0.4s forwards; flex-wrap: wrap; background: #14141a; transition: 0.2s;
+            display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1a1a24; 
+            flex-wrap: wrap; background: #14141a; transition: background 0.2s;
         }
         .race-row:hover { background: #1a1a24; }
-        @keyframes slideDown { to { opacity: 1; transform: translateY(0); } }
 
         .race-rnd { width: 60px; font-weight: bold; color: var(--f1-red); font-size: 20px;}
         .race-track { flex-grow: 1; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
@@ -239,11 +249,11 @@
         .pos-dns { background: #444; color: #aaa; font-size: 14px;}
         
         .race-pts { width: 80px; text-align: right; font-weight: bold; color: var(--success); font-size: 24px; font-family: 'Teko', sans-serif;}
-        .chaos-msg { width: 100%; margin-top: 10px; font-size: 14px; color: #ff5555; font-style: italic; text-align: right; font-weight: 600;}
+        .chaos-msg { width: 100%; margin-top: 8px; font-size: 14px; color: #ff5555; font-style: italic; text-align: right; font-weight: 600;}
         .dns-msg { color: #f1c40f; }
         .event-msg { color: #00ffcc; }
 
-        .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; animation: slideUpFade 0.8s forwards; }
+        .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; }
         
         .summary-card {
             grid-column: span 2; background: linear-gradient(135deg, #111, #1a1a24);
@@ -448,10 +458,12 @@
                 { name: 'Lotus 72', year: 1970, stat: 94, note: 'Wedge-shaped aerodynamic pioneer.' },
                 { name: 'Brawn BGP 001', year: 2009, stat: 96, note: 'The double-diffuser miracle.' },
                 { name: 'Williams FW14B', year: 1992, stat: 98, note: 'Active suspension spaceship. Untouchable.' },
-                { name: 'Ferrari F2002', year: 2002, stat: 98, note: 'Schumacher dominant weapon. Built to destroy.' },
-                { name: 'Tyrrell P34', year: 1976, stat: 85, note: 'Six wheels are clearly better than four.' },
-                { name: 'Jordan 191', year: 1991, stat: 88, note: 'The most beautiful F1 car ever made.' },
-                { name: 'McLaren MP4-20', year: 2005, stat: 95, note: 'Fastest on the grid, made entirely of glass.', dnfRisk: 20 },
+                { name: 'Ferrari F1-2000', year: 2000, stat: 97, note: 'The car that started the Schumacher golden decade.' },
+                { name: 'Williams FW18', year: 1996, stat: 97, note: 'Damon Hill\'s championship crushing machine.' },
+                { name: 'Lotus 49', year: 1967, stat: 96, note: 'The iconic Jim Clark Cosworth innovator.' },
+                { name: 'Prost AP04', year: 2001, stat: 35, note: 'Gearbox failures every single weekend.', dnfRisk: 35 },
+                { name: 'Lola T97/30', year: 1997, stat: 15, note: 'MasterCard Lola disaster. 11 seconds off pace.', dnfRisk: 45 },
+                { name: 'HRT F111', year: 2011, stat: 40, note: 'Held together by gaffer tape and hope.', dnfRisk: 30 },
                 { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10 },
                 { name: 'Andrea Moda S921', year: 1992, stat: 10, note: 'The worst F1 car ever built. A lethal joke.', dnfRisk: 50 },
                 { name: 'Life L190', year: 1990, stat: 5, note: 'A chassis attached to a W12 block that barely moved.', dnfRisk: 60 }
@@ -459,15 +471,17 @@
             engine: [
                 { name: 'Mercedes PU106A', year: 2014, stat: 99, note: 'The dawn of the hybrid era. Uncatchable.' },
                 { name: 'Ferrari 053', year: 2004, stat: 98, note: '3.0L V10 that revved to 19,000 RPM.' },
+                { name: 'Ferrari Tipo 049', year: 2000, stat: 98, note: 'The screamer that won Ferrari\'s 2000 title.' },
+                { name: 'BMW M12/13 Turbo', year: 1986, stat: 97, note: '1,400+ HP monster qualifying engine.' },
                 { name: 'Honda RBPTH001', year: 2023, stat: 99, note: 'Bulletproof Red Bull reliability.' },
                 { name: 'Honda RA168E', year: 1988, stat: 97, note: 'The turbo beast that conquered the 80s.' },
                 { name: 'Ford Cosworth DFV', year: 1970, stat: 95, note: 'The engine that powered an entire decade.' },
                 { name: 'BMW P83 V10', year: 2003, stat: 98, note: 'Screaming 900+ horsepower Williams monster.' },
-                { name: 'Renault RS27 V8', year: 2011, stat: 96, note: 'Blown diffuser exhaust mapping perfection.' },
-                { name: 'TAG-Porsche V6t', year: 1984, stat: 95, note: 'Absolute dominance in the 80s turbo era.' },
-                { name: 'Mercedes FO 108W', year: 2009, stat: 96, note: 'The powerhouse behind Brawn GP.' },
+                { name: 'Cosworth CR-3 V10', year: 2001, stat: 88, note: 'Jaguar sound machine with explosive temperament.' },
+                { name: 'Hart 415T', year: 1984, stat: 75, note: 'Sennas Toleman engine. Fast when not on fire.', dnfRisk: 25 },
+                { name: 'Peugeot A10 V10', year: 1998, stat: 60, note: 'Promised power, delivered cloud of smoke.', dnfRisk: 35 },
+                { name: 'Subaru 1235 F12', year: 1990, stat: 10, note: 'Flat-12 embarrassment. Heaviest engine ever.', dnfRisk: 60 },
                 { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25 },
-                { name: 'Renault Energy F1', year: 2015, stat: 65, note: '"The engine feels good, much slower than before."', dnfRisk: 20 },
                 { name: 'Life W12', year: 1990, stat: 10, note: 'Produced 400hp when everyone else had 700. Catastrophic.', dnfRisk: 50 }
             ],
             principal: [
@@ -634,12 +648,27 @@
             
             overlay.classList.add('active');
             
+            // COOL VISUAL SLOT MACHINE REEL SHUFFLE
             grid.innerHTML = '';
             for(let i=0; i<4; i++) {
-                grid.innerHTML += `<div class="draft-option spinning-card" style="animation-delay: ${i*0.1}s"><div class="opt-content"><div class="opt-name" style="background:transparent;">DRAFTING...</div></div></div>`;
+                grid.innerHTML += `<div class="draft-option slot-reeling" id="reel-${i}"><div class="opt-content"><div class="opt-year">....</div><div class="opt-name">SCRAMBLING</div><div class="opt-note">Accessing FIA Database...</div></div></div>`;
             }
 
-            setTimeout(() => { renderDraftOptions(slotName, grid); }, 600);
+            let shuffleCount = 0;
+            const scrambleInterval = setInterval(() => {
+                for(let i=0; i<4; i++) {
+                    const reelEl = document.getElementById(`reel-${i}`);
+                    if (reelEl) {
+                        const randomTemp = db.drivers[Math.floor(Math.random() * db.drivers.length)].name.toUpperCase();
+                        reelEl.querySelector('.opt-name').innerText = randomTemp;
+                    }
+                }
+                shuffleCount++;
+                if (shuffleCount > 6) {
+                    clearInterval(scrambleInterval);
+                    renderDraftOptions(slotName, grid);
+                }
+            }, 60);
         }
 
         function respin() {
@@ -673,7 +702,6 @@
             grid.innerHTML = '';
             let options = [];
 
-            // 5% CHANCE FOR A "CURSED" SHIT-TIER OR "GOD" ALL-GOLD SELECTION ROLL
             const rollType = Math.random();
             let forceShit = rollType < 0.05;
             let forceGod = rollType > 0.95;
@@ -736,7 +764,7 @@
                 const isShit = opt.stat <= 50;
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
-                card.style.animationDelay = `${index * 0.1}s`;
+                card.style.animationDelay = `${index * 0.08}s`;
                 
                 let watermarkText = opt.name.split(' ').pop().substring(0,2).toUpperCase();
                 if (slotName === 'engine') watermarkText = "V6";
@@ -838,7 +866,6 @@
             }
         }
 
-        // QOL FEATURE: AUTO DRAFT ("DO IT FOR ME")
         function autoDraft() {
             resetDraft();
             slotSequence.forEach(slot => {
@@ -858,7 +885,6 @@
             });
         }
 
-        // QOL FEATURE: RESET BUTTON
         function resetDraft() {
             teamState = {};
             respinsLeft = 3;
@@ -902,7 +928,7 @@
                         }, 1200);
                     }, 1000 + (Math.random() * 1500)); 
                 }
-            }, 1000);
+            }, 800);
         }
 
         let allDrivers = [];
@@ -934,12 +960,12 @@
             });
 
             currentRace = 0; 
-            setTimeout(runRace, 500);
+            setTimeout(runRace, 400);
         }
 
         function runRace() {
             if (currentRace >= tracks.length) { 
-                setTimeout(renderStandings, 800); 
+                setTimeout(renderStandings, 500); 
                 return; 
             }
 
@@ -998,7 +1024,7 @@
             });
 
             appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts);
-            currentRace++; setTimeout(runRace, 600); 
+            currentRace++; setTimeout(runRace, 300); // HIGH-PERFORMANCE RENDER TICK (NO LAG)
         }
 
         function getPosClass(pos) {
@@ -1031,7 +1057,9 @@
                 ${chaosHtml}
             `;
             list.appendChild(div);
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            
+            // Fast non-blocking auto-scroll
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
         }
 
         function renderStandings() {
