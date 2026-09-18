@@ -241,6 +241,7 @@
         .light-bulb.on { background: #ff0000; box-shadow: 0 0 40px #ff0000, inset 0 0 10px #fff; }
         #lights-text { font-family: 'Teko', sans-serif; font-size: 80px; color: #fff; letter-spacing: 5px; opacity: 0; transition: 0.1s; }
 
+        /* F1 TV STYLE RACE TICKER REDESIGN */
         #season-container { display: none; margin-top: 20px;}
         .scoreboard-header {
             display: flex; justify-content: space-between; background: #111; position: relative;
@@ -251,39 +252,56 @@
             position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold);
             padding: 5px 20px; border-radius: 4px; font-family: 'Teko', sans-serif; font-size: 24px;
-            letter-spacing: 2px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); white-space: nowrap; display: flex; gap: 15px; align-items: center;
+            letter-spacing: 2px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); white-space: nowrap; display: flex; gap: 15px; align-items: center; z-index: 10;
         }
         .team-wins-tracker { color: #fff; font-size: 20px; border-left: 1px solid #555; padding-left: 15px;}
 
-        .race-list { background: var(--panel-dark); border-radius: 0 0 8px 8px; border: 1px solid #222; border-top: none; box-shadow: 0 15px 30px rgba(0,0,0,0.5);}
-        .race-row {
-            display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1a1a24; 
-            flex-wrap: wrap; background: #14141a; transition: background 0.2s;
+        .race-list { 
+            background: transparent; border-radius: 0 0 8px 8px; border: none; padding: 10px 0;
+            display: flex; flex-direction: column; gap: 15px;
         }
-        .race-row:hover { background: #1a1a24; }
-
-        .race-rnd { width: 60px; font-weight: bold; color: var(--f1-red); font-size: 20px;}
-        .race-track { flex-grow: 1; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap: 8px;}
-        .weather-rain { color: var(--neon-blue); font-size: 20px; animation: pulseBg 1s infinite alternate; }
-        .weather-sun { color: var(--gold); font-size: 20px; }
-
-        .race-winner { width: 200px; font-size: 18px; color: var(--gold); font-weight: bold; text-transform: uppercase;}
-        .race-driver { width: 140px; display: flex; align-items: center; gap: 10px; font-family: 'Teko', sans-serif; font-size: 26px; justify-content: center;}
         
-        .pos-badge { background: #222; color: #fff; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border-radius: 6px; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
+        .race-card {
+            background: linear-gradient(90deg, #111 0%, #1a1a24 100%);
+            border-left: 5px solid #333; border-radius: 6px; box-shadow: 0 8px 15px rgba(0,0,0,0.6);
+            display: grid; grid-template-columns: 1.5fr 2fr 1fr; align-items: center; padding: 15px 20px;
+            opacity: 0; transform: translateX(-20px); animation: slideInRight 0.4s forwards;
+            position: relative; overflow: hidden;
+        }
+        @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+
+        .race-card::after {
+            content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 150px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02)); pointer-events: none;
+        }
+        
+        .race-card-left { display: flex; flex-direction: column; }
+        .race-rnd { font-family: 'Teko', sans-serif; font-size: 22px; color: var(--f1-red); font-weight: 500; letter-spacing: 1px; line-height: 1;}
+        .race-track { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #fff; display:flex; align-items:center; gap: 10px; line-height: 1.2;}
+        .weather-rain { color: var(--neon-blue); font-size: 18px; animation: pulseBg 1s infinite alternate; }
+        .weather-sun { color: var(--gold); font-size: 18px; }
+
+        .race-card-center { display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid #333; border-right: 1px solid #333; padding: 0 15px;}
+        .winner-label { font-size: 12px; color: #888; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px;}
+        .race-winner { font-family: 'Teko', sans-serif; font-size: 28px; color: var(--gold); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; line-height: 1; text-shadow: 0 2px 10px rgba(255,215,0,0.2);}
+
+        .race-card-right { display: flex; justify-content: space-around; align-items: center; padding-left: 15px;}
+        .user-driver-res { display: flex; flex-direction: column; align-items: center; gap: 5px;}
+        .ud-name { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+        .pos-badge { background: #222; color: #fff; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; border-radius: 6px; font-family: 'Teko', sans-serif; font-size: 26px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         .pos-1 { background: linear-gradient(135deg, #e6c200, #ffdf00); color: #000; font-weight: bold;} 
         .pos-2 { background: linear-gradient(135deg, #999, #ccc); color: #000; font-weight: bold;} 
         .pos-3 { background: linear-gradient(135deg, #a67c00, #bf953f); color: #000; font-weight: bold;} 
-        .pos-dnf { background: var(--f1-red); color: #fff; font-size: 14px;}
-        .pos-dns { background: #444; color: #aaa; font-size: 14px;}
-        
-        .race-pts { width: 80px; text-align: right; font-weight: bold; color: var(--success); font-size: 24px; font-family: 'Teko', sans-serif;}
-        .chaos-msg { width: 100%; margin-top: 8px; font-size: 14px; color: #ff5555; font-style: italic; text-align: right; font-weight: 600;}
-        .dns-msg { color: #f1c40f; }
-        .event-msg { color: #00ffcc; }
-        
-        .lore-curse { color: var(--curse-purple); text-shadow: 0 0 5px rgba(185, 0, 255, 0.5); }
-        .lore-home { color: var(--gold); text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        .pos-dnf { background: var(--f1-red); color: #fff; font-size: 16px; font-family: 'Rajdhani', sans-serif; font-weight: bold;}
+        .pos-dns { background: #444; color: #aaa; font-size: 16px; font-family: 'Rajdhani', sans-serif; font-weight: bold;}
+
+        .event-feed { grid-column: span 3; display: flex; flex-direction: column; gap: 5px; margin-top: 15px; border-top: 1px dashed #333; padding-top: 10px;}
+        .chaos-msg { font-size: 14px; padding: 6px 12px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; width: fit-content; background: rgba(0,0,0,0.5); border-left: 3px solid transparent;}
+        .msg-dnf { color: #ff5555; border-left-color: #ff5555; }
+        .msg-dns { color: #f1c40f; border-left-color: #f1c40f; }
+        .msg-radio { color: var(--success); border-left-color: var(--success); font-style: italic; }
+        .msg-curse { color: var(--curse-purple); border-left-color: var(--curse-purple); text-shadow: 0 0 5px rgba(185, 0, 255, 0.3); }
+        .msg-home { color: var(--gold); border-left-color: var(--gold); text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
 
         .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; }
         
@@ -300,7 +318,6 @@
         .summary-mid { border-color: var(--success); } .summary-mid h2 { color: var(--success); }
         .summary-bad { border-color: #ff3333; } .summary-bad h2 { color: #ff3333; }
         
-        /* 24-0 GOD TIER ANIMATIONS */
         .perfect-season-card {
             background: linear-gradient(135deg, #ffdf00, #b38728) !important;
             border: 4px solid #fff !important; box-shadow: 0 0 50px rgba(255,215,0,0.8), inset 0 0 30px rgba(255,255,255,0.5) !important;
@@ -309,13 +326,8 @@
         .perfect-season-card h2 { color: #000 !important; text-shadow: 0 0 10px #fff; font-size: 60px; }
         .perfect-season-card p { color: #111 !important; font-weight: bold; }
 
-        #confetti-container {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; overflow: hidden; display: none;
-        }
-        .confetti-particle {
-            position: absolute; width: 10px; height: 20px; background: var(--gold); top: -20px;
-            animation: fall linear forwards;
-        }
+        #confetti-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; overflow: hidden; display: none; }
+        .confetti-particle { position: absolute; width: 10px; height: 20px; background: var(--gold); top: -20px; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
         .champ-card { background: var(--panel-dark); border-top: 4px solid var(--f1-red); border-radius: 8px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -335,10 +347,7 @@
         }
         .share-btn:hover { background: #0c85d0; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(29, 161, 242, 0.4);}
         
-        .footer-credits {
-            text-align: center; color: #555; font-size: 16px; margin-top: 80px; 
-            padding-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
-        }
+        .footer-credits { text-align: center; color: #555; font-size: 16px; margin-top: 80px; padding-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
 
         @media (max-width: 1000px) {
             .builder-grid { grid-template-columns: 1fr 1fr; }
@@ -353,9 +362,9 @@
             .driver-row { grid-column: span 1; grid-template-columns: 1fr; }
             .draft-grid { grid-template-columns: 1fr; padding: 0 10px; }
             .btn-main { padding: 15px 40px; font-size: 28px; width: 100%; }
-            .scoreboard-header { font-size: 16px; padding: 10px; }
-            .race-winner { display: none; }
-            .race-driver { width: 100px; font-size: 20px; }
+            .scoreboard-header { display: none; }
+            .race-card { grid-template-columns: 1fr; gap: 10px; }
+            .race-card-center { border: none; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 10px 0; }
             .championships { grid-template-columns: 1fr; margin-top: 30px; }
             .summary-card { grid-column: span 1; padding: 20px; }
             .summary-card h2 { font-size: 32px; }
@@ -418,12 +427,7 @@
         <div id="season-container">
             <div class="scoreboard-header">
                 <div id="live-wdc-leader">🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: 0/24</span></div>
-                <div style="width: 60px;">RND</div>
-                <div style="flex-grow: 1;">GRAND PRIX</div>
-                <div class="race-winner">RACE WINNER</div>
-                <div style="width: 140px; text-align:center;" id="header-d1">DRV 1</div>
-                <div style="width: 140px; text-align:center;" id="header-d2">DRV 2</div>
-                <div style="width: 80px; text-align: right;">PTS</div>
+                <div style="width: 100%;">LIVE RACE TELEMETRY</div>
             </div>
             <div class="race-list" id="race-list"></div>
         </div>
@@ -453,7 +457,6 @@
         </div>
     </div>
 
-    <!-- FULLSCREEN CONFETTI -->
     <div id="confetti-container"></div>
 
     <div class="draft-overlay" id="draft-overlay">
@@ -489,7 +492,9 @@
             "Pit crew nailed a 1.8 second stop. Masterclass.",
             "Defended like a lion against a faster car for 10 laps.",
             "Ignored team orders to let teammate past.",
-            "Got a 5 second penalty for exceeding track limits.",
+            "Got a 5-second penalty for Ocon.",
+            "Left the track and gained a massive advantage.",
+            "Box box, stay out stay out! IN IN IN IN IN IN.",
             "Radio: 'Bono, my tires are gone!'"
         ];
 
@@ -518,7 +523,10 @@
             "Tried to text and drive down the back straight. DNF.",
             "Mechanic left a wrench in the sidepod. Catastrophic DNF.",
             "Hydraulics failed. Car is now a massive paperweight. DNF.",
-            "Crashed into the safety car. DNF."
+            "Visor tear-off got stuck in the brake duct. Brakes melted. DNF.",
+            "Brake magic left on. Straight into the Turn 1 escape road. DNF.",
+            "Hit a groundhog. Suspension destroyed. DNF.",
+            "Engineer told them the wrong tire compound. Spun out immediately. DNF."
         ];
 
         const dnsMessages = [
@@ -933,7 +941,6 @@
                 internalWarfareRisk = false;
                 let isWorksTeam = false;
 
-                // REALISTIC WORKS TEAM SYNERGIES
                 if (teamState.chassis.name.includes('Mercedes') && teamState.engine.name.includes('Mercedes')) isWorksTeam = true;
                 if (teamState.chassis.name.includes('Red Bull') && teamState.engine.name.includes('Honda')) isWorksTeam = true;
                 if (teamState.chassis.name.includes('Ferrari') && teamState.engine.name.includes('Ferrari')) isWorksTeam = true;
@@ -959,7 +966,7 @@
                 }
 
                 if (isWorksTeam) {
-                    synergyPenalty += 5; // MASSIVE BOOST
+                    synergyPenalty += 5;
                     synText.innerHTML += "<br><span class='syn-works'>⚙️ WORKS TEAM SYNERGY: Chassis and Engine matched perfectly. +5 Pace Boost!</span>";
                 }
 
@@ -1124,7 +1131,6 @@
                     if (teamState.principal.stratRisk) dnfThreshold += teamState.principal.stratRisk;
                     dnfThreshold += synergyDnfMultiplier;
 
-                    // DRIVER SPECIAL BOOSTS
                     if (d.name === 'Jamie Karter' && teamState.engine.name.includes("Peugeot")) {
                         currentPace += 25; d.loreEventMsg = "Peugeot Masterclass!"; d.loreType = 'home';
                     }
@@ -1216,35 +1222,48 @@
         function appendRaceRow(track, round, winner, d1, d2, userPts, isRaining) {
             const list = document.getElementById('race-list');
             const div = document.createElement('div');
-            div.className = 'race-row';
+            div.className = 'race-card';
             
-            let chaosHtml = '';
+            let feedHtml = '';
             
-            if (d1.msg && !d1.loreMsg) chaosHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
-            if (d2.msg && !d2.loreMsg) chaosHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
+            if (d1.msg && !d1.loreMsg) feedHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'msg-dns' : 'msg-dnf'}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
+            if (d2.msg && !d2.loreMsg) feedHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'msg-dns' : 'msg-dnf'}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
             
-            if (d1.evt && !d1.loreMsg) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
-            if (d2.evt && !d2.loreMsg) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
+            if (d1.evt && !d1.loreMsg) feedHtml += `<div class="chaos-msg msg-radio">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
+            if (d2.evt && !d2.loreMsg) feedHtml += `<div class="chaos-msg msg-radio">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
             
             if (d1.loreMsg) {
-                let lClass = d1.loreType === 'curse' ? 'lore-curse' : 'lore-home';
-                chaosHtml += `<div class="chaos-msg ${lClass}">${d1.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver1.name.split(' ').pop()}: ${d1.loreMsg}</div>`;
+                let lClass = d1.loreType === 'curse' ? 'msg-curse' : 'msg-home';
+                feedHtml += `<div class="chaos-msg ${lClass}">${d1.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver1.name.split(' ').pop()}: ${d1.loreMsg}</div>`;
             }
             if (d2.loreMsg) {
-                let lClass = d2.loreType === 'curse' ? 'lore-curse' : 'lore-home';
-                chaosHtml += `<div class="chaos-msg ${lClass}">${d2.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver2.name.split(' ').pop()}: ${d2.loreMsg}</div>`;
+                let lClass = d2.loreType === 'curse' ? 'msg-curse' : 'msg-home';
+                feedHtml += `<div class="chaos-msg ${lClass}">${d2.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver2.name.split(' ').pop()}: ${d2.loreMsg}</div>`;
             }
 
-            let weatherIcon = isRaining ? '<span class="weather-rain">🌧️ WET</span>' : '<span class="weather-sun">☀️ DRY</span>';
+            let weatherIcon = isRaining ? '<span class="weather-rain">🌧️</span>' : '<span class="weather-sun">☀️</span>';
 
             div.innerHTML = `
-                <div class="race-rnd">R${round}</div>
-                <div class="race-track">${track} ${weatherIcon}</div>
-                <div class="race-winner">${winner || "NO FINISHERS"}</div>
-                <div class="race-driver"><div class="pos-badge ${d1.class}">${d1.pos}</div></div>
-                <div class="race-driver"><div class="pos-badge ${d2.class}">${d2.pos}</div></div>
-                <div class="race-pts">+${userPts}</div>
-                ${chaosHtml}
+                <div class="race-card-left">
+                    <div class="race-rnd">ROUND ${round}</div>
+                    <div class="race-track">${track} ${weatherIcon}</div>
+                </div>
+                <div class="race-card-center">
+                    <div class="winner-label">RACE WINNER</div>
+                    <div class="race-winner">${winner || "NO FINISHERS"}</div>
+                </div>
+                <div class="race-card-right">
+                    <div class="user-driver-res">
+                        <span class="ud-name">${teamState.driver1.name.substring(0,3).toUpperCase()}</span>
+                        <div class="pos-badge ${d1.class}">${d1.pos}</div>
+                    </div>
+                    <div class="user-driver-res">
+                        <span class="ud-name">${teamState.driver2.name.substring(0,3).toUpperCase()}</span>
+                        <div class="pos-badge ${d2.class}">${d2.pos}</div>
+                    </div>
+                    <div class="race-pts" style="font-size: 32px; margin-left: 15px;">+${userPts}</div>
+                </div>
+                ${feedHtml ? `<div class="event-feed">${feedHtml}</div>` : ''}
             `;
             list.appendChild(div);
             
@@ -1283,7 +1302,6 @@
             const summaryTitle = document.getElementById('summary-title');
             const summaryText = document.getElementById('summary-text');
 
-            // DID A SINGLE DRIVER GO 24-0?
             let godDriver = allDrivers.find(d => d.wins === 24 && d.isUser);
 
             if (godDriver) {
