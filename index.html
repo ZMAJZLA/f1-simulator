@@ -27,7 +27,6 @@
             will-change: transform;
         }
 
-        /* Ambient Telemetry Grid */
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
@@ -121,7 +120,6 @@
             box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
 
-        /* GOLD CARDS */
         .gold-card {
             background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
             border: 2px solid var(--gold) !important;
@@ -217,6 +215,7 @@
         .synergy-status { font-size: 18px; font-weight: bold; margin-top: 5px; text-transform: uppercase;}
         .syn-good { color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.5);}
         .syn-bad { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,0.5);}
+        .syn-works { color: var(--gold); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
 
         .btn-container { text-align: center; margin: 30px 0 60px 0; display:flex; justify-content: center; align-items:center; }
         .btn-main {
@@ -248,7 +247,6 @@
             padding: 15px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-bottom: 3px solid var(--f1-red); border-radius: 8px 8px 0 0; color: #8b8b99; letter-spacing: 1px;
         }
         
-        /* LIVE WDC LEADER HUD */
         #live-wdc-leader {
             position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold);
@@ -292,7 +290,7 @@
         .summary-card {
             grid-column: span 2; background: linear-gradient(135deg, #111, #1a1a24);
             border-left: 6px solid var(--f1-red); padding: 40px; border-radius: 8px;
-            text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin-bottom: 20px;
+            text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.6); margin-bottom: 20px; transition: 0.5s;
         }
         .summary-card h2 { font-family: 'Teko', sans-serif; font-size: 50px; margin: 0; color: #fff; letter-spacing: 2px;}
         .summary-card p { font-size: 20px; color: #ccc; line-height: 1.6; max-width: 900px; margin: 15px auto 0; font-weight: 500;}
@@ -301,6 +299,24 @@
         .summary-2 { border-color: #b4b4b4; } .summary-2 h2 { color: #b4b4b4; }
         .summary-mid { border-color: var(--success); } .summary-mid h2 { color: var(--success); }
         .summary-bad { border-color: #ff3333; } .summary-bad h2 { color: #ff3333; }
+        
+        /* 24-0 GOD TIER ANIMATIONS */
+        .perfect-season-card {
+            background: linear-gradient(135deg, #ffdf00, #b38728) !important;
+            border: 4px solid #fff !important; box-shadow: 0 0 50px rgba(255,215,0,0.8), inset 0 0 30px rgba(255,255,255,0.5) !important;
+            transform: scale(1.05); z-index: 100; position: relative;
+        }
+        .perfect-season-card h2 { color: #000 !important; text-shadow: 0 0 10px #fff; font-size: 60px; }
+        .perfect-season-card p { color: #111 !important; font-weight: bold; }
+
+        #confetti-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; overflow: hidden; display: none;
+        }
+        .confetti-particle {
+            position: absolute; width: 10px; height: 20px; background: var(--gold); top: -20px;
+            animation: fall linear forwards;
+        }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
         .champ-card { background: var(--panel-dark); border-top: 4px solid var(--f1-red); border-radius: 8px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .champ-card h2 { font-family: 'Teko', sans-serif; font-size: 36px; margin: 0 0 20px 0; color: #fff; text-align: center; letter-spacing: 1px;}
@@ -361,7 +377,7 @@
             <button class="tool-btn tool-btn-reset" onclick="resetDraft()">🔄 RESET</button>
         </div>
     </header>
-    <div class="ultimate-goal-banner">🎯 OBJECTIVE: ACHIEVE THE IMPOSSIBLE 24-0 PERFECT SEASON</div>
+    <div class="ultimate-goal-banner">🎯 OBJECTIVE: ACHIEVE THE IMPOSSIBLE - ONE DRIVER. 24 WINS. 0 LOSSES.</div>
 
     <div class="container">
         <div class="builder-grid">
@@ -401,7 +417,7 @@
 
         <div id="season-container">
             <div class="scoreboard-header">
-                <div id="live-wdc-leader">🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">TEAM WINS: 0/24</span></div>
+                <div id="live-wdc-leader">🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: 0/24</span></div>
                 <div style="width: 60px;">RND</div>
                 <div style="flex-grow: 1;">GRAND PRIX</div>
                 <div class="race-winner">RACE WINNER</div>
@@ -436,6 +452,9 @@
             </div>
         </div>
     </div>
+
+    <!-- FULLSCREEN CONFETTI -->
+    <div id="confetti-container"></div>
 
     <div class="draft-overlay" id="draft-overlay">
         <div class="draft-header" id="draft-title">DRAFT <span>CHASSIS</span></div>
@@ -542,7 +561,9 @@
                 { name: 'BMW P83 V10', year: 2003, stat: 98, note: 'Screaming 900+ horsepower Williams monster.' },
                 { name: 'Cosworth CR-3 V10', year: 2001, stat: 88, note: 'Jaguar sound machine with explosive temperament.' },
                 { name: 'Hart 415T', year: 1984, stat: 75, note: 'Sennas Toleman engine. Fast when not on fire.', dnfRisk: 25 },
-                { name: 'Peugeot A10 V10', year: 1998, stat: 60, note: 'Promised power, delivered cloud of smoke.', dnfRisk: 35 },
+                { name: 'Jamie\'s Peugeot 206', year: 2006, stat: 75, note: 'Loud exhaust, suspicious smells, certified tractor.', dnfRisk: 20 },
+                { name: 'Ryan\'s Kia Picanto', year: 2007, stat: 75, note: 'Reliable to go to Tesco. On an F1 track? Not so much.', dnfRisk: 10 },
+                { name: 'Alisha\'s Fiat 500', year: 2006, stat: 35, note: 'Whoops! Absolute snail pace, usually found curbed.', dnfRisk: 40 },
                 { name: 'Subaru 1235 F12', year: 1990, stat: 10, note: 'Flat-12 embarrassment. Heaviest engine ever.', dnfRisk: 60 },
                 { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25 },
                 { name: 'Life W12', year: 1990, stat: 10, note: 'Produced 400hp when everyone else had 700. Catastrophic.', dnfRisk: 50 }
@@ -653,19 +674,18 @@
         };
 
         const aiTeamsBase = [
-            { id: 'mcl', name: 'McLaren', pace: 96, drivers: [{name: 'L. Norris', stat: 95}, {name: 'O. Piastri', stat: 93}] },
-            { id: 'rbr', name: 'Red Bull', pace: 95, drivers: [{name: 'M. Verstappen', stat: 98}, {name: 'L. Lawson', stat: 86}] },
-            { id: 'fer', name: 'Ferrari', pace: 95, drivers: [{name: 'L. Hamilton', stat: 96}, {name: 'C. Leclerc', stat: 95}] },
-            { id: 'mer', name: 'Mercedes', pace: 93, drivers: [{name: 'G. Russell', stat: 92}, {name: 'K. Antonelli', stat: 87}] },
-            { id: 'ast', name: 'Aston Martin', pace: 89, drivers: [{name: 'F. Alonso', stat: 92}, {name: 'L. Stroll', stat: 80}] },
-            { id: 'aud', name: 'Audi', pace: 83, drivers: [{name: 'N. Hulkenberg', stat: 84}, {name: 'G. Bortoleto', stat: 82}] },
-            { id: 'vca', name: 'VCARB', pace: 81, drivers: [{name: 'Y. Tsunoda', stat: 84}, {name: 'I. Hadjar', stat: 80}] },
-            { id: 'haa', name: 'Haas', pace: 80, drivers: [{name: 'O. Bearman', stat: 82}, {name: 'E. Ocon', stat: 84}] },
-            { id: 'wil', name: 'Williams', pace: 79, drivers: [{name: 'A. Albon', stat: 85}, {name: 'C. Sainz', stat: 91}] },
-            { id: 'alp', name: 'Alpine', pace: 76, drivers: [{name: 'P. Gasly', stat: 85}, {name: 'J. Doohan', stat: 79}] }
+            { id: 'mcl', name: 'McLaren', pace: 95, drivers: [{name: 'L. Norris', stat: 93}, {name: 'O. Piastri', stat: 90}] },
+            { id: 'rbr', name: 'Red Bull', pace: 94, drivers: [{name: 'M. Verstappen', stat: 96}, {name: 'L. Lawson', stat: 84}] },
+            { id: 'fer', name: 'Ferrari', pace: 93, drivers: [{name: 'L. Hamilton', stat: 94}, {name: 'C. Leclerc', stat: 93}] },
+            { id: 'mer', name: 'Mercedes', pace: 91, drivers: [{name: 'G. Russell', stat: 91}, {name: 'K. Antonelli', stat: 85}] },
+            { id: 'ast', name: 'Aston Martin', pace: 87, drivers: [{name: 'F. Alonso', stat: 90}, {name: 'L. Stroll', stat: 78}] },
+            { id: 'aud', name: 'Audi', pace: 82, drivers: [{name: 'N. Hulkenberg', stat: 82}, {name: 'G. Bortoleto', stat: 80}] },
+            { id: 'vca', name: 'VCARB', pace: 80, drivers: [{name: 'Y. Tsunoda', stat: 82}, {name: 'I. Hadjar', stat: 78}] },
+            { id: 'haa', name: 'Haas', pace: 78, drivers: [{name: 'O. Bearman', stat: 80}, {name: 'E. Ocon', stat: 82}] },
+            { id: 'wil', name: 'Williams', pace: 77, drivers: [{name: 'A. Albon', stat: 83}, {name: 'C. Sainz', stat: 89}] },
+            { id: 'alp', name: 'Alpine', pace: 74, drivers: [{name: 'P. Gasly', stat: 83}, {name: 'J. Doohan', stat: 76}] }
         ];
 
-        // Added China to make it exactly 24 Races
         const tracks = ["Bahrain", "Saudi Arabia", "Australia", "Japan", "China", "Miami", "Imola", "Monaco", "Canada", "Spain", "Austria", "Great Britain", "Hungary", "Belgium", "Netherlands", "Monza", "Baku", "Singapore", "Austin", "Mexico", "Brazil", "Las Vegas", "Qatar", "Abu Dhabi"];
         const ptsSys = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 
@@ -677,7 +697,7 @@
         let synergyDnfMultiplier = 0;
         let internalWarfareRisk = false;
         let isFastForward = false;
-        let userTeamWins = 0;
+        let highestDriverWins = 0;
 
         function formatStatDisplay(type, stat) {
             if (type !== 'engine') return stat;
@@ -911,6 +931,13 @@
                 
                 synBox.style.display = 'block';
                 internalWarfareRisk = false;
+                let isWorksTeam = false;
+
+                // REALISTIC WORKS TEAM SYNERGIES
+                if (teamState.chassis.name.includes('Mercedes') && teamState.engine.name.includes('Mercedes')) isWorksTeam = true;
+                if (teamState.chassis.name.includes('Red Bull') && teamState.engine.name.includes('Honda')) isWorksTeam = true;
+                if (teamState.chassis.name.includes('Ferrari') && teamState.engine.name.includes('Ferrari')) isWorksTeam = true;
+                if (teamState.chassis.name.includes('McLaren') && teamState.engine.name.includes('Honda') && teamState.engine.year < 2000) isWorksTeam = true;
 
                 if (teamState.driver1.stage === 'Prime' && teamState.driver2.stage === 'Prime') {
                     internalWarfareRisk = true;
@@ -929,6 +956,11 @@
                     synergyPenalty = -10; synergyDnfMultiplier = 20;
                     synText.className = 'synergy-status syn-bad';
                     synText.innerText = `CRITICAL MISMATCH: Bolting a ${teamState.engine.year} engine into a ${teamState.chassis.year} chassis! Massive pace deficit and high DNF risk!`;
+                }
+
+                if (isWorksTeam) {
+                    synergyPenalty += 5; // MASSIVE BOOST
+                    synText.innerHTML += "<br><span class='syn-works'>⚙️ WORKS TEAM SYNERGY: Chassis and Engine matched perfectly. +5 Pace Boost!</span>";
                 }
 
                 if (internalWarfareRisk) {
@@ -1014,11 +1046,26 @@
             document.getElementById('ff-btn').style.display = 'none';
         }
 
+        function shootConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.style.display = 'block';
+            const colors = ['#ffd700', '#ffffff', '#e10600'];
+            for(let i=0; i<80; i++) {
+                let conf = document.createElement('div');
+                conf.className = 'confetti-particle';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                conf.style.animationDelay = Math.random() * 2 + 's';
+                container.appendChild(conf);
+            }
+        }
+
         function initSeason() {
             document.getElementById('sim-btn').style.display = 'none';
             document.getElementById('season-container').style.display = 'block';
             document.getElementById('live-wdc-leader').style.display = 'flex';
-            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">TEAM WINS: 0/24</span>`;
+            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: 0/24</span>`;
             
             const userTeamName = teamState.principal.name.split(' ').pop().toUpperCase() + " RACING";
             const userCarPace = ((teamState.chassis.stat + teamState.engine.stat + teamState.principal.stat) / 3) + synergyPenalty;
@@ -1030,15 +1077,15 @@
             allDrivers = [];
             allTeams.forEach(team => {
                 if (team.isUser) {
-                    allDrivers.push({ name: teamState.driver1.name, stat: teamState.driver1.stat, team: team, pts: 0, isUser: true, wetMod: teamState.driver1.wetMod, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg });
-                    allDrivers.push({ name: teamState.driver2.name, stat: teamState.driver2.stat, team: team, pts: 0, isUser: true, wetMod: teamState.driver2.wetMod, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg });
+                    allDrivers.push({ name: teamState.driver1.name, stat: teamState.driver1.stat, team: team, pts: 0, wins: 0, isUser: true, wetMod: teamState.driver1.wetMod, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg });
+                    allDrivers.push({ name: teamState.driver2.name, stat: teamState.driver2.stat, team: team, pts: 0, wins: 0, isUser: true, wetMod: teamState.driver2.wetMod, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg });
                 } else {
-                    team.drivers.forEach(d => { allDrivers.push({ name: d.name, stat: d.stat, team: team, pts: 0, isUser: false, risk: 4 }); });
+                    team.drivers.forEach(d => { allDrivers.push({ name: d.name, stat: d.stat, team: team, pts: 0, wins: 0, isUser: false, risk: 4 }); });
                 }
             });
 
             currentRace = 0; 
-            userTeamWins = 0;
+            highestDriverWins = 0;
             setTimeout(runRace, 500);
         }
 
@@ -1076,6 +1123,17 @@
                     if (teamState.engine.stat < 80) dnfThreshold += 15;
                     if (teamState.principal.stratRisk) dnfThreshold += teamState.principal.stratRisk;
                     dnfThreshold += synergyDnfMultiplier;
+
+                    // DRIVER SPECIAL BOOSTS
+                    if (d.name === 'Jamie Karter' && teamState.engine.name.includes("Peugeot")) {
+                        currentPace += 25; d.loreEventMsg = "Peugeot Masterclass!"; d.loreType = 'home';
+                    }
+                    if (d.name === 'Ryan Vasey' && teamState.engine.name.includes("Kia")) {
+                        currentPace += 25; d.loreEventMsg = "Kia Power Surge!"; d.loreType = 'home';
+                    }
+                    if (d.name === 'Alisha Cummings' && teamState.engine.name.includes("Fiat")) {
+                        dnfThreshold = 0; d.loreEventMsg = "Fiat Whisperer!"; d.loreType = 'home';
+                    }
                 }
 
                 if (track === "Great Britain" && (d.name.includes("Hamilton") || d.name.includes("Button") || d.name.includes("Mansell") || d.name.includes("Norris") || d.name.includes("Russell"))) { isHomeRace = true; d.loreEventMsg = "Home Crowd Advantage!"; currentPace += 8; d.loreType = 'home'; }
@@ -1121,7 +1179,8 @@
                     d.currentPos = pos;
                     if (pos === 1) {
                         raceWinner = d.name;
-                        if (d.isUser) userTeamWins++;
+                        d.wins++;
+                        if (d.isUser && d.wins > highestDriverWins) highestDriverWins = d.wins;
                     }
                     if (pos <= 10) {
                         let pts = ptsSys[pos - 1];
@@ -1138,7 +1197,7 @@
             });
 
             let currentLeader = [...allDrivers].sort((a, b) => b.pts - a.pts)[0];
-            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: ${currentLeader.name.toUpperCase()} (${currentLeader.pts} PTS) <span class="team-wins-tracker" id="team-wins-tracker">TEAM WINS: ${userTeamWins}/24</span>`;
+            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: ${currentLeader.name.toUpperCase()} (${currentLeader.pts} PTS) <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: ${highestDriverWins}/24</span>`;
 
             appendRaceRow(track, currentRace + 1, raceWinner, u1Result, u2Result, userRacePts, isRaining);
             currentRace++; 
@@ -1224,10 +1283,14 @@
             const summaryTitle = document.getElementById('summary-title');
             const summaryText = document.getElementById('summary-text');
 
-            if (userTeamWins === 24) {
-                summaryCard.className = 'summary-card summary-1 gold-card';
+            // DID A SINGLE DRIVER GO 24-0?
+            let godDriver = allDrivers.find(d => d.wins === 24 && d.isUser);
+
+            if (godDriver) {
+                shootConfetti();
+                summaryCard.className = 'summary-card perfect-season-card';
                 summaryTitle.innerText = "👑 24-0: THE PERFECT SEASON";
-                summaryText.innerText = "THE IMPOSSIBLE HAS BEEN ACHIEVED! You won every single race. Your team is officially the greatest dynasty in the history of motorsport. The FIA is literally rewriting the rulebook to stop you.";
+                summaryText.innerText = `THE IMPOSSIBLE HAS BEEN ACHIEVED! ${godDriver.name.toUpperCase()} won every single race. Your team is officially the greatest dynasty in the history of motorsport. The FIA is literally rewriting the rulebook to stop you.`;
             } else if (finalTeamPos === 1) {
                 summaryCard.className = 'summary-card summary-1';
                 summaryTitle.innerText = "🏆 WORLD CONSTRUCTORS' CHAMPIONS";
@@ -1255,14 +1318,14 @@
 
         function shareResults() {
             let posEmoji = "🏁";
-            if (userTeamWins === 24) posEmoji = "👑 24-0 PERFECT SEASON!";
+            if (highestDriverWins === 24) posEmoji = "👑 24-0 PERFECT SEASON!";
             else if (finalTeamPos === 1) posEmoji = "🏆 P1 - CHAMPIONS!";
             else if (finalTeamPos === 2) posEmoji = "🥈 P2 - ALMOST!";
             else if (finalTeamPos >= 3 && finalTeamPos <= 6) posEmoji = "📊 MIDFIELD";
             else posEmoji = "🚜 TRACTOR TIER";
 
             const seedText = document.getElementById('active-seed').innerText;
-            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\nWins: ${userTeamWins}/24\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\n${seedText}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
+            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\nMax Driver Wins: ${highestDriverWins}/24\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\n${seedText}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
             
             navigator.clipboard.writeText(shareText).then(() => {
                 alert("Results copied to clipboard!");
