@@ -50,6 +50,9 @@
         .tool-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
         .tool-btn-reset { border-color: var(--f1-red); color: var(--f1-red); }
         .tool-btn-reset:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 15px var(--f1-red); }
+        
+        .ff-btn { border-color: var(--gold); color: var(--gold); display: none; margin-left: 10px; padding: 15px 30px; font-size: 28px;}
+        .ff-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
@@ -145,7 +148,7 @@
         .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,1);}
         .draft-header span { color: var(--f1-red); }
         
-        .respin-container { margin-bottom: 30px; display: flex; gap: 15px; align-items: center;}
+        .respin-container { margin-bottom: 40px; display: flex; gap: 15px; align-items: center;}
         .respin-btn { 
             background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 25px;
             font-family: 'Teko', sans-serif; font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.2s;
@@ -159,21 +162,19 @@
             background: linear-gradient(180deg, #18181f, #0a0a0f); border: 2px solid #333; border-radius: 8px;
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); will-change: transform;
+            opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            will-change: transform;
         }
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
         .draft-option:hover { border-color: var(--f1-red); transform: translate3d(0, -12px, 0) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
         
-        /* SLOT REEL DIGITAL SHUFFLE EFFECT */
         .slot-reeling {
             border-color: var(--neon-blue) !important;
             box-shadow: 0 0 20px rgba(0, 191, 255, 0.3) !important;
             animation: slotPulse 0.1s infinite alternate;
         }
-        @keyframes slotPulse {
-            0% { transform: scale(0.98); opacity: 0.8; }
-            100% { transform: scale(1.01); opacity: 1; }
-        }
+        @keyframes slotPulse { 0% { transform: scale(0.98); opacity: 0.8; } 100% { transform: scale(1.01); opacity: 1; } }
 
         .opt-content { z-index: 2; position: relative; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
         .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; letter-spacing: 2px;}
@@ -200,7 +201,7 @@
         .syn-good { color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.5);}
         .syn-bad { color: #ff3333; text-shadow: 0 0 10px rgba(255,51,51,0.5);}
 
-        .btn-container { text-align: center; margin: 30px 0 60px 0; }
+        .btn-container { text-align: center; margin: 30px 0 60px 0; display:flex; justify-content: center; align-items:center; }
         .btn-main {
             background: transparent; color: var(--text-main); font-family: 'Teko', sans-serif;
             font-size: 42px; padding: 15px 100px; border: 3px solid #333; border-radius: 6px;
@@ -237,7 +238,10 @@
         .race-row:hover { background: #1a1a24; }
 
         .race-rnd { width: 60px; font-weight: bold; color: var(--f1-red); font-size: 20px;}
-        .race-track { flex-grow: 1; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;}
+        .race-track { flex-grow: 1; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap: 8px;}
+        .weather-rain { color: var(--neon-blue); font-size: 20px; animation: pulseBg 1s infinite alternate; }
+        .weather-sun { color: var(--gold); font-size: 20px; }
+
         .race-winner { width: 200px; font-size: 18px; color: var(--gold); font-weight: bold; text-transform: uppercase;}
         .race-driver { width: 140px; display: flex; align-items: center; gap: 10px; font-family: 'Teko', sans-serif; font-size: 26px; justify-content: center;}
         
@@ -289,6 +293,33 @@
             text-align: center; color: #555; font-size: 16px; margin-top: 80px; 
             padding-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
         }
+
+        /* 📱 DEVICE OPTIMIZATION & RESPONSIVENESS */
+        @media (max-width: 1000px) {
+            .builder-grid { grid-template-columns: 1fr 1fr; }
+            .driver-row { grid-column: span 2; }
+            .draft-grid { grid-template-columns: 1fr 1fr; padding: 0 20px; }
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; text-align: center; gap: 15px; }
+            .top-tools { width: 100%; justify-content: center; flex-wrap: wrap; }
+            .builder-grid { grid-template-columns: 1fr; }
+            .driver-row { grid-column: span 1; grid-template-columns: 1fr; }
+            .draft-grid { grid-template-columns: 1fr; padding: 0 10px; }
+            .btn-main { padding: 15px 40px; font-size: 28px; width: 100%; }
+            .scoreboard-header { font-size: 16px; padding: 10px; }
+            .race-winner { display: none; } /* Hide on mobile to save space */
+            .race-driver { width: 100px; font-size: 20px; }
+            .championships { grid-template-columns: 1fr; margin-top: 30px; }
+            .summary-card { grid-column: span 1; padding: 20px; }
+            .summary-card h2 { font-size: 32px; }
+            .ff-btn { font-size: 20px; padding: 10px 20px; margin-top: 15px;}
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
@@ -335,13 +366,14 @@
 
         <div class="btn-container">
             <button class="btn-main" id="sim-btn" onclick="triggerLightsOut()">LIGHTS OUT</button>
+            <button id="ff-btn" class="tool-btn ff-btn" onclick="fastForwardSim()">⏩ FAST FORWARD</button>
         </div>
 
         <div id="season-container">
             <div class="scoreboard-header">
                 <div style="width: 60px;">RND</div>
                 <div style="flex-grow: 1;">GRAND PRIX</div>
-                <div style="width: 200px;">RACE WINNER</div>
+                <div class="race-winner">RACE WINNER</div>
                 <div style="width: 140px; text-align:center;" id="header-d1">DRV 1</div>
                 <div style="width: 140px; text-align:center;" id="header-d2">DRV 2</div>
                 <div style="width: 80px; text-align: right;">PTS</div>
@@ -506,12 +538,12 @@
             drivers: [
                 { name: 'Lewis Hamilton', versions: [
                     { year: 2007, stage: 'Rookie', stat: 93, note: 'Sensational debut year.', hWins: 4, hPods: 12, hPoles: 6 },
-                    { year: 2020, stage: 'Prime', stat: 99, note: 'Absolute peak in the W11.', hWins: 11, hPods: 14, hPoles: 10 },
+                    { year: 2020, stage: 'Prime', stat: 99, wetMod: 15, note: 'Absolute peak in the W11.', hWins: 11, hPods: 14, hPoles: 10 },
                     { year: 2026, stage: 'Veteran', stat: 91, note: 'The Ferrari era.', hWins: 0, hPods: 3, hPoles: 0 }
                 ]},
                 { name: 'Max Verstappen', versions: [
                     { year: 2016, stage: 'Rookie', stat: 89, note: 'Aggressive, raw, incredibly fast.', hWins: 1, hPods: 7, hPoles: 0 },
-                    { year: 2023, stage: 'Prime', stat: 99, note: '19 wins in a single season. Unbeatable.', hWins: 19, hPods: 21, hPoles: 12 }
+                    { year: 2023, stage: 'Prime', stat: 99, wetMod: 15, note: '19 wins in a single season. Unbeatable.', hWins: 19, hPods: 21, hPoles: 12 }
                 ]},
                 { name: 'Fernando Alonso', versions: [
                     { year: 2012, stage: 'Prime', stat: 98, note: 'Taking a midfield Ferrari to a title fight.', hWins: 3, hPods: 13, hPoles: 2 },
@@ -522,11 +554,11 @@
                     { year: 2020, stage: 'Decline', stat: 82, note: 'Sbinnala era.', hWins: 0, hPods: 1, hPoles: 0, crashMsg: 'Vettel spun at the apex. DNF.' }
                 ]},
                 { name: 'Michael Schumacher', versions: [
-                    { year: 2004, stage: 'Prime', stat: 99, note: 'The Red Baron at his terrifying peak.', hWins: 13, hPods: 15, hPoles: 8 },
+                    { year: 2004, stage: 'Prime', stat: 99, wetMod: 18, note: 'The Red Baron at his terrifying peak.', hWins: 13, hPods: 15, hPoles: 8 },
                     { year: 2012, stage: 'Veteran', stat: 88, note: 'Mercedes comeback era.', hWins: 0, hPods: 1, hPoles: 0 }
                 ]},
                 { name: 'Ayrton Senna', versions: [
-                    { year: 1988, stage: 'Prime', stat: 99, note: 'God-like qualifying pace.', hWins: 8, hPods: 11, hPoles: 13 }
+                    { year: 1988, stage: 'Prime', stat: 99, wetMod: 20, note: 'God-like qualifying pace.', hWins: 8, hPods: 11, hPoles: 13 }
                 ]},
                 { name: 'Alain Prost', versions: [
                     { year: 1989, stage: 'Prime', stat: 98, note: 'The Professor. Clinical and calculating.', hWins: 4, hPods: 11, hPoles: 2 }
@@ -545,7 +577,7 @@
                     { year: 1999, stage: 'Prime', stat: 96, note: 'The Flying Finn. Schumacher\'s greatest rival.', hWins: 5, hPods: 10, hPoles: 11 }
                 ]},
                 { name: 'Jenson Button', versions: [
-                    { year: 2009, stage: 'Prime', stat: 94, note: 'Brawn GP hero and wet weather god.', hWins: 6, hPods: 9, hPoles: 4 }
+                    { year: 2009, stage: 'Prime', stat: 94, wetMod: 25, note: 'Brawn GP hero and wet weather god.', hWins: 6, hPods: 9, hPoles: 4 }
                 ]},
                 { name: 'Mark Webber', versions: [
                     { year: 2010, stage: 'Prime', stat: 91, note: '"Not bad for a number two driver."', hWins: 4, hPods: 10, hPoles: 5 }
@@ -611,6 +643,8 @@
         let respinsLeft = 3;
         let synergyPenalty = 0;
         let synergyDnfMultiplier = 0;
+        let internalWarfareRisk = false;
+        let isFastForward = false;
 
         function formatStatDisplay(type, stat) {
             if (type !== 'engine') return stat;
@@ -648,7 +682,6 @@
             
             overlay.classList.add('active');
             
-            // COOL VISUAL SLOT MACHINE REEL SHUFFLE
             grid.innerHTML = '';
             for(let i=0; i<4; i++) {
                 grid.innerHTML += `<div class="draft-option slot-reeling" id="reel-${i}"><div class="opt-content"><div class="opt-year">....</div><div class="opt-name">SCRAMBLING</div><div class="opt-note">Accessing FIA Database...</div></div></div>`;
@@ -716,7 +749,7 @@
 
                 options = shuffledDrivers.slice(0, 4).map(d => {
                     const rv = getRandomVersion(d.versions);
-                    return { name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles };
+                    return { name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, wetMod: rv.wetMod, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles };
                 });
 
                 if (Math.random() < 0.25 && !forceShit && !forceGod) {
@@ -844,6 +877,11 @@
                 const synText = document.getElementById('synergy-text');
                 
                 synBox.style.display = 'block';
+                internalWarfareRisk = false;
+
+                if (teamState.driver1.stage === 'Prime' && teamState.driver2.stage === 'Prime') {
+                    internalWarfareRisk = true;
+                }
 
                 if (eraDiff <= 5) {
                     synergyPenalty = 0; synergyDnfMultiplier = 0;
@@ -858,6 +896,10 @@
                     synergyPenalty = -10; synergyDnfMultiplier = 20;
                     synText.className = 'synergy-status syn-bad';
                     synText.innerText = `CRITICAL MISMATCH: Bolting a ${teamState.engine.year} engine into a ${teamState.chassis.year} chassis! Massive pace deficit and high DNF risk!`;
+                }
+
+                if (internalWarfareRisk) {
+                    synText.innerHTML += "<br><span style='color:#ff3333; margin-top:8px; display:inline-block;'>⚠️ TOXIC RIVALRY: Two Prime drivers drafted! High risk of internal warfare and collisions!</span>";
                 }
 
                 document.getElementById('sim-btn').classList.add('ready');
@@ -875,7 +917,7 @@
                     if (slot === 'driver2' && teamState.driver1) available = available.filter(d => d.name !== teamState.driver1.name);
                     let d = available[Math.floor(Math.random() * available.length)];
                     let rv = getRandomVersion(d.versions);
-                    options.push({ name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles });
+                    options.push({ name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, wetMod: rv.wetMod, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles });
                 } else {
                     options = db[slot];
                 }
@@ -888,9 +930,11 @@
         function resetDraft() {
             teamState = {};
             respinsLeft = 3;
+            isFastForward = false;
             updateRespinBtn();
             document.getElementById('synergy-box').style.display = 'none';
             document.getElementById('sim-btn').classList.remove('ready');
+            document.getElementById('ff-btn').style.display = 'none';
             document.getElementById('active-seed').innerText = "SEED: READY";
 
             slotSequence.forEach((slot, index) => {
@@ -931,6 +975,11 @@
             }, 800);
         }
 
+        function fastForwardSim() {
+            isFastForward = true;
+            document.getElementById('ff-btn').style.display = 'none';
+        }
+
         let allDrivers = [];
         let allTeams = [];
         let currentRace = 0;
@@ -952,22 +1001,29 @@
             allDrivers = [];
             allTeams.forEach(team => {
                 if (team.isUser) {
-                    allDrivers.push({ name: teamState.driver1.name, stat: teamState.driver1.stat, team: team, pts: 0, isUser: true, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg });
-                    allDrivers.push({ name: teamState.driver2.name, stat: teamState.driver2.stat, team: team, pts: 0, isUser: true, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg });
+                    allDrivers.push({ name: teamState.driver1.name, stat: teamState.driver1.stat, team: team, pts: 0, isUser: true, wetMod: teamState.driver1.wetMod, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg });
+                    allDrivers.push({ name: teamState.driver2.name, stat: teamState.driver2.stat, team: team, pts: 0, isUser: true, wetMod: teamState.driver2.wetMod, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg });
                 } else {
                     team.drivers.forEach(d => { allDrivers.push({ name: d.name, stat: d.stat, team: team, pts: 0, isUser: false, risk: 4 }); });
                 }
             });
 
             currentRace = 0; 
-            setTimeout(runRace, 400);
+            setTimeout(runRace, 500);
         }
 
         function runRace() {
             if (currentRace >= tracks.length) { 
-                setTimeout(renderStandings, 500); 
+                document.getElementById('ff-btn').style.display = 'none';
+                setTimeout(renderStandings, isFastForward ? 0 : 500); 
                 return; 
             }
+
+            if (currentRace === 1 && !isFastForward) {
+                document.getElementById('ff-btn').style.display = 'inline-block';
+            }
+
+            let isRaining = Math.random() < 0.20;
 
             allDrivers.forEach(d => {
                 if (Math.random() * 100 < 2) { 
@@ -979,11 +1035,26 @@
                 }
 
                 let dnfThreshold = d.risk || 4;
+                let currentPace = (d.stat * 0.4) + (d.team.pace * 0.6);
+
                 if (d.isUser) {
                     if (teamState.chassis.dnfRisk) dnfThreshold += teamState.chassis.dnfRisk;
                     if (teamState.engine.stat < 80) dnfThreshold += 15;
                     if (teamState.principal.stratRisk) dnfThreshold += teamState.principal.stratRisk;
                     dnfThreshold += synergyDnfMultiplier;
+                }
+
+                if (isRaining) {
+                    currentPace += (d.wetMod || 0); 
+                    if (d.stat < 75) dnfThreshold *= 3; 
+                }
+
+                if (d.isUser && internalWarfareRisk && Math.random() < 0.08) {
+                    d.raceScore = -1;
+                    d.raceStatus = 'DNF';
+                    d.raceMsg = "Collided with teammate in turn 1! Internal warfare!";
+                    d.eventMsg = null;
+                    return; 
                 }
 
                 if (Math.random() * 100 < dnfThreshold) {
@@ -992,7 +1063,7 @@
                     d.raceMsg = d.msg || (d.isUser ? dnfMessages[Math.floor(Math.random() * dnfMessages.length)] : null);
                     d.eventMsg = null;
                 } else {
-                    d.raceScore = (d.stat * 0.4) + (d.team.pace * 0.6) + (Math.random() * 12 - 5);
+                    d.raceScore = currentPace + (Math.random() * 12 - 5);
                     d.raceStatus = 'FINISH';
                     d.raceMsg = null;
                     d.eventMsg = (d.isUser && Math.random() < 0.15) ? raceEvents[Math.floor(Math.random() * raceEvents.length)] : null;
@@ -1023,8 +1094,9 @@
                 }
             });
 
-            appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts);
-            currentRace++; setTimeout(runRace, 300); // HIGH-PERFORMANCE RENDER TICK (NO LAG)
+            appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts, isRaining);
+            currentRace++; 
+            setTimeout(runRace, isFastForward ? 10 : 600); 
         }
 
         function getPosClass(pos) {
@@ -1036,7 +1108,7 @@
             return '';
         }
 
-        function appendRaceRow(track, round, winner, d1, d2, userPts) {
+        function appendRaceRow(track, round, winner, d1, d2, userPts, isRaining) {
             const list = document.getElementById('race-list');
             const div = document.createElement('div');
             div.className = 'race-row';
@@ -1047,9 +1119,11 @@
             if (d1.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
             if (d2.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
 
+            let weatherIcon = isRaining ? '<span class="weather-rain">🌧️ WET</span>' : '<span class="weather-sun">☀️ DRY</span>';
+
             div.innerHTML = `
                 <div class="race-rnd">R${round}</div>
-                <div class="race-track">${track}</div>
+                <div class="race-track">${track} ${weatherIcon}</div>
                 <div class="race-winner">${winner || "NO FINISHERS"}</div>
                 <div class="race-driver"><div class="pos-badge ${d1.class}">${d1.pos}</div></div>
                 <div class="race-driver"><div class="pos-badge ${d2.class}">${d2.pos}</div></div>
@@ -1058,8 +1132,9 @@
             `;
             list.appendChild(div);
             
-            // Fast non-blocking auto-scroll
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+            if (!isFastForward) {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+            }
         }
 
         function renderStandings() {
