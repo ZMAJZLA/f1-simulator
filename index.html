@@ -15,7 +15,7 @@
             --success: #00ffcc;
             --gold: #ffd700;
             --neon-blue: #00bfff;
-            --neon-purple: #9d00ff;
+            --curse-purple: #b900ff;
         }
 
         body {
@@ -27,13 +27,20 @@
             will-change: transform;
         }
 
+        /* Ambient Telemetry Grid */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1; pointer-events: none;
+        }
+
         header {
             background: #000; border-bottom: 3px solid var(--f1-red);
             padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 50; box-shadow: 0 5px 25px rgba(0,0,0,0.9);
         }
 
-        header h1 { font-family: 'Teko', sans-serif; font-size: 38px; margin: 0; letter-spacing: 2px; }
+        header h1 { font-family: 'Teko', sans-serif; font-size: 38px; margin: 0; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(225,6,0,0.4); }
         header span { color: var(--f1-red); }
 
         .top-tools { display: flex; gap: 15px; align-items: center; }
@@ -69,7 +76,12 @@
         }
         .driver-card { height: 320px; }
 
-        .slot-card:hover { border-color: var(--f1-red); transform: translate3d(0, -8px, 0); box-shadow: 0 15px 30px rgba(225, 6, 0, 0.2); }
+        /* 3D HOLOGRAPHIC TILT ON HOVER */
+        .slot-card:hover { 
+            border-color: var(--f1-red); 
+            transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px) scale(1.01); 
+            box-shadow: -10px 15px 30px rgba(225, 6, 0, 0.2); 
+        }
         .slot-card.filled { border-style: solid; border-color: #444; background: linear-gradient(145deg, #111, #000); }
         
         .slot-card.locked-slot { opacity: 0.4; pointer-events: none; filter: grayscale(100%); border-color: #222; box-shadow: none; transform: none;}
@@ -103,7 +115,6 @@
             box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
 
-        /* GOLD CARDS */
         .gold-card {
             background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
             border: 2px solid var(--gold) !important;
@@ -119,11 +130,7 @@
         }
         @keyframes goldShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
 
-        /* SHIT TIER CARDS */
-        .shit-card {
-            background: linear-gradient(135deg, #200500 0%, #100200 100%) !important;
-            border: 2px dashed #ff3333 !important;
-        }
+        .shit-card { background: linear-gradient(135deg, #200500 0%, #100200 100%) !important; border: 2px dashed #ff3333 !important; }
         .shit-card .filled-stat { border-color: #ff3333; color: #ff3333; }
 
         .sparkle-1, .sparkle-2, .sparkle-3 {
@@ -137,7 +144,6 @@
 
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
-        /* OVERLAY & RANDOMIZATION REEL */
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.92); z-index: 200; display: flex; flex-direction: column;
@@ -167,7 +173,12 @@
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
-        .draft-option:hover { border-color: var(--f1-red); transform: translate3d(0, -12px, 0) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
+        /* 3D HOLOGRAPHIC TILT ON DRAFT OPTIONS */
+        .draft-option:hover { 
+            border-color: var(--f1-red); 
+            transform: perspective(1000px) rotateX(4deg) rotateY(-4deg) translateY(-15px) scale(1.02); 
+            box-shadow: -10px 20px 40px rgba(225,6,0,0.4); 
+        }
         
         .slot-reeling {
             border-color: var(--neon-blue) !important;
@@ -227,9 +238,18 @@
 
         #season-container { display: none; margin-top: 20px;}
         .scoreboard-header {
-            display: flex; justify-content: space-between; background: #111;
+            display: flex; justify-content: space-between; background: #111; position: relative;
             padding: 15px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-bottom: 3px solid var(--f1-red); border-radius: 8px 8px 0 0; color: #8b8b99; letter-spacing: 1px;
         }
+        
+        /* LIVE WDC LEADER HUD */
+        #live-wdc-leader {
+            position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); border: 1px solid var(--gold); color: var(--gold);
+            padding: 5px 20px; border-radius: 4px; font-family: 'Teko', sans-serif; font-size: 24px;
+            letter-spacing: 2px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); white-space: nowrap;
+        }
+
         .race-list { background: var(--panel-dark); border-radius: 0 0 8px 8px; border: 1px solid #222; border-top: none; box-shadow: 0 15px 30px rgba(0,0,0,0.5);}
         .race-row {
             display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #1a1a24; 
@@ -256,6 +276,10 @@
         .chaos-msg { width: 100%; margin-top: 8px; font-size: 14px; color: #ff5555; font-style: italic; text-align: right; font-weight: 600;}
         .dns-msg { color: #f1c40f; }
         .event-msg { color: #00ffcc; }
+        
+        /* NEW LORE COLORS */
+        .lore-curse { color: var(--curse-purple); text-shadow: 0 0 5px rgba(185, 0, 255, 0.5); }
+        .lore-home { color: var(--gold); text-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
 
         .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; }
         
@@ -294,13 +318,11 @@
             padding-bottom: 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600;
         }
 
-        /* 📱 DEVICE OPTIMIZATION & RESPONSIVENESS */
         @media (max-width: 1000px) {
             .builder-grid { grid-template-columns: 1fr 1fr; }
             .driver-row { grid-column: span 2; }
             .draft-grid { grid-template-columns: 1fr 1fr; padding: 0 20px; }
         }
-
         @media (max-width: 768px) {
             header { flex-direction: column; text-align: center; gap: 15px; }
             .top-tools { width: 100%; justify-content: center; flex-wrap: wrap; }
@@ -309,14 +331,13 @@
             .draft-grid { grid-template-columns: 1fr; padding: 0 10px; }
             .btn-main { padding: 15px 40px; font-size: 28px; width: 100%; }
             .scoreboard-header { font-size: 16px; padding: 10px; }
-            .race-winner { display: none; } /* Hide on mobile to save space */
+            .race-winner { display: none; }
             .race-driver { width: 100px; font-size: 20px; }
             .championships { grid-template-columns: 1fr; margin-top: 30px; }
             .summary-card { grid-column: span 1; padding: 20px; }
             .summary-card h2 { font-size: 32px; }
             .ff-btn { font-size: 20px; padding: 10px 20px; margin-top: 15px;}
         }
-
         @media (prefers-reduced-motion: reduce) {
             * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
         }
@@ -371,6 +392,7 @@
 
         <div id="season-container">
             <div class="scoreboard-header">
+                <div id="live-wdc-leader">🏆 CH'SHIP LEADER: ---</div>
                 <div style="width: 60px;">RND</div>
                 <div style="flex-grow: 1;">GRAND PRIX</div>
                 <div class="race-winner">RACE WINNER</div>
@@ -935,6 +957,7 @@
             document.getElementById('synergy-box').style.display = 'none';
             document.getElementById('sim-btn').classList.remove('ready');
             document.getElementById('ff-btn').style.display = 'none';
+            document.getElementById('live-wdc-leader').style.display = 'none';
             document.getElementById('active-seed').innerText = "SEED: READY";
 
             slotSequence.forEach((slot, index) => {
@@ -990,6 +1013,8 @@
         function initSeason() {
             document.getElementById('sim-btn').style.display = 'none';
             document.getElementById('season-container').style.display = 'block';
+            document.getElementById('live-wdc-leader').style.display = 'block';
+            document.getElementById('live-wdc-leader').innerText = "🏆 CH'SHIP LEADER: ---";
             
             const userTeamName = teamState.principal.name.split(' ').pop().toUpperCase() + " RACING";
             const userCarPace = ((teamState.chassis.stat + teamState.engine.stat + teamState.principal.stat) / 3) + synergyPenalty;
@@ -1023,14 +1048,18 @@
                 document.getElementById('ff-btn').style.display = 'inline-block';
             }
 
+            let track = tracks[currentRace];
             let isRaining = Math.random() < 0.20;
 
             allDrivers.forEach(d => {
+                let isHomeRace = false;
+                let isCursed = false;
+                d.loreEventMsg = null;
+                d.loreType = null; // 'home' or 'curse'
+
                 if (Math.random() * 100 < 2) { 
-                    d.raceScore = -1;
-                    d.raceStatus = 'DNS';
+                    d.raceScore = -1; d.raceStatus = 'DNS';
                     d.raceMsg = d.isUser ? dnsMessages[Math.floor(Math.random() * dnsMessages.length)] : null;
-                    d.eventMsg = null;
                     return;
                 }
 
@@ -1044,29 +1073,36 @@
                     dnfThreshold += synergyDnfMultiplier;
                 }
 
+                // 🏁 LORE MECHANICS
+                if (track === "Great Britain" && (d.name.includes("Hamilton") || d.name.includes("Button") || d.name.includes("Mansell") || d.name.includes("Norris") || d.name.includes("Russell"))) { isHomeRace = true; d.loreEventMsg = "Home Crowd Advantage!"; currentPace += 8; d.loreType = 'home'; }
+                if (track === "Netherlands" && d.name.includes("Verstappen")) { isHomeRace = true; d.loreEventMsg = "Orange Army Boost!"; currentPace += 8; d.loreType = 'home'; }
+                if (track === "Spain" && (d.name.includes("Alonso") || d.name.includes("Sainz"))) { isHomeRace = true; d.loreEventMsg = "Spanish Fans Going Wild!"; currentPace += 8; d.loreType = 'home'; }
+                
+                if (track === "Monaco" && d.name.includes("Leclerc")) { isCursed = true; d.loreEventMsg = "The Monaco Curse Strikes!"; dnfThreshold = 85; d.loreType = 'curse'; }
+                if (d.isUser && d.name.includes("Alonso") && teamState.engine.name.includes("RA615H")) { isCursed = true; d.loreEventMsg = "GP2 ENGINE! GP2 ENGINE!"; currentPace -= 10; d.loreType = 'curse'; }
+
                 if (isRaining) {
                     currentPace += (d.wetMod || 0); 
                     if (d.stat < 75) dnfThreshold *= 3; 
                 }
 
                 if (d.isUser && internalWarfareRisk && Math.random() < 0.08) {
-                    d.raceScore = -1;
-                    d.raceStatus = 'DNF';
+                    d.raceScore = -1; d.raceStatus = 'DNF';
                     d.raceMsg = "Collided with teammate in turn 1! Internal warfare!";
-                    d.eventMsg = null;
+                    d.loreEventMsg = "Toxic Rivalry Crash!"; d.loreType = 'curse';
                     return; 
                 }
 
                 if (Math.random() * 100 < dnfThreshold) {
-                    d.raceScore = -1;
-                    d.raceStatus = 'DNF';
+                    d.raceScore = -1; d.raceStatus = 'DNF';
                     d.raceMsg = d.msg || (d.isUser ? dnfMessages[Math.floor(Math.random() * dnfMessages.length)] : null);
-                    d.eventMsg = null;
                 } else {
                     d.raceScore = currentPace + (Math.random() * 12 - 5);
                     d.raceStatus = 'FINISH';
                     d.raceMsg = null;
-                    d.eventMsg = (d.isUser && Math.random() < 0.15) ? raceEvents[Math.floor(Math.random() * raceEvents.length)] : null;
+                    if (!d.loreEventMsg) {
+                        d.eventMsg = (d.isUser && Math.random() < 0.15) ? raceEvents[Math.floor(Math.random() * raceEvents.length)] : null;
+                    }
                 }
             });
 
@@ -1089,14 +1125,18 @@
                 }
 
                 if (d.isUser) {
-                    if (d.name === teamState.driver1.name) u1Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, class: getPosClass(d.currentPos) };
-                    else u2Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, class: getPosClass(d.currentPos) };
+                    if (d.name === teamState.driver1.name) u1Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, loreMsg: d.loreEventMsg, loreType: d.loreType, class: getPosClass(d.currentPos) };
+                    else u2Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, loreMsg: d.loreEventMsg, loreType: d.loreType, class: getPosClass(d.currentPos) };
                 }
             });
 
-            appendRaceRow(tracks[currentRace], currentRace + 1, raceWinner, u1Result, u2Result, userRacePts, isRaining);
+            // Update Live Leader HUD
+            let currentLeader = [...allDrivers].sort((a, b) => b.pts - a.pts)[0];
+            document.getElementById('live-wdc-leader').innerText = `🏆 CH'SHIP LEADER: ${currentLeader.name.toUpperCase()} (${currentLeader.pts} PTS)`;
+
+            appendRaceRow(track, currentRace + 1, raceWinner, u1Result, u2Result, userRacePts, isRaining);
             currentRace++; 
-            setTimeout(runRace, isFastForward ? 10 : 600); 
+            setTimeout(runRace, isFastForward ? 10 : 700); 
         }
 
         function getPosClass(pos) {
@@ -1114,10 +1154,24 @@
             div.className = 'race-row';
             
             let chaosHtml = '';
-            if (d1.msg) chaosHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
-            if (d2.msg) chaosHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
-            if (d1.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
-            if (d2.evt) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
+            
+            // Standard DNFs
+            if (d1.msg && !d1.loreMsg) chaosHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
+            if (d2.msg && !d2.loreMsg) chaosHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'dns-msg' : ''}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
+            
+            // Standard Radio Events
+            if (d1.evt && !d1.loreMsg) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
+            if (d2.evt && !d2.loreMsg) chaosHtml += `<div class="chaos-msg event-msg">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
+            
+            // Lore Events (Home & Curse)
+            if (d1.loreMsg) {
+                let lClass = d1.loreType === 'curse' ? 'lore-curse' : 'lore-home';
+                chaosHtml += `<div class="chaos-msg ${lClass}">${d1.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver1.name.split(' ').pop()}: ${d1.loreMsg}</div>`;
+            }
+            if (d2.loreMsg) {
+                let lClass = d2.loreType === 'curse' ? 'lore-curse' : 'lore-home';
+                chaosHtml += `<div class="chaos-msg ${lClass}">${d2.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver2.name.split(' ').pop()}: ${d2.loreMsg}</div>`;
+            }
 
             let weatherIcon = isRaining ? '<span class="weather-rain">🌧️ WET</span>' : '<span class="weather-sun">☀️ DRY</span>';
 
@@ -1133,11 +1187,12 @@
             list.appendChild(div);
             
             if (!isFastForward) {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'auto' });
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         }
 
         function renderStandings() {
+            document.getElementById('live-wdc-leader').style.display = 'none';
             document.getElementById('championships').style.display = 'grid';
             
             allDrivers.sort((a, b) => b.pts - a.pts);
