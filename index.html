@@ -84,12 +84,15 @@
         }
         .driver-card { height: 280px; }
 
-        .slot-card:hover:not(.completed-slot) { 
+        .slot-card:hover:not(.locked-slot):not(.completed-slot) { 
             border-color: var(--f1-red); 
             transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px) scale(1.01); 
             box-shadow: -10px 15px 30px rgba(225, 6, 0, 0.2); 
         }
         .slot-card.filled { border-style: solid; border-color: #444; background: linear-gradient(145deg, #111, #000); }
+        
+        .slot-card.locked-slot { opacity: 0.4; pointer-events: none; filter: grayscale(100%); border-color: #222; box-shadow: none; transform: none;}
+        .slot-card.locked-slot::after { content: "LOCKED"; position: absolute; bottom: 15px; font-size: 13px; letter-spacing: 3px; color: #666; font-weight: bold; background: #000; padding: 5px 12px; border-radius: 4px; border: 1px solid #333; }
         .slot-card.completed-slot { border-color: var(--success); }
 
         .slot-label { position: absolute; top: 15px; left: 15px; font-size: 14px; color: #fff; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; z-index: 2; background: rgba(0,0,0,0.9); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0; }
@@ -129,7 +132,6 @@
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
             opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            will-change: transform;
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
@@ -173,6 +175,7 @@
         .btn-main.ready { border-color: var(--f1-red); color: var(--f1-red); opacity: 1; pointer-events: auto; }
         .btn-main.ready:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 40px rgba(225, 6, 0, 0.8); transform: scale(1.05); }
 
+        /* OFF-SEASON HUB MODAL */
         #offseason-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(10, 10, 15, 0.98); z-index: 300; display: none; flex-direction: column;
@@ -312,23 +315,23 @@
                 <div class="slot-label">STEP 1: CHASSIS</div>
                 <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT CHASSIS</div></div>
             </div>
-            <div class="slot-card" id="slot-engine" onclick="openDraft('engine')">
+            <div class="slot-card locked-slot" id="slot-engine" onclick="openDraft('engine')">
                 <div class="slot-label">STEP 2: ENGINE</div>
                 <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT ENGINE</div></div>
             </div>
-            <div class="slot-card" id="slot-principal" onclick="openDraft('principal')">
+            <div class="slot-card locked-slot" id="slot-principal" onclick="openDraft('principal')">
                 <div class="slot-label">STEP 3: PRINCIPAL</div>
                 <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT PRINCIPAL</div></div>
             </div>
-            <div class="slot-card driver-card" id="slot-driver1" onclick="openDraft('driver1')">
+            <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
                 <div class="slot-label">STEP 4: LEAD (PRIME/VET)</div>
                 <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT LEAD</div></div>
             </div>
-            <div class="slot-card driver-card" id="slot-driver2" onclick="openDraft('driver2')">
+            <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
                 <div class="slot-label">STEP 5: SECOND (ROOKIE/VET)</div>
                 <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT SECOND</div></div>
             </div>
-            <div class="slot-card driver-card" id="slot-reserve" onclick="openDraft('reserve')">
+            <div class="slot-card driver-card locked-slot" id="slot-reserve" onclick="openDraft('reserve')">
                 <div class="slot-label" style="background:#555; border-color:#888;">STEP 6: RESERVE</div>
                 <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT RESERVE</div></div>
             </div>
@@ -379,7 +382,6 @@
         </div>
     </div>
 
-    <!-- OFF-SEASON HUB -->
     <div id="offseason-overlay">
         <div class="os-header">OFF-SEASON HUB</div>
         <div class="os-grid">
@@ -633,6 +635,9 @@
         }
 
         function openDraft(slotName) {
+            const slotEl = document.getElementById(`slot-${slotName}`);
+            if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
+
             activeDraftSlot = slotName;
             const overlay = document.getElementById('draft-overlay');
             const grid = document.getElementById('draft-grid');
@@ -654,11 +659,11 @@
                     }
                 }
                 shuffleCount++;
-                if (shuffleCount > 5) {
+                if (shuffleCount > 4) {
                     clearInterval(scrambleInterval);
                     renderDraftOptions(slotName, grid);
                 }
-            }, 50);
+            }, 60);
         }
 
         function respin() {
@@ -721,8 +726,14 @@
 
                 candidateDrivers = candidateDrivers.sort(() => 0.5 - Math.random());
                 
-                if (forceShit) candidateDrivers = candidateDrivers.filter(d => d.versions.some(v => v.stat < 60));
-                if (forceGod) candidateDrivers = candidateDrivers.filter(d => d.versions.some(v => v.stat > 95));
+                if (forceShit) {
+                    let shitList = candidateDrivers.filter(d => d.versions.some(v => v.stat < 75));
+                    if (shitList.length > 0) candidateDrivers = shitList;
+                }
+                if (forceGod) {
+                    let godList = candidateDrivers.filter(d => d.versions.some(v => v.stat > 92));
+                    if (godList.length > 0) candidateDrivers = godList;
+                }
 
                 options = candidateDrivers.slice(0, 4).map(d => {
                     const rv = getRandomVersionForSlot(d.versions, slotName);
@@ -756,8 +767,14 @@
                 }
             } else if (slotName === 'principal') {
                 let shuffled = [...db.principal].sort(() => 0.5 - Math.random());
-                if (forceShit) shuffled = shuffled.filter(p => p.stat < 85);
-                if (forceGod) shuffled = shuffled.filter(p => p.stat >= 96);
+                if (forceShit) {
+                    let s = shuffled.filter(p => p.stat < 85);
+                    if (s.length > 0) shuffled = s;
+                }
+                if (forceGod) {
+                    let g = shuffled.filter(p => p.stat >= 95);
+                    if (g.length > 0) shuffled = g;
+                }
                 options = shuffled.slice(0, 4);
 
                 if (Math.random() < 0.25 && !forceShit && !forceGod) {
@@ -768,8 +785,14 @@
                 }
             } else {
                 let shuffled = [...db[slotName]].sort(() => 0.5 - Math.random());
-                if (forceShit) shuffled = shuffled.filter(i => i.stat < 75);
-                if (forceGod) shuffled = shuffled.filter(i => i.stat >= 97);
+                if (forceShit) {
+                    let s = shuffled.filter(p => p.stat < 80);
+                    if (s.length > 0) shuffled = s;
+                }
+                if (forceGod) {
+                    let g = shuffled.filter(p => p.stat >= 95);
+                    if (g.length > 0) shuffled = g;
+                }
                 options = shuffled.slice(0, 4);
             }
 
@@ -811,13 +834,13 @@
                 `;
                 
                 if(canAfford) {
-                    card.onclick = () => selectDraft(opt, cost);
+                    card.onclick = () => selectDraft(opt, cost, false);
                 }
                 grid.appendChild(card);
             });
         }
 
-        function selectDraft(item, cost) {
+        function selectDraft(item, cost, isAuto = false) {
             const contractLen = item.isDriver ? 3 : 99;
             
             teamState[activeDraftSlot] = {
@@ -858,14 +881,25 @@
             updateSeedDisplay();
             checkDraftCompletion();
 
-            // AUTO-ADVANCE TO NEXT UNFILLED SLOT FOR A FLAWLESS DRAFTING FLOW
-            const nextSlot = slotSequence.find(s => !teamState[s]);
-            if (nextSlot) {
-                setTimeout(() => { openDraft(nextSlot); }, 350);
+            // Auto-advance modal only if manual selection is happening
+            if (!isAuto) {
+                const nextSlot = slotSequence.find(s => !teamState[s]);
+                if (nextSlot) {
+                    setTimeout(() => { openDraft(nextSlot); }, 350);
+                }
             }
         }
 
         function checkDraftCompletion() {
+            let allFilled = true;
+            for(let i=0; i<slotSequence.length; i++) {
+                if(!teamState[slotSequence[i]]) {
+                    allFilled = false;
+                    document.getElementById(`slot-${slotSequence[i]}`).classList.remove('locked-slot');
+                    break;
+                }
+            }
+
             if (slotSequence.every(key => teamState[key] !== undefined)) {
                 
                 const cYear = teamState.chassis.item.year;
@@ -926,12 +960,18 @@
                 for (let slot of slotSequence) {
                     let options = [];
                     if (slot.includes('driver') || slot === 'reserve') {
-                        let available = db.drivers;
-                        if (tempState.driver1) available = available.filter(d => d.name !== tempState.driver1.item.name);
-                        if (tempState.driver2) available = available.filter(d => d.name !== tempState.driver2.item.name);
-                        
-                        if (slot === 'driver1') available = available.filter(d => d.versions.some(v => v.stage === 'Prime' || v.stage === 'Veteran'));
-                        if (slot === 'driver2') available = available.filter(d => d.versions.some(v => v.stage === 'Rookie' || v.stage === 'Veteran'));
+                        let available = db.drivers.filter(d => {
+                            let inUse = false;
+                            if (tempState.driver1 && tempState.driver1.item.name === d.name) inUse = true;
+                            if (tempState.driver2 && tempState.driver2.item.name === d.name) inUse = true;
+                            if (tempState.reserve && tempState.reserve.item.name === d.name) inUse = true;
+                            return !inUse;
+                        });
+
+                        let filtered = available;
+                        if (slot === 'driver1') filtered = available.filter(d => d.versions.some(v => v.stage === 'Prime' || v.stage === 'Veteran'));
+                        if (slot === 'driver2') filtered = available.filter(d => d.versions.some(v => v.stage === 'Rookie' || v.stage === 'Veteran'));
+                        if (filtered.length > 0) available = filtered;
 
                         let d = available[Math.floor(Math.random() * available.length)];
                         let rv = getRandomVersionForSlot(d.versions, slot);
@@ -944,9 +984,14 @@
                     let cost = getCost(picked.stat);
 
                     if (tempBudget < cost) {
-                        if (slot === 'chassis' || slot === 'engine') picked = db[slot].find(x => x.stat <= 60) || db[slot][0];
-                        else if (slot === 'principal') picked = db.principal.find(x => x.stat <= 80) || db.principal[0];
-                        else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true };
+                        let cheapOptions = options.filter(x => getCost(x.stat) <= tempBudget);
+                        if(cheapOptions.length > 0) {
+                            picked = cheapOptions[Math.floor(Math.random() * cheapOptions.length)];
+                        } else {
+                            if (slot === 'chassis' || slot === 'engine') picked = db[slot].sort((a,b)=>a.stat-b.stat)[0];
+                            else if (slot === 'principal') picked = db.principal.sort((a,b)=>a.stat-b.stat)[0];
+                            else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true };
+                        }
                         cost = getCost(picked.stat);
                     }
                     
@@ -959,7 +1004,7 @@
             const finalPicks = attemptDraft();
             slotSequence.forEach(slot => {
                 activeDraftSlot = slot;
-                selectDraft(finalPicks[slot].item, finalPicks[slot].cost);
+                selectDraft(finalPicks[slot].item, finalPicks[slot].cost, true);
             });
         }
 
@@ -985,7 +1030,7 @@
 
             slotSequence.forEach((slot, index) => {
                 const el = document.getElementById(`slot-${slot}`);
-                el.className = `slot-card ${slot.includes('driver') ? 'driver-card' : ''}`;
+                el.className = `slot-card ${index > 0 ? 'locked-slot' : ''} ${slot.includes('driver') ? 'driver-card' : ''}`;
                 const label = slot.replace(/[0-9]/g, '').toUpperCase();
                 
                 let stepLabel = label;
