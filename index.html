@@ -36,7 +36,7 @@
             background: radial-gradient(circle at center, #1a1a24 0%, #0a0a0f 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
         }
-        #landing-screen h1 { font-family: 'Teko', sans-serif; font-size: 80px; margin: 0 0 40px 0; letter-spacing: 4px; text-shadow: 0 4px 20px rgba(225,6,0,0.6); }
+        #landing-screen h1 { font-family: 'Teko', sans-serif; font-size: 80px; margin: 0 0 40px 0; letter-spacing: 4px; text-shadow: 0 4px 20px rgba(225,6,0,0.6); text-align: center;}
         #landing-screen h1 span { color: var(--f1-red); }
         .mode-cards { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; padding: 0 20px;}
         .mode-card {
@@ -108,8 +108,10 @@
 
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 200;
-            display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(10px);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
         }
+        .draft-overlay.active { opacity: 1; pointer-events: auto; }
 
         .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,1);}
         .draft-header span { color: var(--f1-red); }
@@ -125,16 +127,21 @@
             background: linear-gradient(180deg, #18181f, #0a0a0f); border: 2px solid #333; border-radius: 8px;
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
+        
         .draft-option:hover:not(.unaffordable) { border-color: var(--f1-red); transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
 
         .draft-option.unaffordable { opacity: 0.35; filter: grayscale(100%); pointer-events: none !important; border-color: #111; }
         .draft-option.unaffordable::after {
             content: "OVER BUDGET"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
-            color: #ff3333; font-family: 'Teko', sans-serif; font-size: 38px; border: 3px solid #ff3333; padding: 5px 15px; background: rgba(0,0,0,0.9); z-index: 10;
+            color: #ff3333; font-family: 'Teko', sans-serif; font-size: 38px; border: 3px solid #ff3333; padding: 5px 15px; background: rgba(0,0,0,0.9); z-index: 10; width: max-content;
         }
         
+        .slot-reeling { border-color: var(--neon-blue) !important; box-shadow: 0 0 20px rgba(0, 191, 255, 0.3) !important; animation: slotPulse 0.1s infinite alternate; }
+        @keyframes slotPulse { 0% { transform: scale(0.98); opacity: 0.8; } 100% { transform: scale(1.01); opacity: 1; } }
+
         .opt-content { z-index: 2; position: relative; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
         .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; letter-spacing: 2px;}
         .opt-name { font-family: 'Teko', sans-serif; font-size: 40px; line-height: 0.9; margin-bottom: 15px; text-transform: uppercase; color: #fff;}
@@ -628,7 +635,7 @@
                 } else {
                     el.classList.remove('completed-slot');
                     if (!nextFound) {
-                        el.classList.remove('locked-slot');
+                        el.classList.remove('locked-slot'); // Unlocks the immediate next slot
                         nextFound = true;
                     } else {
                         el.classList.add('locked-slot');
@@ -639,7 +646,6 @@
 
         function openDraft(slotName) {
             const slotEl = document.getElementById(`slot-${slotName}`);
-            // Prevent opening if the slot is properly locked or already completed
             if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
 
             activeDraftSlot = slotName;
@@ -651,8 +657,6 @@
             document.getElementById('draft-title').innerHTML = `DRAFT <span>${displayTitle}</span>`;
             
             overlay.style.display = 'flex';
-            
-            // Animation Delay
             setTimeout(() => { overlay.classList.add('active'); }, 10);
             
             grid.innerHTML = '';
@@ -790,7 +794,6 @@
                 const isShit = opt.stat <= 50;
                 const cost = getCost(opt.stat);
                 
-                // Guarantee affordability logic for Career Mode
                 const canAfford = currentMode === 'arcade' ? true : ((currentBudget >= cost) || (index === 0 && currentBudget < 5));
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
@@ -833,9 +836,9 @@
             const slot = document.getElementById(`slot-${slotName}`);
             const isShiny = item.isSpecial || item.stat >= 98;
             const isShit = item.stat <= 50;
+            const isDriver = slotName.includes('driver') || slotName === 'reserve';
             
-            // Note: completed-slot explicitly adds pointer-events: none in CSS
-            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
+            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${isDriver ? 'driver-card' : ''}`;
             
             let displayStat = formatStatDisplay(slotName, item.stat);
             let statFontSize = slotName === 'engine' ? '20px' : '28px';
@@ -878,12 +881,9 @@
             setTimeout(() => { overlay.style.display = 'none'; }, 300);
 
             updateSeedDisplay();
-            
-            // Advance the state locks immediately
             updateSlotLocks();
             checkDraftCompletion();
 
-            // Auto-advance modal only if manual selection is happening
             if (!isAuto) {
                 const nextSlot = currentModeSlots.find(s => !teamState[s]);
                 if (nextSlot) {
@@ -999,8 +999,6 @@
                 activeDraftSlot = slot;
                 selectDraft(finalPicks[slot].item, finalPicks[slot].cost, true);
             });
-            updateSlotLocks();
-            checkDraftCompletion();
         }
 
         function resetDraft() {
@@ -1029,7 +1027,6 @@
             document.getElementById('championships').style.display = 'none';
             document.getElementById('active-seed').innerText = "SEED: READY";
 
-            // Reset UI visually
             const allSlots = ['chassis', 'engine', 'principal', 'driver1', 'driver2', 'reserve'];
             allSlots.forEach((slot) => {
                 const el = document.getElementById(`slot-${slot}`);
@@ -1225,7 +1222,6 @@
                 }
             });
 
-            // Substitute injured drivers automatically in Career Mode
             if (currentMode === 'career') {
                 allDrivers.forEach(d => {
                     if (d.isUser && d.isInjured && teamState.reserve) {
@@ -1490,7 +1486,7 @@
             document.getElementById(`os-card-${slot}`).innerHTML = `<div style="color:var(--f1-red); font-weight:bold;">DRIVER HAS LEFT THE TEAM.</div>`;
             
             const el = document.getElementById(`slot-${slot}`);
-            el.className = `slot-card driver-card`;
+            el.className = `slot-card ${slot.includes('driver') || slot === 'reserve' ? 'driver-card' : ''}`;
             const label = slot.replace(/[0-9]/g, '').toUpperCase();
             
             let stepLabel = label;
