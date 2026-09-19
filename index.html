@@ -84,18 +84,21 @@
             background: linear-gradient(145deg, var(--panel-dark), #0f0f13); border: 2px dashed #333; border-radius: 8px;
             height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;
             transition: transform 0.3s, border-color 0.3s; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            will-change: transform;
         }
         .driver-card { height: 280px; }
 
-        .slot-card:hover:not(.locked-slot):not(.completed-slot) { border-color: var(--f1-red); transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px) scale(1.01); box-shadow: -10px 15px 30px rgba(225, 6, 0, 0.2); }
+        /* ENSURE CARDS CAN ONLY BE HOVERED IF THEY ARE NOT LOCKED AND NOT COMPLETED */
+        .slot-card:hover:not(.locked-slot):not(.completed-slot) { 
+            border-color: var(--f1-red); transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px) scale(1.01); box-shadow: -10px 15px 30px rgba(225, 6, 0, 0.2); 
+        }
+        
         .slot-card.filled { border-style: solid; border-color: #444; background: linear-gradient(145deg, #111, #000); }
         
-        /* STRICT POINTER LOCKS */
+        /* HARD CSS POINTER LOCKS */
+        .slot-card.completed-slot { border-color: var(--success); pointer-events: none !important; }
         .slot-card.locked-slot { opacity: 0.4; filter: grayscale(100%); border-color: #222; box-shadow: none; pointer-events: none !important; transform: none;}
         .slot-card.locked-slot::after { content: "LOCKED"; position: absolute; bottom: 15px; font-size: 13px; letter-spacing: 3px; color: #666; font-weight: bold; background: #000; padding: 5px 12px; border-radius: 4px; border: 1px solid #333; }
-        .slot-card.completed-slot { border-color: var(--success); pointer-events: none !important; }
-
+        
         .slot-label { position: absolute; top: 15px; left: 15px; font-size: 14px; color: #fff; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; z-index: 2; background: rgba(0,0,0,0.9); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0; }
         .watermark { position: absolute; right: -10px; bottom: -20px; font-family: 'Teko', sans-serif; font-size: 140px; color: rgba(255,255,255,0.03); z-index: 0; line-height: 1; pointer-events: none; font-weight: bold; }
         .slot-content { text-align: center; z-index: 2; padding: 20px; width: 100%; box-sizing: border-box; }
@@ -133,8 +136,10 @@
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
             opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            will-change: transform;
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
+        
         .draft-option:hover:not(.unaffordable) { border-color: var(--f1-red); transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
 
         .draft-option.unaffordable { opacity: 0.35; filter: grayscale(100%); pointer-events: none !important; border-color: #111; }
@@ -292,7 +297,7 @@
                     <option value="10">10 SEASONS</option>
                     <option value="15">15 SEASONS</option>
                 </select>
-                <div class="budget-display" id="budget-display">BUDGET: $150M</div>
+                <div class="budget-display" id="budget-display">BUDGET: $200M</div>
                 <button class="tool-btn" onclick="autoDraft()">⚡ AUTO DRAFT</button>
                 <button class="tool-btn tool-btn-reset" onclick="location.reload()">🏠 MENU</button>
             </div>
@@ -319,11 +324,11 @@
                     <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT PRINCIPAL</div></div>
                 </div>
                 <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
-                    <div class="slot-label">STEP 4: LEAD DRIVER</div>
+                    <div class="slot-label">STEP 4: LEAD (PRIME/VET)</div>
                     <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT LEAD</div></div>
                 </div>
                 <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
-                    <div class="slot-label">STEP 5: SECOND DRIVER</div>
+                    <div class="slot-label">STEP 5: SECOND (ROOKIE/VET)</div>
                     <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT SECOND</div></div>
                 </div>
                 <div class="slot-card driver-card locked-slot" id="slot-reserve" onclick="openDraft('reserve')">
@@ -378,13 +383,13 @@
         </div>
     </div>
 
-    <!-- OVERLAYS -->
+    <!-- OFF-SEASON HUB -->
     <div id="offseason-overlay">
         <div class="os-header">OFF-SEASON HUB</div>
         <div class="os-grid">
             <div class="os-panel">
                 <h3>FINANCES & UPGRADES</h3>
-                <div class="os-budget" id="os-budget-display">$150M</div>
+                <div class="os-budget" id="os-budget-display">$200M</div>
                 <div style="color:#aaa; text-align:center; margin-bottom: 20px;" id="os-prize-money">+ $0M Prize Money Awarded</div>
                 <button class="os-upgrade-btn" id="btn-upg-aero" onclick="buyUpgrade('aero')">
                     <span>UPGRADE AERO (+2 Pace)</span><span style="color:var(--gold);">$25M</span>
@@ -543,7 +548,7 @@
         let totalSeasons = 1;
         let currentSeason = 1;
         let totalCareerWins = 0;
-        let currentBudget = 150;
+        let currentBudget = 200;
         let highestDriverWins = 0;
         
         let upgradeAeroBonus = 0;
@@ -578,7 +583,6 @@
                 document.getElementById('header-title').innerHTML = `F1 <span>MANAGER</span>`;
                 totalSeasons = 5;
             }
-            
             resetDraft();
         }
 
@@ -618,16 +622,18 @@
         }
 
         function updateSeedDisplay() {
-            if (!teamState.chassis) return;
-            const s1 = teamState.chassis ? teamState.chassis.item.name.substring(0,2).toUpperCase() : 'XX';
-            const s2 = teamState.engine ? teamState.engine.item.name.substring(0,2).toUpperCase() : 'XX';
-            const s3 = teamState.principal ? teamState.principal.item.name.substring(0,2).toUpperCase() : 'XX';
-            document.getElementById('active-seed').innerText = `SEED: #${s1}${s2}-${s3}`;
+            try {
+                if (!teamState.chassis) return;
+                const s1 = teamState.chassis ? teamState.chassis.item.name.substring(0,2).toUpperCase() : 'XX';
+                const s2 = teamState.engine ? teamState.engine.item.name.substring(0,2).toUpperCase() : 'XX';
+                const s3 = teamState.principal ? teamState.principal.item.name.substring(0,2).toUpperCase() : 'XX';
+                document.getElementById('active-seed').innerText = `SEED: #${s1}${s2}-${s3}`;
+            } catch(e) {}
         }
 
         // --- BULLETPROOF STATE LOCKING SYSTEM ---
         function updateSlotLocks() {
-            let nextFound = false;
+            let nextToUnlock = null;
             for (let i = 0; i < currentModeSlots.length; i++) {
                 const sName = currentModeSlots[i];
                 const el = document.getElementById(`slot-${sName}`);
@@ -636,21 +642,24 @@
                 if (teamState[sName]) {
                     el.classList.remove('locked-slot');
                     el.classList.add('completed-slot');
+                    el.style.pointerEvents = 'none';
                 } else {
                     el.classList.remove('completed-slot');
-                    if (!nextFound) {
-                        el.classList.remove('locked-slot'); // Unlocks the immediate next slot
-                        nextFound = true;
+                    if (!nextToUnlock) {
+                        nextToUnlock = sName;
+                        el.classList.remove('locked-slot');
+                        el.style.pointerEvents = 'auto';
                     } else {
-                        el.classList.add('locked-slot'); // Locks everything after
+                        el.classList.add('locked-slot');
+                        el.style.pointerEvents = 'none';
                     }
                 }
             }
+            return nextToUnlock;
         }
 
         function openDraft(slotName) {
             const slotEl = document.getElementById(`slot-${slotName}`);
-            // Prevent opening if the slot is properly locked or already completed
             if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
 
             activeDraftSlot = slotName;
@@ -793,33 +802,26 @@
                 options = shuffled.slice(0, 4);
             }
 
-            // GUARANTEE BUDGET LOCKOUT PREVENTION
-            let cheapestCost = Math.min(...options.map(o => getCost(o.stat)));
-
             options.forEach((opt, index) => {
                 const card = document.createElement('div');
                 const isShiny = opt.isSpecial || opt.stat >= 98;
                 const isShit = opt.stat <= 50;
-                let cost = getCost(opt.stat);
+                const cost = getCost(opt.stat);
                 
-                let canAfford = currentMode === 'arcade' ? true : (currentBudget >= cost);
-
-                // Ultimate Fallback: Un-stick the player if they are broke
-                if (currentMode === 'career' && currentBudget < cheapestCost && cost === cheapestCost) {
-                    canAfford = true;
-                    cost = currentBudget; // Drain remaining budget
-                }
+                const canAfford = currentMode === 'arcade' ? true : ((currentBudget >= cost) || (index === 0 && currentBudget < 5));
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
                 card.style.animationDelay = `${index * 0.08}s`;
                 
                 let watermarkText = "F1";
-                if (opt.name) {
-                    let parts = opt.name.split(' ');
-                    let lastPart = parts[parts.length - 1];
-                    if (lastPart.includes('(')) lastPart = parts[0]; 
-                    watermarkText = lastPart.substring(0,2).toUpperCase();
-                }
+                try {
+                    if (opt.name) {
+                        let parts = opt.name.split(' ');
+                        let lastPart = parts[parts.length - 1];
+                        if (lastPart.includes('(')) lastPart = parts[0]; 
+                        watermarkText = lastPart.substring(0,2).toUpperCase();
+                    }
+                } catch(e) {}
                 if (slotName === 'engine') watermarkText = "V6";
                 let watermark = `<div class="watermark">${watermarkText}</div>`;
                 
@@ -853,118 +855,121 @@
         }
 
         function selectDraft(item, cost, isAuto = false) {
-            const contractLen = item.isDriver ? 3 : 99;
-            teamState[activeDraftSlot] = {
-                item: item,
-                cost: currentMode === 'career' ? cost : 0,
-                contract: contractLen,
-                yearsInStage: 0,
-                baseStat: item.stat
-            };
-            
-            if (currentMode === 'career') {
-                currentBudget -= cost;
-            }
-            updateHUD();
+            try {
+                const contractLen = item.isDriver ? 3 : 99;
+                teamState[activeDraftSlot] = {
+                    item: item,
+                    cost: currentMode === 'career' ? cost : 0,
+                    contract: contractLen,
+                    yearsInStage: 0,
+                    baseStat: item.stat
+                };
+                
+                if (currentMode === 'career') currentBudget -= cost;
+                updateHUD();
 
-            const slot = document.getElementById(`slot-${activeDraftSlot}`);
-            const isShiny = item.isSpecial || item.stat >= 98;
-            const isShit = item.stat <= 50;
-            const isDriver = activeDraftSlot.includes('driver') || activeDraftSlot === 'reserve';
-            
-            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${isDriver ? 'driver-card' : ''}`;
-            
-            let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
-            let statFontSize = activeDraftSlot === 'engine' ? '20px' : '28px';
-            
-            let watermarkText = "F1";
-            if (item.name) {
-                let parts = item.name.split(' ');
-                let lastPart = parts[parts.length - 1];
-                if (lastPart.includes('(')) lastPart = parts[0]; 
-                watermarkText = lastPart.substring(0,2).toUpperCase();
-            }
-            if (activeDraftSlot === 'engine') watermarkText = "V6";
-            
-            let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
-            
-            slot.innerHTML = `
-                <div class="watermark" style="font-size: 180px; right:-20px; bottom:-30px;">${watermarkText}</div>
-                ${sparkles}
-                <div class="slot-label">${activeDraftSlot.replace(/[0-9]/g, '')}</div>
-                <div class="slot-content">
-                    <div class="filled-name">${item.name}</div>
-                    <div class="filled-year">${item.year || ''} ${item.stage ? '[' + item.stage.toUpperCase() + ']' : ''}</div>
-                    <div class="filled-stat" style="font-size: ${statFontSize};">${displayStat}</div>
-                </div>
-            `;
-            
-            const overlay = document.getElementById('draft-overlay');
-            overlay.classList.remove('active');
-            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+                const slot = document.getElementById(`slot-${activeDraftSlot}`);
+                const isShiny = item.isSpecial || item.stat >= 98;
+                const isShit = item.stat <= 50;
+                const isDriver = activeDraftSlot.includes('driver') || activeDraftSlot === 'reserve';
+                
+                slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${isDriver ? 'driver-card' : ''}`;
+                
+                let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
+                let statFontSize = activeDraftSlot === 'engine' ? '20px' : '28px';
+                
+                let watermarkText = "F1";
+                try {
+                    if (item.name) {
+                        let parts = item.name.split(' ');
+                        let lastPart = parts[parts.length - 1];
+                        if (lastPart.includes('(')) lastPart = parts[0]; 
+                        watermarkText = lastPart.substring(0,2).toUpperCase();
+                    }
+                } catch(e) {}
+                if (activeDraftSlot === 'engine') watermarkText = "V6";
+                
+                let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
+                
+                slot.innerHTML = `
+                    <div class="watermark" style="font-size: 180px; right:-20px; bottom:-30px;">${watermarkText}</div>
+                    ${sparkles}
+                    <div class="slot-label">${activeDraftSlot.replace(/[0-9]/g, '').toUpperCase()}</div>
+                    <div class="slot-content">
+                        <div class="filled-name">${item.name}</div>
+                        <div class="filled-year">${item.year || ''} ${item.stage ? '[' + item.stage.toUpperCase() + ']' : ''}</div>
+                        <div class="filled-stat" style="font-size: ${statFontSize};">${displayStat}</div>
+                    </div>
+                `;
+                
+                const overlay = document.getElementById('draft-overlay');
+                overlay.classList.remove('active');
+                setTimeout(() => { overlay.style.display = 'none'; }, 300);
 
-            updateSeedDisplay();
-            
-            // --- THE CRITICAL FIX: RE-EVALUATE LOCKS IMMEDIATELY ---
-            updateSlotLocks();
-            checkDraftCompletion();
+                try { updateSeedDisplay(); } catch(e){}
+            } catch (err) {
+                console.error("Critical error in selectDraft:", err);
+            } finally {
+                // ABSOLUTE GUARANTEE THAT THE FLOW CONTINUES
+                let nextSlot = updateSlotLocks();
+                try { checkDraftCompletion(); } catch(e){}
 
-            // Auto-advance modal
-            if (!isAuto) {
-                const nextSlot = currentModeSlots.find(s => !teamState[s]);
-                if (nextSlot) {
+                if (!isAuto && nextSlot) {
                     setTimeout(() => { openDraft(nextSlot); }, 400);
                 }
             }
         }
 
         function checkDraftCompletion() {
-            if (currentModeSlots.every(key => teamState[key] !== undefined)) {
-                
-                const cYear = teamState.chassis.item.year;
-                const eYear = teamState.engine.item.year;
-                const eraDiff = Math.abs(cYear - eYear);
-                const synBox = document.getElementById('synergy-box');
-                const synText = document.getElementById('synergy-text');
-                
-                synBox.style.display = 'block';
-                internalWarfareRisk = false;
-                let isWorksTeam = false;
+            try {
+                if (currentModeSlots.every(key => teamState[key] !== undefined)) {
+                    const cYear = teamState.chassis.item.year;
+                    const eYear = teamState.engine.item.year;
+                    const eraDiff = Math.abs(cYear - eYear);
+                    const synBox = document.getElementById('synergy-box');
+                    const synText = document.getElementById('synergy-text');
+                    
+                    synBox.style.display = 'block';
+                    internalWarfareRisk = false;
+                    let isWorksTeam = false;
 
-                if (teamState.chassis.item.name.includes('Mercedes') && teamState.engine.item.name.includes('Mercedes')) isWorksTeam = true;
-                if (teamState.chassis.item.name.includes('Red Bull') && teamState.engine.item.name.includes('Honda')) isWorksTeam = true;
-                if (teamState.chassis.item.name.includes('Ferrari') && teamState.engine.item.name.includes('Ferrari')) isWorksTeam = true;
-                if (teamState.chassis.item.name.includes('McLaren') && teamState.engine.item.name.includes('Honda') && eYear < 2000) isWorksTeam = true;
+                    if (teamState.chassis.item.name.includes('Mercedes') && teamState.engine.item.name.includes('Mercedes')) isWorksTeam = true;
+                    if (teamState.chassis.item.name.includes('Red Bull') && teamState.engine.item.name.includes('Honda')) isWorksTeam = true;
+                    if (teamState.chassis.item.name.includes('Ferrari') && teamState.engine.item.name.includes('Ferrari')) isWorksTeam = true;
+                    if (teamState.chassis.item.name.includes('McLaren') && teamState.engine.item.name.includes('Honda') && eYear < 2000) isWorksTeam = true;
 
-                if (teamState.driver1.item.stage === 'Prime' && teamState.driver2.item.stage === 'Prime') {
-                    internalWarfareRisk = true;
+                    if (teamState.driver1.item.stage === 'Prime' && teamState.driver2.item.stage === 'Prime') {
+                        internalWarfareRisk = true;
+                    }
+
+                    if (eraDiff <= 5) {
+                        synergyPenalty = 0; synergyDnfMultiplier = 0;
+                        synText.className = 'synergy-status syn-good';
+                        synText.innerText = "PERFECT HARMONY: Chassis and Engine eras align perfectly. Maximum pace unlocked.";
+                    } else if (eraDiff <= 15) {
+                        synergyPenalty = -3; synergyDnfMultiplier = 5;
+                        synText.className = 'synergy-status syn-bad';
+                        synText.style.borderColor = "#f1c40f"; synText.style.color = "#f1c40f";
+                        synText.innerText = "WARNING: Slight era mismatch. Minor aerodynamic and power penalty.";
+                    } else {
+                        synergyPenalty = -10; synergyDnfMultiplier = 20;
+                        synText.className = 'synergy-status syn-bad';
+                        synText.innerText = `CRITICAL MISMATCH: Bolting a ${eYear} engine into a ${cYear} chassis! Massive pace deficit and high DNF risk!`;
+                    }
+
+                    if (isWorksTeam) {
+                        synergyPenalty += 5;
+                        synText.innerHTML += "<br><span class='syn-works'>⚙️ WORKS TEAM SYNERGY: Chassis and Engine matched perfectly. +5 Pace Boost!</span>";
+                    }
+
+                    if (internalWarfareRisk) {
+                        synText.innerHTML += "<br><span style='color:#ff3333; margin-top:8px; display:inline-block;'>⚠️ TOXIC RIVALRY: Two Prime drivers drafted! High risk of internal warfare and collisions!</span>";
+                    }
+
+                    document.getElementById('sim-btn').classList.add('ready');
                 }
-
-                if (eraDiff <= 5) {
-                    synergyPenalty = 0; synergyDnfMultiplier = 0;
-                    synText.className = 'synergy-status syn-good';
-                    synText.innerText = "PERFECT HARMONY: Chassis and Engine eras align perfectly. Maximum pace unlocked.";
-                } else if (eraDiff <= 15) {
-                    synergyPenalty = -3; synergyDnfMultiplier = 5;
-                    synText.className = 'synergy-status syn-bad';
-                    synText.style.borderColor = "#f1c40f"; synText.style.color = "#f1c40f";
-                    synText.innerText = "WARNING: Slight era mismatch. Minor aerodynamic and power penalty.";
-                } else {
-                    synergyPenalty = -10; synergyDnfMultiplier = 20;
-                    synText.className = 'synergy-status syn-bad';
-                    synText.innerText = `CRITICAL MISMATCH: Bolting a ${eYear} engine into a ${cYear} chassis! Massive pace deficit and high DNF risk!`;
-                }
-
-                if (isWorksTeam) {
-                    synergyPenalty += 5;
-                    synText.innerHTML += "<br><span class='syn-works'>⚙️ WORKS TEAM SYNERGY: Chassis and Engine matched perfectly. +5 Pace Boost!</span>";
-                }
-
-                if (internalWarfareRisk) {
-                    synText.innerHTML += "<br><span style='color:#ff3333; margin-top:8px; display:inline-block;'>⚠️ TOXIC RIVALRY: Two Prime drivers drafted! High risk of internal warfare and collisions!</span>";
-                }
-
-                document.getElementById('sim-btn').classList.add('ready');
+            } catch (err) {
+                console.error("Error in checkDraftCompletion:", err);
             }
         }
 
@@ -1009,9 +1014,9 @@
                         } else {
                             if (slot === 'chassis' || slot === 'engine') picked = [...db[slot]].sort((a,b)=>a.stat-b.stat)[0];
                             else if (slot === 'principal') picked = [...db.principal].sort((a,b)=>a.stat-b.stat)[0];
-                            else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true, wetMod: 0 };
+                            else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true };
                         }
-                        cost = Math.min(tempBudget, getCost(picked.stat));
+                        cost = getCost(picked.stat);
                     }
                     
                     tempBudget -= cost;
