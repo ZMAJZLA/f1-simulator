@@ -84,6 +84,7 @@
             background: linear-gradient(145deg, var(--panel-dark), #0f0f13); border: 2px dashed #333; border-radius: 8px;
             height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;
             transition: transform 0.3s, border-color 0.3s; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            will-change: transform;
         }
         .driver-card { height: 280px; }
 
@@ -297,7 +298,7 @@
                     <option value="10">10 SEASONS</option>
                     <option value="15">15 SEASONS</option>
                 </select>
-                <div class="budget-display" id="budget-display">BUDGET: $200M</div>
+                <div class="budget-display" id="budget-display">BUDGET: $150M</div>
                 <button class="tool-btn" onclick="autoDraft()">⚡ AUTO DRAFT</button>
                 <button class="tool-btn tool-btn-reset" onclick="location.reload()">🏠 MENU</button>
             </div>
@@ -548,7 +549,7 @@
         let totalSeasons = 1;
         let currentSeason = 1;
         let totalCareerWins = 0;
-        let currentBudget = 200;
+        let currentBudget = 150;
         let highestDriverWins = 0;
         
         let upgradeAeroBonus = 0;
@@ -583,6 +584,7 @@
                 document.getElementById('header-title').innerHTML = `F1 <span>MANAGER</span>`;
                 totalSeasons = 5;
             }
+            
             resetDraft();
         }
 
@@ -660,6 +662,7 @@
 
         function openDraft(slotName) {
             const slotEl = document.getElementById(`slot-${slotName}`);
+            // Prevent opening if the slot is properly locked or already completed
             if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
 
             activeDraftSlot = slotName;
@@ -808,6 +811,7 @@
                 const isShit = opt.stat <= 50;
                 const cost = getCost(opt.stat);
                 
+                // Guarantee affordability logic for Career Mode
                 const canAfford = currentMode === 'arcade' ? true : ((currentBudget >= cost) || (index === 0 && currentBudget < 5));
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
@@ -966,7 +970,10 @@
                         synText.innerHTML += "<br><span style='color:#ff3333; margin-top:8px; display:inline-block;'>⚠️ TOXIC RIVALRY: Two Prime drivers drafted! High risk of internal warfare and collisions!</span>";
                     }
 
-                    document.getElementById('sim-btn').classList.add('ready');
+                    // ENSURE BUTTON IS VISIBLE AND READY
+                    const simBtn = document.getElementById('sim-btn');
+                    simBtn.style.display = 'inline-block';
+                    simBtn.classList.add('ready');
                 }
             } catch (err) {
                 console.error("Error in checkDraftCompletion:", err);
@@ -1014,9 +1021,9 @@
                         } else {
                             if (slot === 'chassis' || slot === 'engine') picked = [...db[slot]].sort((a,b)=>a.stat-b.stat)[0];
                             else if (slot === 'principal') picked = [...db.principal].sort((a,b)=>a.stat-b.stat)[0];
-                            else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true };
+                            else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true, wetMod: 0 };
                         }
-                        cost = getCost(picked.stat);
+                        cost = Math.min(tempBudget, getCost(picked.stat));
                     }
                     
                     tempBudget -= cost;
@@ -1052,6 +1059,7 @@
             
             document.getElementById('synergy-box').style.display = 'none';
             document.getElementById('sim-btn').classList.remove('ready');
+            document.getElementById('sim-btn').style.display = 'inline-block';
             document.getElementById('ff-btn').style.display = 'none';
             document.getElementById('season-container').style.display = 'none';
             document.getElementById('championships').style.display = 'none';
@@ -1548,10 +1556,15 @@
             }
 
             if (needsDraft) {
-                document.getElementById('sim-btn').classList.remove('ready');
+                const simBtn = document.getElementById('sim-btn');
+                simBtn.style.display = 'inline-block';
+                simBtn.classList.remove('ready');
                 document.getElementById('synergy-box').style.display = 'none';
                 window.scrollTo(0,0);
             } else {
+                const simBtn = document.getElementById('sim-btn');
+                simBtn.style.display = 'inline-block';
+                simBtn.classList.add('ready');
                 triggerLightsOut();
             }
         }
