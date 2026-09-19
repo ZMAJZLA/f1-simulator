@@ -132,7 +132,6 @@
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
             opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            will-change: transform;
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
@@ -504,6 +503,12 @@
                 { name: 'Lotus 72', year: 1970, stat: 94, note: 'Wedge-shaped aerodynamic pioneer.' },
                 { name: 'Brawn BGP 001', year: 2009, stat: 96, note: 'The double-diffuser miracle.' },
                 { name: 'Williams FW14B', year: 1992, stat: 98, note: 'Active suspension spaceship. Untouchable.' },
+                { name: 'Ferrari F1-2000', year: 2000, stat: 97, note: 'The car that started the Schumacher golden decade.' },
+                { name: 'Williams FW18', year: 1996, stat: 97, note: 'Damon Hill\'s championship crushing machine.' },
+                { name: 'Lotus 49', year: 1967, stat: 96, note: 'The iconic Jim Clark Cosworth innovator.' },
+                { name: 'Prost AP04', year: 2001, stat: 35, note: 'Gearbox failures every single weekend.', dnfRisk: 35 },
+                { name: 'Lola T97/30', year: 1997, stat: 15, note: 'MasterCard Lola disaster. 11 seconds off pace.', dnfRisk: 45 },
+                { name: 'HRT F111', year: 2011, stat: 40, note: 'Held together by gaffer tape and hope.', dnfRisk: 30 },
                 { name: 'Haas VF-21', year: 2021, stat: 60, note: 'Essentially a tractor. Highly unstable.', dnfRisk: 10 },
                 { name: 'Andrea Moda S921', year: 1992, stat: 10, note: 'The worst F1 car ever built. A lethal joke.', dnfRisk: 50 },
                 { name: 'Life L190', year: 1990, stat: 5, note: 'A chassis attached to a W12 block that barely moved.', dnfRisk: 60 }
@@ -511,9 +516,14 @@
             engine: [
                 { name: 'Mercedes PU106A', year: 2014, stat: 99, note: 'The dawn of the hybrid era. Uncatchable.' },
                 { name: 'Ferrari 053', year: 2004, stat: 98, note: '3.0L V10 that revved to 19,000 RPM.' },
+                { name: 'Ferrari Tipo 049', year: 2000, stat: 98, note: 'The screamer that won Ferrari\'s 2000 title.' },
+                { name: 'BMW M12/13 Turbo', year: 1986, stat: 97, note: '1,400+ HP monster qualifying engine.' },
                 { name: 'Honda RBPTH001', year: 2023, stat: 99, note: 'Bulletproof Red Bull reliability.' },
                 { name: 'Honda RA168E', year: 1988, stat: 97, note: 'The turbo beast that conquered the 80s.' },
                 { name: 'Ford Cosworth DFV', year: 1970, stat: 95, note: 'The engine that powered an entire decade.' },
+                { name: 'BMW P83 V10', year: 2003, stat: 98, note: 'Screaming 900+ horsepower Williams monster.' },
+                { name: 'Cosworth CR-3 V10', year: 2001, stat: 88, note: 'Jaguar sound machine with explosive temperament.' },
+                { name: 'Hart 415T', year: 1984, stat: 75, note: 'Sennas Toleman engine. Fast when not on fire.', dnfRisk: 25 },
                 { name: 'Jamie\'s Peugeot 206', year: 2006, stat: 75, note: 'Loud exhaust, suspicious smells, certified tractor.', dnfRisk: 20 },
                 { name: 'Ryan\'s Kia Picanto', year: 2007, stat: 75, note: 'Reliable to go to Tesco. On an F1 track? Not so much.', dnfRisk: 10 },
                 { name: 'Alisha\'s Fiat 500', year: 2006, stat: 35, note: 'Whoops! Absolute snail pace, usually found curbed.', dnfRisk: 40 },
@@ -790,7 +800,7 @@
                 const isShit = opt.stat <= 50;
                 const cost = getCost(opt.stat);
                 
-                // Guarantee user never gets locked out!
+                // Guarantee user never gets locked out of a draft selection
                 const canAfford = (currentBudget >= cost) || (index === 0 && currentBudget < 5);
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
@@ -1000,9 +1010,14 @@
                 const el = document.getElementById(`slot-${slot}`);
                 el.className = `slot-card ${index > 0 ? 'locked-slot' : ''} ${slot.includes('driver') ? 'driver-card' : ''}`;
                 const label = slot.replace(/[0-9]/g, '').toUpperCase();
+                
+                let stepLabel = label;
+                if(slot === 'driver1') stepLabel = "LEAD (PRIME/VET)";
+                if(slot === 'driver2') stepLabel = "SECOND (ROOKIE/VET)";
+                
                 el.innerHTML = `
-                    <div class="slot-label">STEP ${index + 1}: ${label}</div>
-                    <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT ${label}</div></div>
+                    <div class="slot-label">STEP ${index + 1}: ${stepLabel}</div>
+                    <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT ${label.split(' ')[0]}</div></div>
                 `;
             });
         }
@@ -1183,10 +1198,10 @@
 
             allDrivers.forEach(d => {
                 if (d.isUser && d.isInjured) {
-                    if (d.seat === 1 && activeDriver1.name !== teamState.reserve.item.name) {
+                    if (d.seat === 1 && activeDriver1.name !== teamState.reserve.item.name + " (RES)") {
                         activeDriver1 = { name: teamState.reserve.item.name + " (RES)", stat: teamState.reserve.item.stat, team: d.team, pts: 0, wins: 0, isUser: true, wetMod: teamState.reserve.item.wetMod, risk: teamState.reserve.item.risk, msg: teamState.reserve.item.crashMsg, isInjured: false, seat: 1 };
                         allDrivers.push(activeDriver1);
-                    } else if (d.seat === 2 && activeDriver2.name !== teamState.reserve.item.name) {
+                    } else if (d.seat === 2 && activeDriver2.name !== teamState.reserve.item.name + " (RES)") {
                         activeDriver2 = { name: teamState.reserve.item.name + " (RES)", stat: teamState.reserve.item.stat, team: d.team, pts: 0, wins: 0, isUser: true, wetMod: teamState.reserve.item.wetMod, risk: teamState.reserve.item.risk, msg: teamState.reserve.item.crashMsg, isInjured: false, seat: 2 };
                         allDrivers.push(activeDriver2);
                     }
@@ -1370,7 +1385,7 @@
 
                 if (d.item.stage === 'Rookie' && d.yearsInStage >= 2) {
                     d.item.stage = 'Prime'; d.item.stat += 6; d.yearsInStage = 0;
-                    devMsg = "Evolved to PRIME! (+6 Pace)"; devColor = var(--success);
+                    devMsg = "Evolved to PRIME! (+6 Pace)"; devColor = "#00ffcc";
                 } else if (d.item.stage === 'Prime' && d.yearsInStage >= 4) {
                     d.item.stage = 'Veteran'; d.item.stat -= 4; d.yearsInStage = 0;
                     devMsg = "Declined to VETERAN. (-4 Pace)"; devColor = "#ffaa00";
@@ -1442,9 +1457,14 @@
             
             const el = document.getElementById(`slot-${slot}`);
             el.className = `slot-card driver-card`;
-            const label = slot.toUpperCase();
+            const label = slot.replace(/[0-9]/g, '').toUpperCase();
+            
+            let stepLabel = label;
+            if(slot === 'driver1') stepLabel = "LEAD (PRIME/VET)";
+            if(slot === 'driver2') stepLabel = "SECOND (ROOKIE/VET)";
+                
             el.innerHTML = `
-                <div class="slot-label">${label}</div>
+                <div class="slot-label">${stepLabel}</div>
                 <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT REPLACEMENT</div></div>
             `;
         }
