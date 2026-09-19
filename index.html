@@ -20,8 +20,11 @@
         }
 
         body {
-            margin: 0; padding: 0; background-color: var(--bg-dark); color: var(--text-main);
-            font-family: 'Rajdhani', sans-serif; min-height: 100vh; overflow-x: hidden;
+            margin: 0; padding: 0 0 50px 0;
+            background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            background-image: radial-gradient(circle at top right, #1a1a24 0%, var(--bg-dark) 80%);
+            min-height: 100vh; overflow-x: hidden;
         }
 
         body::before {
@@ -108,10 +111,8 @@
 
         .draft-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 200;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(10px);
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(10px);
         }
-        .draft-overlay.active { opacity: 1; pointer-events: auto; }
 
         .draft-header { font-family: 'Teko', sans-serif; font-size: 54px; color: #fff; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 5px 15px rgba(0,0,0,1);}
         .draft-header span { color: var(--f1-red); }
@@ -128,6 +129,7 @@
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
             opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            will-change: transform;
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
@@ -638,7 +640,7 @@
                         el.classList.remove('locked-slot'); // Unlocks the immediate next slot
                         nextFound = true;
                     } else {
-                        el.classList.add('locked-slot');
+                        el.classList.add('locked-slot'); // Locks everything after
                     }
                 }
             }
@@ -646,6 +648,7 @@
 
         function openDraft(slotName) {
             const slotEl = document.getElementById(`slot-${slotName}`);
+            // Prevent opening if the slot is properly locked or already completed
             if (slotEl.classList.contains('locked-slot') || slotEl.classList.contains('completed-slot')) return;
 
             activeDraftSlot = slotName;
@@ -657,6 +660,7 @@
             document.getElementById('draft-title').innerHTML = `DRAFT <span>${displayTitle}</span>`;
             
             overlay.style.display = 'flex';
+            
             setTimeout(() => { overlay.classList.add('active'); }, 10);
             
             grid.innerHTML = '';
@@ -794,6 +798,7 @@
                 const isShit = opt.stat <= 50;
                 const cost = getCost(opt.stat);
                 
+                // Guarantee affordability logic for Career Mode
                 const canAfford = currentMode === 'arcade' ? true : ((currentBudget >= cost) || (index === 0 && currentBudget < 5));
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
@@ -832,33 +837,6 @@
             });
         }
 
-        function renderSlotUI(slotName, item) {
-            const slot = document.getElementById(`slot-${slotName}`);
-            const isShiny = item.isSpecial || item.stat >= 98;
-            const isShit = item.stat <= 50;
-            const isDriver = slotName.includes('driver') || slotName === 'reserve';
-            
-            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${isDriver ? 'driver-card' : ''}`;
-            
-            let displayStat = formatStatDisplay(slotName, item.stat);
-            let statFontSize = slotName === 'engine' ? '20px' : '28px';
-            let watermarkText = item.name.split(' ').pop().substring(0,2).toUpperCase();
-            if (slotName === 'engine') watermarkText = "V6";
-            
-            let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
-            
-            slot.innerHTML = `
-                <div class="watermark" style="font-size: 180px; right:-20px; bottom:-30px;">${watermarkText}</div>
-                ${sparkles}
-                <div class="slot-label">${slotName.replace(/[0-9]/g, '')}</div>
-                <div class="slot-content">
-                    <div class="filled-name">${item.name}</div>
-                    <div class="filled-year">${item.year || ''} ${item.stage ? '[' + item.stage.toUpperCase() + ']' : ''}</div>
-                    <div class="filled-stat" style="font-size: ${statFontSize};">${displayStat}</div>
-                </div>
-            `;
-        }
-
         function selectDraft(item, cost, isAuto = false) {
             const contractLen = item.isDriver ? 3 : 99;
             teamState[activeDraftSlot] = {
@@ -874,16 +852,42 @@
             }
             updateHUD();
 
-            renderSlotUI(activeDraftSlot, item);
+            const slot = document.getElementById(`slot-${activeDraftSlot}`);
+            const isShiny = item.isSpecial || item.stat >= 98;
+            const isShit = item.stat <= 50;
+            
+            // Overwrite class but include completed-slot explicitly
+            slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
+            
+            let displayStat = formatStatDisplay(activeDraftSlot, item.stat);
+            let statFontSize = activeDraftSlot === 'engine' ? '20px' : '28px';
+            let watermarkText = item.name.split(' ').pop().substring(0,2).toUpperCase();
+            if (activeDraftSlot === 'engine') watermarkText = "V6";
+            
+            let sparkles = isShiny ? '<div class="sparkle-1"></div><div class="sparkle-2"></div><div class="sparkle-3"></div>' : '';
+            
+            slot.innerHTML = `
+                <div class="watermark" style="font-size: 180px; right:-20px; bottom:-30px;">${watermarkText}</div>
+                ${sparkles}
+                <div class="slot-label">${activeDraftSlot.replace(/[0-9]/g, '')}</div>
+                <div class="slot-content">
+                    <div class="filled-name">${item.name}</div>
+                    <div class="filled-year">${item.year || ''} ${item.stage ? '[' + item.stage.toUpperCase() + ']' : ''}</div>
+                    <div class="filled-stat" style="font-size: ${statFontSize};">${displayStat}</div>
+                </div>
+            `;
             
             const overlay = document.getElementById('draft-overlay');
             overlay.classList.remove('active');
             setTimeout(() => { overlay.style.display = 'none'; }, 300);
 
             updateSeedDisplay();
+            
+            // --- CRITICAL FIX: ADVANCE THE STATE LOCKS IMMEDIATELY ---
             updateSlotLocks();
             checkDraftCompletion();
 
+            // Auto-advance modal only if manual selection is happening
             if (!isAuto) {
                 const nextSlot = currentModeSlots.find(s => !teamState[s]);
                 if (nextSlot) {
@@ -1027,8 +1031,9 @@
             document.getElementById('championships').style.display = 'none';
             document.getElementById('active-seed').innerText = "SEED: READY";
 
+            // Reset UI visually
             const allSlots = ['chassis', 'engine', 'principal', 'driver1', 'driver2', 'reserve'];
-            allSlots.forEach((slot) => {
+            allSlots.forEach((slot, index) => {
                 const el = document.getElementById(`slot-${slot}`);
                 if (el) {
                     el.className = `slot-card ${slot.includes('driver') || slot === 'reserve' ? 'driver-card' : ''}`;
