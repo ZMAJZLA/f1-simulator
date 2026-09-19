@@ -138,10 +138,10 @@
         
         .draft-option:hover:not(.unaffordable) { border-color: var(--f1-red); transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
 
-        .draft-option.unaffordable { opacity: 0.4; filter: grayscale(100%); pointer-events: none; border-color: #111; }
+        .draft-option.unaffordable { opacity: 0.35; filter: grayscale(100%); pointer-events: none; border-color: #111; }
         .draft-option.unaffordable::after {
-            content: "TOO EXPENSIVE"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
-            color: #ff3333; font-family: 'Teko', sans-serif; font-size: 40px; border: 4px solid #ff3333; padding: 5px 20px;
+            content: "OVER BUDGET"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+            color: #ff3333; font-family: 'Teko', sans-serif; font-size: 38px; border: 3px solid #ff3333; padding: 5px 15px;
             background: rgba(0,0,0,0.9); z-index: 10; width: max-content;
         }
         
@@ -299,7 +299,7 @@
                 <option value="10">10 SEASONS</option>
                 <option value="15">15 SEASONS</option>
             </select>
-            <div class="budget-display" id="budget-display">BUDGET: $150M</div>
+            <div class="budget-display" id="budget-display">BUDGET: $200M</div>
             <button class="tool-btn" onclick="autoDraft()">⚡ AUTO DRAFT</button>
             <button class="tool-btn tool-btn-reset" onclick="resetDraft()">🔄 RESTART CAREER</button>
         </div>
@@ -325,15 +325,15 @@
                 <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT PRINCIPAL</div></div>
             </div>
             <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
-                <div class="slot-label">STEP 4: LEAD DRIVER (PRIME/VET)</div>
+                <div class="slot-label">STEP 4: LEAD (PRIME/VET)</div>
                 <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT LEAD</div></div>
             </div>
             <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
-                <div class="slot-label">STEP 5: SECOND DRIVER (ROOKIE/VET)</div>
+                <div class="slot-label">STEP 5: SECOND (ROOKIE/VET)</div>
                 <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT SECOND</div></div>
             </div>
             <div class="slot-card driver-card locked-slot" id="slot-reserve" onclick="openDraft('reserve')">
-                <div class="slot-label" style="background:#555; border-color:#888;">STEP 6: RESERVE DRIVER</div>
+                <div class="slot-label" style="background:#555; border-color:#888;">STEP 6: RESERVE</div>
                 <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT RESERVE</div></div>
             </div>
         </div>
@@ -389,7 +389,7 @@
         <div class="os-grid">
             <div class="os-panel">
                 <h3>FINANCES & UPGRADES</h3>
-                <div class="os-budget" id="os-budget-display">$150M</div>
+                <div class="os-budget" id="os-budget-display">$200M</div>
                 <div style="color:#aaa; text-align:center; margin-bottom: 20px;" id="os-prize-money">+ $0M Prize Money Awarded</div>
                 <button class="os-upgrade-btn" id="btn-upg-aero" onclick="buyUpgrade('aero')">
                     <span>UPGRADE AERO (+2 Pace)</span>
@@ -441,7 +441,7 @@
         let totalSeasons = 5;
         let currentSeason = 1;
         let totalCareerWins = 0;
-        let currentBudget = 150;
+        let currentBudget = 200;
         let highestDriverWins = 0;
         let teamState = {};
         
@@ -553,11 +553,11 @@
                 { name: 'Leonardo Fornaroli', versions: [{ year: 2025, stage: 'Rookie', stat: 81, note: 'F3 World Champion.' }] },
                 { name: 'Luke Browning', versions: [{ year: 2026, stage: 'Rookie', stat: 80, note: 'Williams Academy star.' }] },
 
-                // Legends
+                // Legends & Pros
                 { name: 'Lewis Hamilton', versions: [{ year: 2007, stage: 'Rookie', stat: 93, hWins: 4 }, { year: 2020, stage: 'Prime', stat: 99, wetMod: 15, hWins: 11 }, { year: 2026, stage: 'Veteran', stat: 91, hWins: 0 }] },
                 { name: 'Max Verstappen', versions: [{ year: 2016, stage: 'Rookie', stat: 89, hWins: 1 }, { year: 2023, stage: 'Prime', stat: 99, wetMod: 15, hWins: 19 }] },
                 { name: 'Fernando Alonso', versions: [{ year: 2012, stage: 'Prime', stat: 98, hWins: 3 }, { year: 2023, stage: 'Veteran', stat: 93, hWins: 0 }] },
-                { name: 'Sebastian Vettel', versions: [{ year: 2013, stage: 'Prime', stat: 98, hWins: 13 }, { year: 2020, stage: 'Decline', stat: 82, crashMsg: 'Vettel spun at the apex. DNF.' }] },
+                { name: 'Sebastian Vettel', versions: [{ year: 2013, stage: 'Prime', stat: 98, hWins: 13 }, { year: 2020, stage: 'Veteran', stat: 82, crashMsg: 'Vettel spun at the apex. DNF.' }] },
                 { name: 'Michael Schumacher', versions: [{ year: 2004, stage: 'Prime', stat: 99, wetMod: 18, hWins: 13 }, { year: 2012, stage: 'Veteran', stat: 88 }] },
                 { name: 'Ayrton Senna', versions: [{ year: 1988, stage: 'Prime', stat: 99, wetMod: 20, hWins: 8 }] },
                 { name: 'Alain Prost', versions: [{ year: 1989, stage: 'Prime', stat: 98, hWins: 4 }] },
@@ -567,7 +567,7 @@
                 // Meme Drivers
                 { name: 'Pastor Maldonado', versions: [{ year: 2012, stage: 'Prime', stat: 80, risk: 40, crashMsg: 'Maldonado torpedoed into Turn 1. DNF.' }] },
                 { name: 'Nikita Mazepin', versions: [{ year: 2021, stage: 'Rookie', stat: 30, risk: 40, crashMsg: 'Spun out on pit exit. Typical. DNF.' }] },
-                { name: 'Nicholas Latifi', versions: [{ year: 2021, stage: 'Prime', stat: 55, risk: 20, crashMsg: 'Crashed into the barriers, causing a safety car.' }] },
+                { name: 'Nicholas Latifi', versions: [{ year: 2021, stage: 'Rookie', stat: 55, risk: 20, crashMsg: 'Crashed into the barriers, causing a safety car.' }] },
                 { name: 'Mahaveer Raghunathan', versions: [{ year: 2019, stage: 'Rookie', stat: 5, risk: 50, crashMsg: 'Got stuck doing a 15-point turn. Disqualified.' }] }
             ],
             specialDrivers: [
@@ -600,10 +600,10 @@
         ];
 
         function getCost(stat) {
-            if (stat >= 100) return 55;
-            if (stat >= 95) return 45;
-            if (stat >= 90) return 30;
-            if (stat >= 80) return 15;
+            if (stat >= 100) return 35;
+            if (stat >= 95) return 25;
+            if (stat >= 90) return 18;
+            if (stat >= 80) return 10;
             if (stat >= 60) return 5;
             return 1;
         }
@@ -724,12 +724,9 @@
                     return !inUse;
                 });
 
-                // SLOT SPECIFIC STAGE FILTERS
                 if (slotName === 'driver1') {
-                    // LEAD DRIVER MUST BE VETERAN OR PRIME OR SPECIAL
                     candidateDrivers = candidateDrivers.filter(d => d.versions.some(v => v.stage === 'Prime' || v.stage === 'Veteran'));
                 } else if (slotName === 'driver2') {
-                    // SECOND DRIVER MUST BE ROOKIE OR VETERAN
                     candidateDrivers = candidateDrivers.filter(d => d.versions.some(v => v.stage === 'Rookie' || v.stage === 'Veteran'));
                 }
 
@@ -743,7 +740,6 @@
                     return { name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, wetMod: rv.wetMod, isDriver: true, hWins: rv.hWins || 0, hPods: rv.hPods || 0, hPoles: rv.hPoles || 0 };
                 });
 
-                // Special drivers allowed in Driver 1 (or Reserve)
                 if (slotName !== 'driver2' && Math.random() < 0.25 && !forceShit && !forceGod) {
                     const activeYear = teamState.chassis ? teamState.chassis.item.year : 2026;
                     const eligibleSpecials = db.specialDrivers.filter(sd => activeYear >= (sd.birthYear + 18));
@@ -793,7 +789,9 @@
                 const isShiny = opt.isSpecial || opt.stat >= 98;
                 const isShit = opt.stat <= 50;
                 const cost = getCost(opt.stat);
-                const canAfford = (currentBudget >= cost);
+                
+                // Guarantee user never gets locked out!
+                const canAfford = (currentBudget >= cost) || (index === 0 && currentBudget < 5);
 
                 card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
                 card.style.animationDelay = `${index * 0.08}s`;
@@ -936,7 +934,7 @@
             
             const attemptDraft = () => {
                 let tempState = {};
-                let tempBudget = totalBudget;
+                let tempBudget = currentBudget;
 
                 for (let slot of slotSequence) {
                     let options = [];
@@ -982,7 +980,7 @@
             totalSeasons = parseInt(document.getElementById('career-length').value);
             currentSeason = 1;
             totalCareerWins = 0;
-            currentBudget = 150;
+            currentBudget = 200;
             upgradeAeroBonus = 0; upgradeEngBonus = 0; upgradeRelBonus = 0;
             teamState = {};
             respinsLeft = 3;
