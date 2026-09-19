@@ -16,6 +16,7 @@
             --gold: #ffd700;
             --neon-blue: #00bfff;
             --curse-purple: #b900ff;
+            --hc-orange: #ff6600;
         }
 
         body {
@@ -46,15 +47,17 @@
             background: rgba(225, 6, 0, 0.1); border-bottom: 1px solid rgba(225, 6, 0, 0.3);
             text-align: center; padding: 8px; font-family: 'Rajdhani', sans-serif; font-size: 16px;
             font-weight: 700; letter-spacing: 4px; color: var(--gold); text-transform: uppercase;
-            box-shadow: inset 0 -5px 15px rgba(0,0,0,0.5);
+            box-shadow: inset 0 -5px 15px rgba(0,0,0,0.5); display: flex; justify-content: center; gap: 30px; align-items: center;
         }
 
         .top-tools { display: flex; gap: 15px; align-items: center; }
-        .seed-display { 
-            background: rgba(255,255,255,0.05); border: 1px solid #333; padding: 6px 14px; 
-            border-radius: 4px; font-family: monospace; font-size: 14px; color: var(--success); letter-spacing: 1px;
-        }
         
+        .budget-display {
+            background: rgba(255, 102, 0, 0.1); border: 1px solid var(--hc-orange); padding: 6px 14px; 
+            border-radius: 4px; font-family: 'Teko', sans-serif; font-size: 22px; color: var(--hc-orange); letter-spacing: 1px;
+            display: none; box-shadow: 0 0 10px rgba(255,102,0,0.2);
+        }
+
         .tool-btn {
             background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
             padding: 8px 16px; font-family: 'Teko', sans-serif; font-size: 20px; cursor: pointer;
@@ -63,13 +66,14 @@
         .tool-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px var(--neon-blue); }
         .tool-btn-reset { border-color: var(--f1-red); color: var(--f1-red); }
         .tool-btn-reset:hover { background: var(--f1-red); color: #fff; box-shadow: 0 0 15px var(--f1-red); }
+        .tool-btn-hc { border-color: #555; color: #888; }
+        .tool-btn-hc.active-hc { border-color: var(--hc-orange); color: #fff; background: var(--hc-orange); box-shadow: 0 0 15px var(--hc-orange); text-shadow: 0 1px 3px #000; }
         
         .ff-btn { border-color: var(--gold); color: var(--gold); display: none; margin-left: 10px; padding: 15px 30px; font-size: 28px;}
         .ff-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .builder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-        .driver-row { grid-column: span 3; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
         .slot-card {
             background: linear-gradient(145deg, var(--panel-dark), #0f0f13);
@@ -80,7 +84,7 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             will-change: transform;
         }
-        .driver-card { height: 320px; }
+        .driver-card { height: 280px; }
 
         .slot-card:hover { 
             border-color: var(--f1-red); 
@@ -112,41 +116,19 @@
         .empty-icon { font-size: 50px; color: #444; margin-bottom: 10px; font-weight: 300; transition: 0.3s;}
         .slot-card:hover .empty-icon { color: var(--f1-red); transform: scale(1.2); }
         
-        .filled-name { font-family: 'Teko', sans-serif; font-size: 46px; margin: 0; line-height: 1; text-transform: uppercase; text-shadow: 0 4px 10px rgba(0,0,0,0.8);}
+        .filled-name { font-family: 'Teko', sans-serif; font-size: 42px; margin: 0; line-height: 1; text-transform: uppercase; text-shadow: 0 4px 10px rgba(0,0,0,0.8);}
         .filled-year { font-size: 16px; color: #aaa; font-weight: bold; letter-spacing: 2px; margin-top: 8px; background: rgba(0,0,0,0.6); display: inline-block; padding: 4px 10px; border-radius: 4px;}
         .filled-stat { 
             background: rgba(0,0,0,0.8); border: 1px solid var(--f1-red); display: inline-block; color: #fff;
-            padding: 5px 25px; font-family: 'Teko', sans-serif; font-size: 26px; border-radius: 4px; margin-top: 20px; text-transform: uppercase;
+            padding: 5px 20px; font-family: 'Teko', sans-serif; font-size: 24px; border-radius: 4px; margin-top: 15px; text-transform: uppercase;
             box-shadow: 0 0 15px rgba(225,6,0,0.3);
         }
 
-        .gold-card {
-            background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important;
-            border: 2px solid var(--gold) !important;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1) !important;
-        }
+        .gold-card { background: linear-gradient(135deg, #2b2200 0%, #1a1400 100%) !important; border: 2px solid var(--gold) !important; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.1) !important; }
         .gold-card .filled-stat { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
         .gold-card .watermark { color: rgba(255, 215, 0, 0.08); }
-        
-        .gold-card::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
-            transform: skewX(-25deg); animation: goldShine 4s infinite; z-index: 1; pointer-events: none;
-        }
-        @keyframes goldShine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
-
         .shit-card { background: linear-gradient(135deg, #200500 0%, #100200 100%) !important; border: 2px dashed #ff3333 !important; }
         .shit-card .filled-stat { border-color: #ff3333; color: #ff3333; }
-
-        .sparkle-1, .sparkle-2, .sparkle-3 {
-            position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
-            box-shadow: 0 0 10px 2px var(--gold); z-index: 3; opacity: 0; pointer-events: none;
-        }
-        .sparkle-1 { top: 20%; left: 20%; animation: twinkle 2s infinite 0.5s; }
-        .sparkle-2 { top: 70%; right: 20%; animation: twinkle 2.5s infinite 1.2s; }
-        .sparkle-3 { top: 40%; left: 80%; animation: twinkle 1.8s infinite 0.1s; }
-        @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.5); } }
-
         .gold-badge { background: linear-gradient(45deg, #bf953f, #fcf6ba, #b38728, #fbf5b7) !important; color: #000 !important; font-weight: bold !important; border: none !important; }
 
         .draft-overlay {
@@ -160,10 +142,7 @@
         .draft-header span { color: var(--f1-red); }
         
         .respin-container { margin-bottom: 40px; display: flex; gap: 15px; align-items: center;}
-        .respin-btn { 
-            background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 25px;
-            font-family: 'Teko', sans-serif; font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.2s;
-        }
+        .respin-btn { background: transparent; border: 2px solid var(--f1-red); color: #fff; padding: 10px 25px; font-family: 'Teko', sans-serif; font-size: 24px; cursor: pointer; border-radius: 4px; transition: 0.2s; }
         .respin-btn:hover:not(:disabled) { background: var(--f1-red); box-shadow: 0 0 20px rgba(225,6,0,0.6); transform: scale(1.05);}
         .respin-btn:disabled { border-color: #333; color: #555; cursor: not-allowed; }
 
@@ -178,22 +157,26 @@
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
-        .draft-option:hover { 
+        .draft-option:hover:not(.unaffordable) { 
             border-color: var(--f1-red); 
             transform: perspective(1000px) rotateX(4deg) rotateY(-4deg) translateY(-15px) scale(1.02); 
             box-shadow: -10px 20px 40px rgba(225,6,0,0.4); 
         }
-        
-        .slot-reeling {
-            border-color: var(--neon-blue) !important;
-            box-shadow: 0 0 20px rgba(0, 191, 255, 0.3) !important;
-            animation: slotPulse 0.1s infinite alternate;
+
+        .draft-option.unaffordable { opacity: 0.3; filter: grayscale(100%); pointer-events: none; border-color: #111; }
+        .draft-option.unaffordable::after {
+            content: "OVER BUDGET"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+            color: #ff3333; font-family: 'Teko', sans-serif; font-size: 50px; border: 4px solid #ff3333; padding: 5px 20px;
+            background: rgba(0,0,0,0.9); z-index: 10; width: max-content;
         }
+        
+        .slot-reeling { border-color: var(--neon-blue) !important; box-shadow: 0 0 20px rgba(0, 191, 255, 0.3) !important; animation: slotPulse 0.1s infinite alternate; }
         @keyframes slotPulse { 0% { transform: scale(0.98); opacity: 0.8; } 100% { transform: scale(1.01); opacity: 1; } }
 
         .opt-content { z-index: 2; position: relative; display: flex; flex-direction: column; height: 100%; pointer-events: none;}
         .opt-year { font-size: 18px; color: var(--f1-red); font-weight: 700; margin-bottom: 5px; letter-spacing: 2px;}
-        .opt-name { font-family: 'Teko', sans-serif; font-size: 44px; line-height: 0.9; margin-bottom: 15px; text-transform: uppercase; color: #fff;}
+        .opt-name { font-family: 'Teko', sans-serif; font-size: 40px; line-height: 0.9; margin-bottom: 15px; text-transform: uppercase; color: #fff;}
+        .opt-cost { position: absolute; top: 0; right: 0; background: var(--hc-orange); color: #000; font-family: 'Teko', sans-serif; font-size: 24px; padding: 2px 10px; border-radius: 4px; font-weight: bold;}
         
         .opt-stage { display: inline-block; font-size: 13px; padding: 4px 12px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; width: max-content;}
         .stage-rookie { color: var(--success); border: 1px solid var(--success); background: rgba(0, 255, 204, 0.1);}
@@ -201,9 +184,9 @@
         .stage-veteran { color: #888; border: 1px solid #888; background: rgba(136, 136, 136, 0.1);}
         .stage-shit { color: #ff3333; border: 1px solid #ff3333; background: rgba(255, 51, 51, 0.1);}
         
-        .opt-hist { border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 12px 0; font-size: 14px; color: #aaa; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between;}
-        .opt-hist span { color: #fff; font-size: 16px;}
-        .opt-note { font-size: 15px; color: #ccc; line-height: 1.5; font-style: italic; flex-grow: 1; opacity: 0.85;}
+        .opt-hist { border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 12px 0; font-size: 13px; color: #aaa; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between;}
+        .opt-hist span { color: #fff; font-size: 15px;}
+        .opt-note { font-size: 14px; color: #ccc; line-height: 1.4; font-style: italic; flex-grow: 1; opacity: 0.85;}
         
         .opt-stat { font-family: 'Teko', sans-serif; font-size: 48px; text-align: right; color: #fff; margin-top: auto; line-height: 1;}
 
@@ -241,7 +224,6 @@
         .light-bulb.on { background: #ff0000; box-shadow: 0 0 40px #ff0000, inset 0 0 10px #fff; }
         #lights-text { font-family: 'Teko', sans-serif; font-size: 80px; color: #fff; letter-spacing: 5px; opacity: 0; transition: 0.1s; }
 
-        /* F1 TV STYLE RACE TICKER REDESIGN */
         #season-container { display: none; margin-top: 20px;}
         .scoreboard-header {
             display: flex; justify-content: space-between; background: #111; position: relative;
@@ -256,10 +238,7 @@
         }
         .team-wins-tracker { color: #fff; font-size: 20px; border-left: 1px solid #555; padding-left: 15px;}
 
-        .race-list { 
-            background: transparent; border-radius: 0 0 8px 8px; border: none; padding: 10px 0;
-            display: flex; flex-direction: column; gap: 15px;
-        }
+        .race-list { background: transparent; border-radius: 0 0 8px 8px; border: none; padding: 10px 0; display: flex; flex-direction: column; gap: 15px; }
         
         .race-card {
             background: linear-gradient(90deg, #111 0%, #1a1a24 100%);
@@ -270,11 +249,6 @@
         }
         @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
 
-        .race-card::after {
-            content: ''; position: absolute; right: 0; top: 0; height: 100%; width: 150px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02)); pointer-events: none;
-        }
-        
         .race-card-left { display: flex; flex-direction: column; }
         .race-rnd { font-family: 'Teko', sans-serif; font-size: 22px; color: var(--f1-red); font-weight: 500; letter-spacing: 1px; line-height: 1;}
         .race-track { font-size: 24px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #fff; display:flex; align-items:center; gap: 10px; line-height: 1.2;}
@@ -287,7 +261,7 @@
 
         .race-card-right { display: flex; justify-content: space-around; align-items: center; padding-left: 15px;}
         .user-driver-res { display: flex; flex-direction: column; align-items: center; gap: 5px;}
-        .ud-name { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;}
+        .ud-name { font-size: 12px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; text-align:center;}
         .pos-badge { background: #222; color: #fff; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; border-radius: 6px; font-family: 'Teko', sans-serif; font-size: 26px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);}
         .pos-1 { background: linear-gradient(135deg, #e6c200, #ffdf00); color: #000; font-weight: bold;} 
         .pos-2 { background: linear-gradient(135deg, #999, #ccc); color: #000; font-weight: bold;} 
@@ -302,6 +276,7 @@
         .msg-radio { color: var(--success); border-left-color: var(--success); font-style: italic; }
         .msg-curse { color: var(--curse-purple); border-left-color: var(--curse-purple); text-shadow: 0 0 5px rgba(185, 0, 255, 0.3); }
         .msg-home { color: var(--gold); border-left-color: var(--gold); text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+        .msg-injury { color: #ff0000; border-left-color: #ff0000; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 8px rgba(255,0,0,0.6);}
 
         .championships { display: none; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 50px; }
         
@@ -356,7 +331,7 @@
         }
         @media (max-width: 768px) {
             header { flex-direction: column; text-align: center; gap: 15px; }
-            .ultimate-goal-banner { font-size: 14px; letter-spacing: 2px; }
+            .ultimate-goal-banner { font-size: 14px; letter-spacing: 2px; flex-direction: column; gap: 10px;}
             .top-tools { width: 100%; justify-content: center; flex-wrap: wrap; }
             .builder-grid { grid-template-columns: 1fr; }
             .driver-row { grid-column: span 1; grid-template-columns: 1fr; }
@@ -379,14 +354,18 @@
 <body>
 
     <header>
-        <h1>F1 <span>ULTIMATE</span> // ENGINEERING DRAFT</h1>
+        <h1>F1 <span>MANAGER</span> // ULTIMATE DRAFT</h1>
         <div class="top-tools">
             <div class="seed-display" id="active-seed">SEED: READY</div>
-            <button class="tool-btn" onclick="autoDraft()">⚡ DO IT FOR ME</button>
+            <div class="budget-display" id="budget-display">BUDGET: $150M</div>
+            <button class="tool-btn tool-btn-hc" id="hardcore-btn" onclick="toggleHardcore()">🔥 HARDCORE</button>
+            <button class="tool-btn" onclick="autoDraft()">⚡ AUTO</button>
             <button class="tool-btn tool-btn-reset" onclick="resetDraft()">🔄 RESET</button>
         </div>
     </header>
-    <div class="ultimate-goal-banner">🎯 OBJECTIVE: ACHIEVE THE IMPOSSIBLE - ONE DRIVER. 24 WINS. 0 LOSSES.</div>
+    <div class="ultimate-goal-banner">
+        <span>🎯 OBJECTIVE: ACHIEVE THE IMPOSSIBLE - ONE DRIVER. 24 WINS. 0 LOSSES.</span>
+    </div>
 
     <div class="container">
         <div class="builder-grid">
@@ -402,15 +381,17 @@
                 <div class="slot-label">STEP 3: PRINCIPAL</div>
                 <div class="slot-content"><div class="empty-icon">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT PRINCIPAL</div></div>
             </div>
-            <div class="driver-row">
-                <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
-                    <div class="slot-label">STEP 4: LEAD DRIVER</div>
-                    <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT DRIVER</div></div>
-                </div>
-                <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
-                    <div class="slot-label">STEP 5: SECOND DRIVER</div>
-                    <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT DRIVER</div></div>
-                </div>
+            <div class="slot-card driver-card locked-slot" id="slot-driver1" onclick="openDraft('driver1')">
+                <div class="slot-label">STEP 4: LEAD DRIVER</div>
+                <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT DRIVER</div></div>
+            </div>
+            <div class="slot-card driver-card locked-slot" id="slot-driver2" onclick="openDraft('driver2')">
+                <div class="slot-label">STEP 5: SECOND DRIVER</div>
+                <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT DRIVER</div></div>
+            </div>
+            <div class="slot-card driver-card locked-slot" id="slot-reserve" onclick="openDraft('reserve')">
+                <div class="slot-label" style="background:#555; border-color:#888;">STEP 6: RESERVE DRIVER</div>
+                <div class="slot-content"><div class="empty-icon" style="font-size: 60px;">+</div><div style="font-weight: 700; color: #8b8b99; letter-spacing: 1px;">DRAFT RESERVE</div></div>
             </div>
         </div>
 
@@ -426,7 +407,7 @@
 
         <div id="season-container">
             <div class="scoreboard-header">
-                <div id="live-wdc-leader">🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: 0/24</span></div>
+                <div id="live-wdc-leader">🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">TEAM WINS: 0/24</span></div>
                 <div style="width: 100%;">LIVE RACE TELEMETRY</div>
             </div>
             <div class="race-list" id="race-list"></div>
@@ -483,6 +464,10 @@
     </div>
 
     <script>
+        let isHardcore = false;
+        let totalBudget = 150;
+        let currentBudget = 150;
+
         const raceEvents = [
             "Complained about the tires for 40 laps, then set fastest lap.",
             "Asked race control if they had the drink. They did not have the drink.",
@@ -496,24 +481,6 @@
             "Left the track and gained a massive advantage.",
             "Box box, stay out stay out! IN IN IN IN IN IN.",
             "Radio: 'Bono, my tires are gone!'"
-        ];
-
-        const driverFunnyMessages = [
-            "Accidentally shifted into reverse at 200mph and set a lap record.",
-            "Refuses to drive unless steering wheel plays Eurobeat at max volume.",
-            "Bypassed pit limiter by convincing the FIA it was a mechanical glitch.",
-            "Drove three laps on three wheels and didn't even notice.",
-            "Uses telemetry screens to watch cooking tutorials during safety cars.",
-            "Demanded mid-race pit stop just to get iced coffee."
-        ];
-
-        const principalFunnyMessages = [
-            "Screamed at the FIA so loudly they refunded a 5-second penalty.",
-            "Replaced strategy software with a spreadsheet built in 10 minutes.",
-            "Bribed rival engineers with hot sausages for tire degradation data.",
-            "Demanded the pit crew change all 4 tires in under 1.2 seconds or walk home.",
-            "Accidentally ordered 400 sets of wet tires for the Abu Dhabi GP.",
-            "Got caught napping on the pit wall during a safety car."
         ];
 
         const dnfMessages = [
@@ -569,9 +536,9 @@
                 { name: 'BMW P83 V10', year: 2003, stat: 98, note: 'Screaming 900+ horsepower Williams monster.' },
                 { name: 'Cosworth CR-3 V10', year: 2001, stat: 88, note: 'Jaguar sound machine with explosive temperament.' },
                 { name: 'Hart 415T', year: 1984, stat: 75, note: 'Sennas Toleman engine. Fast when not on fire.', dnfRisk: 25 },
-                { name: 'Jamie\'s Peugeot 208', year: 2006, stat: 75, note: 'Loud exhaust, suspicious speeds, certified tractor.', dnfRisk: 10 },
-                { name: 'Ryan\'s Kia Picanto', year: 2007, stat: 75, note: 'Reliable to go to Tesco. On an F1 track? Not so much.', dnfRisk: 10 },
-                { name: 'Alisha\'s Fiat 500', year: 2006, stat: 35, note: 'Whoops! Absolute snail pace, usually found curbed.', dnfRisk: 40 },
+                { name: 'Jamie\'s Peugeot 208', year: 2016, stat: 75, note: 'Loud exhaust, suspicious smells, certified tractor.', dnfRisk: 20 },
+                { name: 'Ryan\'s Kia Ceed', year: 2016, stat: 75, note: 'Reliable to go to Tesco. On an F1 track? Not so much.', dnfRisk: 10 },
+                { name: 'Alisha\'s Fiat 500', year: 2014, stat: 35, note: 'Whoops! Absolute snail pace, usually found curbed.', dnfRisk: 40 },
                 { name: 'Subaru 1235 F12', year: 1990, stat: 10, note: 'Flat-12 embarrassment. Heaviest engine ever.', dnfRisk: 60 },
                 { name: 'Honda RA615H', year: 2015, stat: 70, note: 'GP2 Engine! Needs constant replacements.', dnfRisk: 25 },
                 { name: 'Life W12', year: 1990, stat: 10, note: 'Produced 400hp when everyone else had 700. Catastrophic.', dnfRisk: 50 }
@@ -697,15 +664,36 @@
         const tracks = ["Bahrain", "Saudi Arabia", "Australia", "Japan", "China", "Miami", "Imola", "Monaco", "Canada", "Spain", "Austria", "Great Britain", "Hungary", "Belgium", "Netherlands", "Monza", "Baku", "Singapore", "Austin", "Mexico", "Brazil", "Las Vegas", "Qatar", "Abu Dhabi"];
         const ptsSys = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 
-        const slotSequence = ['chassis', 'engine', 'principal', 'driver1', 'driver2'];
+        const slotSequence = ['chassis', 'engine', 'principal', 'driver1', 'driver2', 'reserve'];
         let teamState = {};
         let activeDraftSlot = '';
         let respinsLeft = 3;
         let synergyPenalty = 0;
         let synergyDnfMultiplier = 0;
         let internalWarfareRisk = false;
-        let isFastForward = false;
-        let highestDriverWins = 0;
+
+        function getCost(stat) {
+            if (stat >= 100) return 55;
+            if (stat >= 95) return 40;
+            if (stat >= 90) return 25;
+            if (stat >= 80) return 15;
+            if (stat >= 60) return 5;
+            return 1;
+        }
+
+        function toggleHardcore() {
+            isHardcore = !isHardcore;
+            const btn = document.getElementById('hardcore-btn');
+            const budgetDisplay = document.getElementById('budget-display');
+            if(isHardcore) {
+                btn.classList.add('active-hc');
+                budgetDisplay.style.display = 'block';
+                resetDraft(); 
+            } else {
+                btn.classList.remove('active-hc');
+                budgetDisplay.style.display = 'none';
+            }
+        }
 
         function formatStatDisplay(type, stat) {
             if (type !== 'engine') return stat;
@@ -800,10 +788,11 @@
             let forceShit = rollType < 0.05;
             let forceGod = rollType > 0.95;
 
-            if (slotName.includes('driver')) {
+            if (slotName.includes('driver') || slotName === 'reserve') {
                 let shuffledDrivers = [...db.drivers].sort(() => 0.5 - Math.random());
-                if (slotName === 'driver2' && teamState.driver1) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver1.name);
-                else if (slotName === 'driver1' && teamState.driver2) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver2.name);
+                if (teamState.driver1) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver1.name);
+                if (teamState.driver2) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.driver2.name);
+                if (teamState.reserve) shuffledDrivers = shuffledDrivers.filter(d => d.name !== teamState.reserve.name);
                 
                 if (forceShit) shuffledDrivers = shuffledDrivers.filter(d => d.versions.some(v => v.stat < 60));
                 if (forceGod) shuffledDrivers = shuffledDrivers.filter(d => d.versions.some(v => v.stat > 95));
@@ -856,8 +845,10 @@
                 const card = document.createElement('div');
                 const isShiny = opt.isSpecial || opt.stat >= 98;
                 const isShit = opt.stat <= 50;
+                const cost = getCost(opt.stat);
+                const canAfford = !isHardcore || (currentBudget >= cost);
 
-                card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
+                card.className = `draft-option ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''} ${!canAfford ? 'unaffordable' : ''}`;
                 card.style.animationDelay = `${index * 0.08}s`;
                 
                 let watermarkText = opt.name.split(' ').pop().substring(0,2).toUpperCase();
@@ -871,6 +862,7 @@
 
                 let stageHtml = opt.isDriver ? `<div class="opt-stage ${isShiny ? 'gold-badge' : stageClass}">${opt.stage}</div>` : '';
                 let histHtml = opt.isDriver ? `<div class="opt-hist">WINS: <span>${opt.hWins}</span> | PODS: <span>${opt.hPods}</span> | POLES: <span>${opt.hPoles}</span></div>` : '';
+                let costHtml = isHardcore ? `<div class="opt-cost">$${cost}M</div>` : '';
                 
                 let displayStat = formatStatDisplay(slotName, opt.stat);
                 let statFontSize = slotName === 'engine' ? '32px' : '54px';
@@ -878,6 +870,7 @@
                 card.innerHTML = `
                     ${watermark}
                     ${sparkles}
+                    ${costHtml}
                     <div class="opt-content">
                         <div>
                             <div class="opt-year">${opt.year}</div>
@@ -889,15 +882,23 @@
                         <div class="opt-stat" style="font-size: ${statFontSize}; color: ${slotName === 'engine' && opt.stat < 80 ? '#ff3333' : '#fff'}">${displayStat}</div>
                     </div>
                 `;
-                card.onclick = () => selectDraft(opt);
+                
+                if(canAfford) {
+                    card.onclick = () => selectDraft(opt, cost);
+                }
                 grid.appendChild(card);
             });
         }
 
-        function selectDraft(item) {
+        function selectDraft(item, cost) {
             teamState[activeDraftSlot] = item;
             const slot = document.getElementById(`slot-${activeDraftSlot}`);
             
+            if(isHardcore) {
+                currentBudget -= cost;
+                document.getElementById('budget-display').innerText = `BUDGET: $${currentBudget}M`;
+            }
+
             const isShiny = item.isSpecial || item.stat >= 98;
             const isShit = item.stat <= 50;
             slot.className = `slot-card filled completed-slot ${isShiny ? 'gold-card' : ''} ${isShit ? 'shit-card' : ''}`;
@@ -982,20 +983,52 @@
 
         function autoDraft() {
             resetDraft();
-            slotSequence.forEach(slot => {
-                let options = [];
-                if (slot.includes('driver')) {
-                    let available = db.drivers;
-                    if (slot === 'driver2' && teamState.driver1) available = available.filter(d => d.name !== teamState.driver1.name);
-                    let d = available[Math.floor(Math.random() * available.length)];
-                    let rv = getRandomVersion(d.versions);
-                    options.push({ name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, wetMod: rv.wetMod, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles });
-                } else {
-                    options = db[slot];
+            
+            // Hardcore auto-draft logic
+            const attemptDraft = () => {
+                let tempState = {};
+                let tempBudget = totalBudget;
+                let success = true;
+
+                for (let slot of slotSequence) {
+                    let options = [];
+                    if (slot.includes('driver') || slot === 'reserve') {
+                        let available = db.drivers;
+                        if (tempState.driver1) available = available.filter(d => d.name !== tempState.driver1.name);
+                        if (tempState.driver2) available = available.filter(d => d.name !== tempState.driver2.name);
+                        let d = available[Math.floor(Math.random() * available.length)];
+                        let rv = getRandomVersion(d.versions);
+                        options.push({ name: d.name, year: rv.year, stage: rv.stage, stat: rv.stat, risk: rv.risk, note: rv.note, crashMsg: rv.crashMsg, wetMod: rv.wetMod, isDriver: true, hWins: rv.hWins, hPods: rv.hPods, hPoles: rv.hPoles });
+                    } else {
+                        options = db[slot];
+                    }
+                    
+                    let picked = options[Math.floor(Math.random() * options.length)];
+                    let cost = getCost(picked.stat);
+
+                    if (isHardcore && tempBudget < cost) {
+                        // Force a cheap pick
+                        if (slot === 'chassis' || slot === 'engine') {
+                            picked = db[slot].find(x => x.stat <= 60) || db[slot][0];
+                        } else if (slot === 'principal') {
+                            picked = db.principal.find(x => x.stat <= 80) || db.principal[0];
+                        } else {
+                            picked = { name: "Latifi (Budget)", year: 2021, stage: "Shit", stat: 50, risk: 20, isDriver: true };
+                        }
+                        cost = getCost(picked.stat);
+                    }
+                    
+                    tempBudget -= cost;
+                    tempState[slot] = { item: picked, cost: cost };
                 }
-                let picked = options[Math.floor(Math.random() * options.length)];
+                return tempState;
+            };
+
+            const finalPicks = attemptDraft();
+            
+            slotSequence.forEach(slot => {
                 activeDraftSlot = slot;
-                selectDraft(picked);
+                selectDraft(finalPicks[slot].item, finalPicks[slot].cost);
             });
         }
 
@@ -1003,7 +1036,10 @@
             teamState = {};
             respinsLeft = 3;
             isFastForward = false;
+            currentBudget = totalBudget;
             updateRespinBtn();
+            
+            document.getElementById('budget-display').innerText = `BUDGET: $${currentBudget}M`;
             document.getElementById('synergy-box').style.display = 'none';
             document.getElementById('sim-btn').classList.remove('ready');
             document.getElementById('ff-btn').style.display = 'none';
@@ -1068,11 +1104,21 @@
             }
         }
 
+        let allDrivers = [];
+        let allTeams = [];
+        let currentRace = 0;
+        let finalTeamPts = 0;
+        let finalTeamPos = 0;
+        let userTeamWins = 0;
+        
+        let activeDriver1;
+        let activeDriver2;
+
         function initSeason() {
             document.getElementById('sim-btn').style.display = 'none';
             document.getElementById('season-container').style.display = 'block';
             document.getElementById('live-wdc-leader').style.display = 'flex';
-            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: 0/24</span>`;
+            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: --- <span class="team-wins-tracker" id="team-wins-tracker">TEAM WINS: 0/24</span>`;
             
             const userTeamName = teamState.principal.name.split(' ').pop().toUpperCase() + " RACING";
             const userCarPace = ((teamState.chassis.stat + teamState.engine.stat + teamState.principal.stat) / 3) + synergyPenalty;
@@ -1082,17 +1128,25 @@
             allTeams.push({ name: userTeamName, pace: userCarPace, pts: 0, isUser: true });
 
             allDrivers = [];
+            
+            // Set up initial active drivers
+            activeDriver1 = { name: teamState.driver1.name, stat: teamState.driver1.stat, team: allTeams[allTeams.length-1], pts: 0, wins: 0, isUser: true, wetMod: teamState.driver1.wetMod, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg, isInjured: false, seat: 1 };
+            activeDriver2 = { name: teamState.driver2.name, stat: teamState.driver2.stat, team: allTeams[allTeams.length-1], pts: 0, wins: 0, isUser: true, wetMod: teamState.driver2.wetMod, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg, isInjured: false, seat: 2 };
+            
+            allDrivers.push(activeDriver1);
+            allDrivers.push(activeDriver2);
+
+            // Add generic hidden reserve to AI teams for realism
             allTeams.forEach(team => {
-                if (team.isUser) {
-                    allDrivers.push({ name: teamState.driver1.name, stat: teamState.driver1.stat, team: team, pts: 0, wins: 0, isUser: true, wetMod: teamState.driver1.wetMod, risk: teamState.driver1.risk, msg: teamState.driver1.crashMsg });
-                    allDrivers.push({ name: teamState.driver2.name, stat: teamState.driver2.stat, team: team, pts: 0, wins: 0, isUser: true, wetMod: teamState.driver2.wetMod, risk: teamState.driver2.risk, msg: teamState.driver2.crashMsg });
-                } else {
-                    team.drivers.forEach(d => { allDrivers.push({ name: d.name, stat: d.stat, team: team, pts: 0, wins: 0, isUser: false, risk: 4 }); });
+                if (!team.isUser) {
+                    team.drivers.forEach((d, idx) => { 
+                        allDrivers.push({ name: d.name, stat: d.stat, team: team, pts: 0, wins: 0, isUser: false, risk: 4, isInjured: false, seat: idx+1 }); 
+                    });
                 }
             });
 
             currentRace = 0; 
-            highestDriverWins = 0;
+            userTeamWins = 0;
             setTimeout(runRace, 500);
         }
 
@@ -1111,6 +1165,13 @@
             let isRaining = Math.random() < 0.20;
 
             allDrivers.forEach(d => {
+                if (d.isInjured) {
+                    d.raceScore = -100;
+                    d.raceStatus = 'INJ';
+                    d.raceMsg = "Out injured.";
+                    return;
+                }
+
                 let isHomeRace = false;
                 let isCursed = false;
                 d.loreEventMsg = null;
@@ -1158,12 +1219,26 @@
                     d.raceScore = -1; d.raceStatus = 'DNF';
                     d.raceMsg = "Collided with teammate in turn 1! Internal warfare!";
                     d.loreEventMsg = "Toxic Rivalry Crash!"; d.loreType = 'curse';
+                    
+                    // Small chance of injury during warfare
+                    if (isHardcore && Math.random() < 0.2) {
+                        d.isInjured = true;
+                        d.loreEventMsg = "HOSPITALIZED IN RIVALRY CRASH!";
+                    }
                     return; 
                 }
 
                 if (Math.random() * 100 < dnfThreshold) {
                     d.raceScore = -1; d.raceStatus = 'DNF';
                     d.raceMsg = d.msg || (d.isUser ? dnfMessages[Math.floor(Math.random() * dnfMessages.length)] : null);
+                    
+                    // CAREER ENDING CRASH CHECK
+                    if (isHardcore && Math.random() < 0.05) {
+                        d.isInjured = true;
+                        d.loreEventMsg = "MASSIVE SHUNT. DRIVER INJURED.";
+                        d.loreType = 'curse';
+                    }
+
                 } else {
                     d.raceScore = currentPace + (Math.random() * 12 - 5);
                     d.raceStatus = 'FINISH';
@@ -1174,19 +1249,34 @@
                 }
             });
 
-            allDrivers.sort((a, b) => b.raceScore - a.raceScore);
+            // Handle substitutions BEFORE sorting positions, but AFTER the race logic evaluates the crash
+            allDrivers.forEach(d => {
+                if (d.isUser && d.isInjured) {
+                    // If they just got injured this round, swap them out for the next round
+                    if (d.seat === 1 && activeDriver1.name !== teamState.reserve.name) {
+                        activeDriver1 = { name: teamState.reserve.name + " (RES)", stat: teamState.reserve.stat, team: d.team, pts: 0, wins: 0, isUser: true, wetMod: teamState.reserve.wetMod, risk: teamState.reserve.risk, msg: teamState.reserve.crashMsg, isInjured: false, seat: 1 };
+                        allDrivers.push(activeDriver1);
+                    } else if (d.seat === 2 && activeDriver2.name !== teamState.reserve.name) {
+                        activeDriver2 = { name: teamState.reserve.name + " (RES)", stat: teamState.reserve.stat, team: d.team, pts: 0, wins: 0, isUser: true, wetMod: teamState.reserve.wetMod, risk: teamState.reserve.risk, msg: teamState.reserve.crashMsg, isInjured: false, seat: 2 };
+                        allDrivers.push(activeDriver2);
+                    }
+                }
+            });
+
+            let activeGrid = allDrivers.filter(d => !d.isInjured || d.raceScore > -100); // Filter out already injured drivers
+            activeGrid.sort((a, b) => b.raceScore - a.raceScore);
 
             let pos = 1; let raceWinner = ""; let u1Result = {}, u2Result = {}; let userRacePts = 0;
 
-            allDrivers.forEach(d => {
-                if (d.raceScore === -1) { 
+            activeGrid.forEach(d => {
+                if (d.raceScore <= -1) { 
                     d.currentPos = d.raceStatus; 
                 } else {
                     d.currentPos = pos;
                     if (pos === 1) {
                         raceWinner = d.name;
                         d.wins++;
-                        if (d.isUser && d.wins > highestDriverWins) highestDriverWins = d.wins;
+                        if (d.isUser) userTeamWins++;
                     }
                     if (pos <= 10) {
                         let pts = ptsSys[pos - 1];
@@ -1197,13 +1287,21 @@
                 }
 
                 if (d.isUser) {
-                    if (d.name === teamState.driver1.name) u1Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, loreMsg: d.loreEventMsg, loreType: d.loreType, class: getPosClass(d.currentPos) };
-                    else u2Result = { pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, loreMsg: d.loreEventMsg, loreType: d.loreType, class: getPosClass(d.currentPos) };
+                    if (d.seat === 1 && d.name === activeDriver1.name) {
+                        u1Result = { name: d.name, pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, loreMsg: d.loreEventMsg, loreType: d.loreType, class: getPosClass(d.currentPos) };
+                    }
+                    if (d.seat === 2 && d.name === activeDriver2.name) {
+                        u2Result = { name: d.name, pos: d.currentPos, msg: d.raceMsg, evt: d.eventMsg, loreMsg: d.loreEventMsg, loreType: d.loreType, class: getPosClass(d.currentPos) };
+                    }
                 }
             });
 
+            // Double check if u1/u2 is empty because the original got injured this exact race
+            if (!u1Result.name) u1Result = { name: "INJURED", pos: "INJ", class: "pos-dnf" };
+            if (!u2Result.name) u2Result = { name: "INJURED", pos: "INJ", class: "pos-dnf" };
+
             let currentLeader = [...allDrivers].sort((a, b) => b.pts - a.pts)[0];
-            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: ${currentLeader.name.toUpperCase()} (${currentLeader.pts} PTS) <span class="team-wins-tracker" id="team-wins-tracker">DRIVER WINS: ${highestDriverWins}/24</span>`;
+            document.getElementById('live-wdc-leader').innerHTML = `🏆 CH'SHIP LEADER: ${currentLeader.name.toUpperCase()} (${currentLeader.pts} PTS) <span class="team-wins-tracker" id="team-wins-tracker">TEAM WINS: ${userTeamWins}/24</span>`;
 
             appendRaceRow(track, currentRace + 1, raceWinner, u1Result, u2Result, userRacePts, isRaining);
             currentRace++; 
@@ -1213,6 +1311,7 @@
         function getPosClass(pos) {
             if (pos === 'DNF') return 'pos-dnf';
             if (pos === 'DNS') return 'pos-dns';
+            if (pos === 'INJ') return 'pos-dnf';
             if (pos === 1) return 'pos-1';
             if (pos === 2) return 'pos-2';
             if (pos === 3) return 'pos-3';
@@ -1224,21 +1323,23 @@
             const div = document.createElement('div');
             div.className = 'race-card';
             
-            let feedHtml = '';
+            let chaosHtml = '';
             
-            if (d1.msg && !d1.loreMsg) feedHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'msg-dns' : 'msg-dnf'}">⚠️ ${teamState.driver1.name.split(' ').pop()}: ${d1.msg}</div>`;
-            if (d2.msg && !d2.loreMsg) feedHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'msg-dns' : 'msg-dnf'}">⚠️ ${teamState.driver2.name.split(' ').pop()}: ${d2.msg}</div>`;
+            if (d1.msg && !d1.loreMsg) chaosHtml += `<div class="chaos-msg ${d1.pos === 'DNS' ? 'msg-dns' : 'msg-dnf'}">⚠️ ${d1.name.split(' ').pop()}: ${d1.msg}</div>`;
+            if (d2.msg && !d2.loreMsg) chaosHtml += `<div class="chaos-msg ${d2.pos === 'DNS' ? 'msg-dns' : 'msg-dnf'}">⚠️ ${d2.name.split(' ').pop()}: ${d2.msg}</div>`;
             
-            if (d1.evt && !d1.loreMsg) feedHtml += `<div class="chaos-msg msg-radio">📻 ${teamState.driver1.name.split(' ').pop()}: "${d1.evt}"</div>`;
-            if (d2.evt && !d2.loreMsg) feedHtml += `<div class="chaos-msg msg-radio">📻 ${teamState.driver2.name.split(' ').pop()}: "${d2.evt}"</div>`;
+            if (d1.evt && !d1.loreMsg) chaosHtml += `<div class="chaos-msg msg-radio">📻 ${d1.name.split(' ').pop()}: "${d1.evt}"</div>`;
+            if (d2.evt && !d2.loreMsg) chaosHtml += `<div class="chaos-msg msg-radio">📻 ${d2.name.split(' ').pop()}: "${d2.evt}"</div>`;
             
             if (d1.loreMsg) {
                 let lClass = d1.loreType === 'curse' ? 'msg-curse' : 'msg-home';
-                feedHtml += `<div class="chaos-msg ${lClass}">${d1.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver1.name.split(' ').pop()}: ${d1.loreMsg}</div>`;
+                if (d1.loreEventMsg === "MASSIVE SHUNT. DRIVER INJURED.") lClass = 'msg-injury';
+                chaosHtml += `<div class="chaos-msg ${lClass}">${d1.loreType === 'curse' ? '☠️' : '🌟'} ${d1.name.split(' ').pop()}: ${d1.loreMsg}</div>`;
             }
             if (d2.loreMsg) {
                 let lClass = d2.loreType === 'curse' ? 'msg-curse' : 'msg-home';
-                feedHtml += `<div class="chaos-msg ${lClass}">${d2.loreType === 'curse' ? '☠️' : '🌟'} ${teamState.driver2.name.split(' ').pop()}: ${d2.loreMsg}</div>`;
+                if (d2.loreEventMsg === "MASSIVE SHUNT. DRIVER INJURED.") lClass = 'msg-injury';
+                chaosHtml += `<div class="chaos-msg ${lClass}">${d2.loreType === 'curse' ? '☠️' : '🌟'} ${d2.name.split(' ').pop()}: ${d2.loreMsg}</div>`;
             }
 
             let weatherIcon = isRaining ? '<span class="weather-rain">🌧️</span>' : '<span class="weather-sun">☀️</span>';
@@ -1254,16 +1355,16 @@
                 </div>
                 <div class="race-card-right">
                     <div class="user-driver-res">
-                        <span class="ud-name">${teamState.driver1.name.substring(0,3).toUpperCase()}</span>
+                        <span class="ud-name">${d1.name.substring(0,3).toUpperCase()}</span>
                         <div class="pos-badge ${d1.class}">${d1.pos}</div>
                     </div>
                     <div class="user-driver-res">
-                        <span class="ud-name">${teamState.driver2.name.substring(0,3).toUpperCase()}</span>
+                        <span class="ud-name">${d2.name.substring(0,3).toUpperCase()}</span>
                         <div class="pos-badge ${d2.class}">${d2.pos}</div>
                     </div>
                     <div class="race-pts" style="font-size: 32px; margin-left: 15px;">+${userPts}</div>
                 </div>
-                ${feedHtml ? `<div class="event-feed">${feedHtml}</div>` : ''}
+                ${chaosHtml ? `<div class="event-feed">${chaosHtml}</div>` : ''}
             `;
             list.appendChild(div);
             
@@ -1276,12 +1377,14 @@
             document.getElementById('live-wdc-leader').style.display = 'none';
             document.getElementById('championships').style.display = 'grid';
             
-            allDrivers.sort((a, b) => b.pts - a.pts);
+            let finalDrivers = allDrivers.filter(d => d.pts > 0 || d.isUser || !d.isInjured);
+            finalDrivers.sort((a, b) => b.pts - a.pts);
+            
             const wdcTable = document.getElementById('wdc-table');
-            allDrivers.forEach((d, index) => {
+            finalDrivers.forEach((d, index) => {
                 const tr = document.createElement('tr');
                 if(d.isUser) tr.className = 'user-team-row';
-                tr.innerHTML = `<td class="pos-col">${index + 1}</td><td>${d.name}</td><td style="font-size:14px; color:#aaa;">${d.team.name}</td><td class="pts-col">${d.pts}</td>`;
+                tr.innerHTML = `<td class="pos-col">${index + 1}</td><td>${d.name} ${d.isInjured ? '🚑' : ''}</td><td style="font-size:14px; color:#aaa;">${d.team.name}</td><td class="pts-col">${d.pts}</td>`;
                 wdcTable.appendChild(tr);
             });
 
@@ -1336,14 +1439,15 @@
 
         function shareResults() {
             let posEmoji = "🏁";
-            if (highestDriverWins === 24) posEmoji = "👑 24-0 PERFECT SEASON!";
+            if (userTeamWins === 24) posEmoji = "👑 24-0 PERFECT SEASON!";
             else if (finalTeamPos === 1) posEmoji = "🏆 P1 - CHAMPIONS!";
             else if (finalTeamPos === 2) posEmoji = "🥈 P2 - ALMOST!";
             else if (finalTeamPos >= 3 && finalTeamPos <= 6) posEmoji = "📊 MIDFIELD";
             else posEmoji = "🚜 TRACTOR TIER";
 
+            let modeText = isHardcore ? "🔥 HARDCORE MODE\n" : "";
             const seedText = document.getElementById('active-seed').innerText;
-            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\nMax Driver Wins: ${highestDriverWins}/24\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n\n${seedText}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
+            const shareText = `🏎️ F1 ULTIMATE DRAFT 🏎️\n${modeText}${posEmoji}\nTEAM: ${teamState.principal.name.split(' ').pop().toUpperCase()} RACING (${finalTeamPts} pts)\nTeam Wins: ${userTeamWins}/24\n\n🚗 Chassis: ${teamState.chassis.name} (${teamState.chassis.year})\n⚙️ Engine: ${teamState.engine.name} (${teamState.engine.year})\n👔 Principal: ${teamState.principal.name}\n🥇 Lead: ${teamState.driver1.name}\n🥈 Second: ${teamState.driver2.name}\n🏁 Reserve: ${teamState.reserve.name}\n\n${seedText}\nPlay now: https://ZMAJZLA.github.io/f1-simulator`;
             
             navigator.clipboard.writeText(shareText).then(() => {
                 alert("Results copied to clipboard!");
