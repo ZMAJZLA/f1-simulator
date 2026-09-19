@@ -81,6 +81,7 @@
             height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s;
             position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            will-change: transform;
         }
         .driver-card { height: 280px; }
 
@@ -89,11 +90,13 @@
             transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateY(-8px) scale(1.01); 
             box-shadow: -10px 15px 30px rgba(225, 6, 0, 0.2); 
         }
+        
         .slot-card.filled { border-style: solid; border-color: #444; background: linear-gradient(145deg, #111, #000); }
         
-        .slot-card.locked-slot { opacity: 0.4; pointer-events: none; filter: grayscale(100%); border-color: #222; box-shadow: none; transform: none;}
+        /* STRICT POINTER EVENT LOCKS TO PREVENT UI FREEZING */
+        .slot-card.completed-slot { border-color: var(--success); pointer-events: none !important; }
+        .slot-card.locked-slot { opacity: 0.4; filter: grayscale(100%); border-color: #222; box-shadow: none; transform: none; pointer-events: none !important; }
         .slot-card.locked-slot::after { content: "LOCKED"; position: absolute; bottom: 15px; font-size: 13px; letter-spacing: 3px; color: #666; font-weight: bold; background: #000; padding: 5px 12px; border-radius: 4px; border: 1px solid #333; }
-        .slot-card.completed-slot { border-color: var(--success); }
 
         .slot-label { position: absolute; top: 15px; left: 15px; font-size: 14px; color: #fff; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; z-index: 2; background: rgba(0,0,0,0.9); padding: 5px 10px; border-left: 3px solid var(--f1-red); border-radius: 0 4px 4px 0; }
         .watermark { position: absolute; right: -10px; bottom: -20px; font-family: 'Teko', sans-serif; font-size: 140px; color: rgba(255,255,255,0.03); z-index: 0; line-height: 1; pointer-events: none; font-weight: bold; }
@@ -132,12 +135,13 @@
             padding: 30px 25px; cursor: pointer; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;
             opacity: 0; transform: translateY(40px); animation: slideUpFade 0.5s forwards; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            will-change: transform;
         }
         @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
         
         .draft-option:hover:not(.unaffordable) { border-color: var(--f1-red); transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(225,6,0,0.3); }
 
-        .draft-option.unaffordable { opacity: 0.35; filter: grayscale(100%); pointer-events: none; border-color: #111; }
+        .draft-option.unaffordable { opacity: 0.35; filter: grayscale(100%); pointer-events: none !important; border-color: #111; }
         .draft-option.unaffordable::after {
             content: "OVER BUDGET"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
             color: #ff3333; font-family: 'Teko', sans-serif; font-size: 38px; border: 3px solid #ff3333; padding: 5px 15px;
@@ -382,6 +386,7 @@
         </div>
     </div>
 
+    <!-- OFF-SEASON HUB -->
     <div id="offseason-overlay">
         <div class="os-header">OFF-SEASON HUB</div>
         <div class="os-grid">
@@ -661,7 +666,13 @@
                 shuffleCount++;
                 if (shuffleCount > 4) {
                     clearInterval(scrambleInterval);
-                    renderDraftOptions(slotName, grid);
+                    try {
+                        renderDraftOptions(slotName, grid);
+                    } catch(err) {
+                        // Fallback safety net
+                        console.error(err);
+                        overlay.classList.remove('active');
+                    }
                 }
             }, 60);
         }
@@ -727,12 +738,12 @@
                 candidateDrivers = candidateDrivers.sort(() => 0.5 - Math.random());
                 
                 if (forceShit) {
-                    let shitList = candidateDrivers.filter(d => d.versions.some(v => v.stat < 75));
-                    if (shitList.length > 0) candidateDrivers = shitList;
+                    let s = candidateDrivers.filter(d => d.versions.some(v => v.stat < 60));
+                    if(s.length > 0) candidateDrivers = s;
                 }
                 if (forceGod) {
-                    let godList = candidateDrivers.filter(d => d.versions.some(v => v.stat > 92));
-                    if (godList.length > 0) candidateDrivers = godList;
+                    let g = candidateDrivers.filter(d => d.versions.some(v => v.stat > 95));
+                    if(g.length > 0) candidateDrivers = g;
                 }
 
                 options = candidateDrivers.slice(0, 4).map(d => {
@@ -772,7 +783,7 @@
                     if (s.length > 0) shuffled = s;
                 }
                 if (forceGod) {
-                    let g = shuffled.filter(p => p.stat >= 95);
+                    let g = shuffled.filter(p => p.stat >= 96);
                     if (g.length > 0) shuffled = g;
                 }
                 options = shuffled.slice(0, 4);
@@ -786,11 +797,11 @@
             } else {
                 let shuffled = [...db[slotName]].sort(() => 0.5 - Math.random());
                 if (forceShit) {
-                    let s = shuffled.filter(p => p.stat < 80);
+                    let s = shuffled.filter(i => i.stat < 75);
                     if (s.length > 0) shuffled = s;
                 }
                 if (forceGod) {
-                    let g = shuffled.filter(p => p.stat >= 95);
+                    let g = shuffled.filter(i => i.stat >= 97);
                     if (g.length > 0) shuffled = g;
                 }
                 options = shuffled.slice(0, 4);
@@ -881,7 +892,6 @@
             updateSeedDisplay();
             checkDraftCompletion();
 
-            // Auto-advance modal only if manual selection is happening
             if (!isAuto) {
                 const nextSlot = slotSequence.find(s => !teamState[s]);
                 if (nextSlot) {
@@ -988,8 +998,8 @@
                         if(cheapOptions.length > 0) {
                             picked = cheapOptions[Math.floor(Math.random() * cheapOptions.length)];
                         } else {
-                            if (slot === 'chassis' || slot === 'engine') picked = db[slot].sort((a,b)=>a.stat-b.stat)[0];
-                            else if (slot === 'principal') picked = db.principal.sort((a,b)=>a.stat-b.stat)[0];
+                            if (slot === 'chassis' || slot === 'engine') picked = [...db[slot]].sort((a,b)=>a.stat-b.stat)[0];
+                            else if (slot === 'principal') picked = [...db.principal].sort((a,b)=>a.stat-b.stat)[0];
                             else picked = { name: "Latifi (Budget)", year: 2021, stage: "Rookie", stat: 55, risk: 20, isDriver: true };
                         }
                         cost = getCost(picked.stat);
@@ -1022,7 +1032,6 @@
             
             document.getElementById('synergy-box').style.display = 'none';
             document.getElementById('sim-btn').classList.remove('ready');
-            document.getElementById('sim-btn').style.display = 'inline-block';
             document.getElementById('ff-btn').style.display = 'none';
             document.getElementById('season-container').style.display = 'none';
             document.getElementById('championships').style.display = 'none';
@@ -1030,7 +1039,7 @@
 
             slotSequence.forEach((slot, index) => {
                 const el = document.getElementById(`slot-${slot}`);
-                el.className = `slot-card ${index > 0 ? 'locked-slot' : ''} ${slot.includes('driver') ? 'driver-card' : ''}`;
+                el.className = `slot-card ${index > 0 ? 'locked-slot' : ''} ${(slot.includes('driver') || slot === 'reserve') ? 'driver-card' : ''}`;
                 const label = slot.replace(/[0-9]/g, '').toUpperCase();
                 
                 let stepLabel = label;
